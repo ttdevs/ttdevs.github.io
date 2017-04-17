@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>ttdevs</title>
+  <subtitle>你之所以觉得时间一年比一年过得快，是因为时间对你一年比一年重要</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="https://ttdevs.github.io/"/>
+  <updated>2017-04-16T06:39:03.000Z</updated>
+  <id>https://ttdevs.github.io/</id>
+  
+  <author>
+    <name>ttdevs</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Welcome</title>
+    <link href="https://ttdevs.github.io/2017/04/16/Welcome/"/>
+    <id>https://ttdevs.github.io/2017/04/16/Welcome/</id>
+    <published>2017-04-16T05:22:24.000Z</published>
+    <updated>2017-04-16T06:39:03.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>这是一篇记录使用方法的介绍， 共以后参考。</p>
+<h2 id="title1"><a href="/2017/04/16/Welcome/#title1" class="headerlink" title="title1"></a>title1</h2><h3 id="title2"><a href="/2017/04/16/Welcome/#title2" class="headerlink" title="title2"></a>title2</h3><h4 id="title3"><a href="/2017/04/16/Welcome/#title3" class="headerlink" title="title3"></a>title3</h4><p>测试TOC</p>
+<h2 id="创建tags"><a href="/2017/04/16/Welcome/#创建tags" class="headerlink" title="创建tags"></a>创建tags</h2><ul>
+<li>方法一</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">tags: </div><div class="line">    - hexo </div><div class="line">    - yml</div></pre></td></tr></table></figure>
+<ul>
+<li>方法二</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">tags: [hexo, yml]</div></pre></td></tr></table></figure>
+<h2 id="插入图片"><a href="/2017/04/16/Welcome/#插入图片" class="headerlink" title="插入图片"></a>插入图片</h2><p><img src="/2017/04/16/Welcome/2A6DD705.jpg" alt="插入图片"></p>
+<h2 id="插入代码"><a href="/2017/04/16/Welcome/#插入代码" class="headerlink" title="插入代码"></a>插入代码</h2><ul>
+<li>方法一</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> class <span class="title">Test</span><span class="params">()</span></span>&#123;</div><div class="line">    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li><p>方法二</p>
+<p>  public class Test(){</p>
+<p>  }</p>
+</li>
+</ul>
+<h2 id="创建About页面"><a href="/2017/04/16/Welcome/#创建About页面" class="headerlink" title="创建About页面"></a>创建About页面</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">➜  blog hexo new page &quot;about&quot;</div><div class="line">INFO  Created: ~/OneDrive/blog/source/about/index.md</div><div class="line">➜  blog</div></pre></td></tr></table></figure>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;这是一篇记录使用方法的介绍， 共以后参考。&lt;/p&gt;
+&lt;h2 id=&quot;title1&quot;&gt;&lt;a href=&quot;/2017/04/16/Welcome/#title1&quot; class=&quot;headerlink&quot; title=&quot;title1&quot;&gt;&lt;/a&gt;title1&lt;/h2&gt;&lt;h3 id=&quot;
+    
+    </summary>
+    
+      <category term="技术" scheme="https://ttdevs.github.io/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="hexo" scheme="https://ttdevs.github.io/tags/hexo/"/>
+    
+      <category term="yml" scheme="https://ttdevs.github.io/tags/yml/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Hello World</title>
+    <link href="https://ttdevs.github.io/1970/01/01/hello-world/"/>
+    <id>https://ttdevs.github.io/1970/01/01/hello-world/</id>
+    <published>1969-12-31T16:00:00.000Z</published>
+    <updated>2016-12-31T16:00:00.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="/1970/01/01/hello-world/#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="/1970/01/01/hello-world/#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
+<h3 id="Run-server"><a href="/1970/01/01/hello-world/#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
+<h3 id="Generate-static-files"><a href="/1970/01/01/hello-world/#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="/1970/01/01/hello-world/#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.
+    
+    </summary>
+    
+    
+  </entry>
+  
+</feed>
