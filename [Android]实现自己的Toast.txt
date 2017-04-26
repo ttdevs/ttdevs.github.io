@@ -1,0 +1,498 @@
+## 0x00 问题
+
+android 4.0以后，新增了一个功能：关闭某个应用发出的通知、Toast等。具体操作为：打开应用安装列表，找到要屏蔽的应用(长按通知，点击弹出的"应用信息"，即可跳到应用信息界面)，把允许推送消息(显示通知)取消即可。产品发现这个功能之后，果断要求屏蔽。能力有限，不知道如何破通知的屏蔽，自己实现一个Toast还是小case的～～
+
+
+## 0x01 分析
+
+Toast的实现很快想到两种方案，Dialog和浮窗(WindowManager)。Dialog怀疑代价可能比较大，因此没有去尝试，直接来看浮窗，最后发现Toast也是用浮窗实现的。决定用浮窗，就比较简单了，拿到WindowManager然后addView/removeView即可。既然决定重新实现，就弄的更好用一些——怎样调用更方便——最简单就直接提供个静态方法吧。然后就实现的细节了。相信有部分朋友跟我一样，对Toast的了解并不是很清楚，这里主要指Toast的现实策略，到现在都没有去细研究它是以一个什么样的策略显示的。下面是点点总结：
+
+- 相同的消息，会取消之前的，最后一个会显示指定时间，不同的消息会串行显示(or 每个应用只能显示一定量的Toast，队列中有了则只更新显示时间)
+
+- 显示时间只能使用指定的两种，自己设置了无效
+
+- 支持自定义显示内容
+
+- 主界面不在前台了，依然可以显示。在其他线程若使用则需要自己实现消息队列
+
+以上紧凭自己观察猜测，不一定对哈，错误地方欢迎指正。自己实现就不一定非得按照原始的样子了，满足产品要求，怎么爽，怎样美观就怎样写～～
+
+
+## 0x02 实现
+
+首先来看看Toast的使用：
+
+`Toast.makeText(getApplicationContext(), "hello world", Toast.LENGTH_LONG).show();`
+
+最简单的一个Toast调用，这个应该也是我们最常用的。
+
+接着，很自然的就会有各种其他的想法，比如自定义显示内容，不想每次都传入Context，显示在指定位置，控制显示时间，等等各种奇葩需求。看看上面这行代码，Toast.make(...)返回的是一个Toast对象，那么我们来看看拿到这个对象之后能做些什么：
+
+``` java
+mToast.setDuration(Toast.LENGTH_SHORT); // 显示时间
+mToast.setText("hello world"); // may res id
+mToast.setGravity(Gravity.LEFT|Gravity.TOP, 50, 300);
+mToast.setMargin(0.5f, 0.5f);
+mToast.setView(tvMsg); // 指定显示的view
+mToast.cancel(); // 取消显示
+mToast.show(); // 显示
+```
+
+非getXXX()方法就这些。除了常用的show/cancel外我们来看看剩下的几个方法是做什么的。
+
+- setText()
+
+    这个就不用说了，显示的内容，支持字符串和字符串资源ID
+
+- setGravity()
+
+    这个是显示的对齐方式，后面两个参数是针对前面对齐方式的x/y偏移量。比如，上面代码设置向屏幕的左上角对齐，并向右偏移50，向下偏移300
+
+- setMargin()
+
+    margin，也就是外边距。比如我们通过Gravity设置显示在左上角，然后设置这两个值为0.5f，则Toast的左上角会现实在屏幕的中央
+
+- setView()
+
+    设置显示内容视图，这个时候我们就可以自定义了。
+
+好了，知道了这么多，我们就写个自定义的Toast出来：
+
+``` java
+private void bolgToast() {
+    LinearLayout llMain = new LinearLayout(getApplicationContext());
+    llMain.setOrientation(LinearLayout.VERTICAL);
+    llMain.setBackgroundColor(Color.BLACK);
+    llMain.setGravity(Gravity.CENTER);
+    ImageView ivIcon = new ImageView(getApplicationContext());
+    ivIcon.setImageResource(R.drawable.ic_launcher);
+    llMain.addView(ivIcon);
+    TextView tvMsg = new TextView(getApplicationContext());
+    tvMsg.setText("hello word");
+    tvMsg.setTextSize(18);
+    llMain.addView(tvMsg);
+    Toast mToast = new Toast(getApplicationContext());
+    mToast.setView(llMain);
+    mToast.show();
+}
+```
+
+最后效果如下：
+
+![](http://img.blog.csdn.net/20140808224745685?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)  
+
+应该还行吧～～
+
+
+## 0x03 坑
+
+下面简单说几个问题。
+
+- 非主线程执行
+
+    有时候可能不知不觉在非主线程调用了Toast，这个时候系统可能会给你报这样一个错误：
+
+    `E/AndroidRuntime(24817): java.lang.RuntimeException: Can't create handler inside thread that has not called Looper.prepare()`
+    
+    这个错误很明显，可能需要我们自己去实现当前线程的消息系统。网上的很多例子告诉我们可以这样写：
+
+    ``` java
+    new Thread(new Runnable() {
+
+        @Override
+        public void run() {
+            Looper.prepare();
+            Toast.makeText(getApplicationContext(), "hello ttdevs", Toast.LENGTH_LONG).show();
+            Looper.loop(); // 不仅仅需要prepare，还需要这句，不然不报错但Toast也不出来
+        }
+    }).start();
+    ```
+
+    其实本人一直很好奇这样写的意义在哪里。当然你也可以这么写：
+    
+    ``` java
+    new Thread(new Runnable() {
+
+        @Override
+        public void run() {
+            new Thread(new Runnable() {
+    
+                Handler mHandler = new Handler(Looper.getMainLooper()) {
+                    @Override
+                    public void dispatchMessage(Message msg) {
+                        Toast.makeText(getApplicationContext(), "hello ttdevs", Toast.LENGTH_LONG).show();
+                    }
+                };
+    
+                @Override
+                public void run() {
+                    mHandler.sendEmptyMessage(0);
+                }
+            }).start();
+        }
+    }).start();
+    ```
+
+    效果是一样的(activity中写的一段测试代码，你能理解为什么用了Thread的嵌套来模拟问题吗？(?))。  
+
+- 使用new来创建Toast
+
+    有的时候你也可能会遇到这样的问题：
+    
+    `53: E/AndroidRuntime(26441): Caused by: java.lang.RuntimeException: This Toast was not created with Toast.makeText()`
+    
+    我的测试代码是这样的：
+    
+    ``` java    
+   Toast mToast = new Toast(getApplicationContext());
+   mToast.setText(String.valueOf(Math.random()));
+   mToast.show();
+    ```
+    
+    对于这个问题，我们只能老老实实的用 `Toast.makeText()` 来构造一个Toast了。具体原因我们之后会分析。  
+
+- RuntimeException:setView must have been called
+    
+    这个问题常见于在调用show()之前调用过cancel()。是否还记得这个cancel方法呢？查看源码我们看到：
+    
+    ``` java
+    final Runnable mHide = new Runnable() {
+        @Override
+        public void run() {
+            handleHide();
+            // Don't do this in handleHide() because it is also invoked by handleShow()
+            mNextView = null;
+        }
+    };
+    ```
+
+在执行完隐藏之后会将mNextView = null。  
+
+
+## 0x04 Toast的源码
+
+下面我们来分析下Toast的源码（最新的4.4），其他版本比如2.2可能和这个版本有较大不同，大家可以自行分析。首先我们来看下最常用的makeText()方法：
+
+``` java
+/**
+ * Make a standard toast that just contains a text view.
+ *
+ * @param context  The context to use.  Usually your {@link android.app.Application}
+ *                 or {@link android.app.Activity} object.
+ * @param text     The text to show.  Can be formatted text.
+ * @param duration How long to display the message.  Either {@link #LENGTH_SHORT} or
+ *                 {@link #LENGTH_LONG}
+ */
+public static Toast makeText(Context context, CharSequence text, int duration) {
+    Toast result = new Toast(context);
+
+    LayoutInflater inflate = (LayoutInflater)
+            context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    View v = inflate.inflate(com.android.internal.R.layout.transient_notification, null);
+    TextView tv = (TextView) v.findViewById(com.android.internal.R.id.message);
+    tv.setText(text);
+
+    result.mNextView = v;
+    result.mDuration = duration;
+
+    return result;
+}
+```
+
+这个方法是返回一个标准的仅仅带有一个TextView的Toast。先是通过Toast的默认构造方法创建一个Toast对象。然后给这个Toast设置view和显示时间。其中R.layout.transient_notification是一个简单线型布局里面嵌套个TextView，大家可以自行查看源码；然后就是设置显示时间，对于long和short这里面并不是一个时间值，而是一个0/1这种静态flag常量，这也就简单说明为什么我们传入的duration为时间的话无效的
+原因了。接下来我们在看Toast的构造方法：  
+
+``` java
+/**
+ * Construct an empty Toast object.  You must call {@link #setView} before you
+ * can call {@link #show}.
+ *
+ * @param context The context to use.  Usually your {@link android.app.Application}
+ *                or {@link android.app.Activity} object.
+ */
+public Toast(Context context) {
+    mContext = context;
+    mTN = new TN();
+    mTN.mY = context.getResources().getDimensionPixelSize(
+            com.android.internal.R.dimen.toast_y_offset);
+    mTN.mGravity = context.getResources().getInteger(
+            com.android.internal.R.integer.config_toastDefaultGravity);
+}
+```
+
+关键部分还是创建一个TN对象，继续跟进：
+
+![](http://img.blog.csdn.net/20140809123107343?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast) 
+![](http://img.blog.csdn.net/20140809123429670?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)  
+
+上面是TN的结构和构造方法。这个构造方法还是比较简单的。修改WindowManager.LayoutParams的参数，如果你弄过浮窗，这里就比较简单了。比较好奇的的LayoutParams.TYOE_TOAST，竟然有这个type，然后立马就想到，屏蔽Toast是不是就根据这个Type，不过通过测试，发现不是。 最让我感觉五雷轰顶的还是这个注释：`This should be changed to use a Dialog, with a Theme.Toast defined that sets up the layout params appropriately.` 为什么会有这个注释呢?写了这个注释又为什么不用dialog来实现呢？做了下面这个尝试：
+
+![](http://img.blog.csdn.net/20140809125031505?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)  
+
+发现并没有Theme.Toast，不知道是不是系统内部的，不给用户使用。不过，这也说明，用dialog实现可能是没有问题的。好了，就到这吧，能力有限再继续往下跟就困难了。
+
+回到上面的Toast来看看我们常用的show()方法：
+
+``` java
+/**
+ * Show the view for the specified duration.
+ */
+public void show() {
+    if (mNextView == null) {
+        throw new RuntimeException("setView must have been called");
+    }
+
+    INotificationManager service = getService();
+    String pkg = mContext.getPackageName();
+    TN tn = mTN;
+    tn.mNextView = mNextView;
+
+    try {
+        service.enqueueToast(pkg, tn, mDuration);
+    } catch (RemoteException e) {
+        // Empty
+    }
+}
+```
+
+关键部分跟不进去，暂时就不看了。值得注意的一点是这个RuntimeException：setView must have been called。如果我们遇到这个错误提示就应该知道是显示Toast的View为null。结合TN的代码，可能很自然的想到真正显示的时候应该是TN.show()，通过handler最终执行的是下面的方法：
+
+``` java
+public void handleShow() {
+    if (localLOGV) Log.v(TAG, "HANDLE SHOW: " + this + " mView=" + mView
+            + " mNextView=" + mNextView);
+    if (mView != mNextView) {
+        // remove the old view if necessary
+        handleHide();
+        mView = mNextView;
+        Context context = mView.getContext().getApplicationContext();
+        if (context == null) {
+            context = mView.getContext();
+        }
+        mWM = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        // We can resolve the Gravity here by using the Locale for getting
+        // the layout direction
+        final Configuration config = mView.getContext().getResources().getConfiguration();
+        final int gravity = Gravity.getAbsoluteGravity(mGravity, config.getLayoutDirection());
+        mParams.gravity = gravity;
+        if ((gravity & Gravity.HORIZONTAL_GRAVITY_MASK) == Gravity.FILL_HORIZONTAL) {
+            mParams.horizontalWeight = 1.0f;
+        }
+        if ((gravity & Gravity.VERTICAL_GRAVITY_MASK) == Gravity.FILL_VERTICAL) {
+            mParams.verticalWeight = 1.0f;
+        }
+        mParams.x = mX;
+        mParams.y = mY;
+        mParams.verticalMargin = mVerticalMargin;
+        mParams.horizontalMargin = mHorizontalMargin;
+        if (mView.getParent() != null) {
+            if (localLOGV) Log.v(TAG, "REMOVE! " + mView + " in " + this);
+            mWM.removeView(mView);
+        }
+        if (localLOGV) Log.v(TAG, "ADD! " + mView + " in " + this);
+        mWM.addView(mView, mParams);
+        trySendAccessibilityEvent();
+    }
+}
+```
+
+整个思路还是比较简答的，准备条件，最终调用WindowManager的addView方法将我们的View显示在界面上。handleHide()类似，将我们的View从界面上remove掉。值得注意的是hide的时候，我们的View会被置为null。  最后，我们来总结下Toast的。首先，我们需要通过new Toast或者Toast.makeText的方式构造一个Toast对象，贮备好要所需数据。当执行show的时候，会将这些数据传递给Android的Notification系统，然后由其负责处理相应的逻辑并最终通过WindowManager显示在界面上。通过上面的分析我们也应该知道Toast和Notification用的同一个Notification系统。没有去仔细的分析各个版本在实现的上的差异，如果有问题大家可以去看对应的Toast源码来找具体的解决办法。下面提供两个参考：
+
+- http://blog.csdn.net/ameyume/article/details/7714491
+- http://www.imooo.com/yidongkaifa/android/1009042.htm
+
+最后我们来谈谈自己实现的Toast：通过一个show方法，将自己的Toast 加入一个消息队列中，然后循环取出消息队列中的内容显示。隐藏也是通过一个特殊的消息来完成。当消息队列达到一定大小，我们采取最简单的逻辑即清空队列来处理。另外作为一个全局的东西，我们需要初始化和回收，初始化建议在application中完成。
+
+代码如下（BaseThread请到我的置顶的那篇文章中查看）：
+
+``` java
+public class ToastUtil extends BaseThread {
+    private static final int SHOW_TIME = 2000; // 显示时间
+    private static final int QUEUE_SIZE = 120; // 队列大小
+    private static final int QUEUE_SIZE_LIMIT = 100; // 限制队列大小
+    private static final int FLAG_SHOW = 1000; // 显示
+    private static final int FLAG_HIDE = 1001; // 隐藏
+    private static final int FLAG_CLEAR = 1002; // 清理消息队列
+    private static final String QUITMSG = "@bian_#feng_$market_%toast_&quit_*flag"; // 退出的标记
+
+    private static BlockingQueue<String> mMsgQueue = new ArrayBlockingQueue<String>(QUEUE_SIZE); // 消息缓存队列
+
+    private static ToastUtil mToast;
+
+    private WindowManager mWindowManager;
+    private WindowManager.LayoutParams mParams;
+    private View toastView;
+    private TextView tvAlert;
+
+    @SuppressLint("InflateParams")
+    private ToastUtil(Context context) {
+        mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+
+        mParams = new WindowManager.LayoutParams();
+        mParams.type = WindowManager.LayoutParams.TYPE_TOAST; //TYPE_SYSTEM_OVERLAY
+        mParams.windowAnimations = android.R.style.Animation_Toast;
+        mParams.format = PixelFormat.TRANSLUCENT;
+        mParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        mParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        mParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
+        mParams.alpha = 1f;// 透明度，0全透 ，1不透
+        mParams.verticalMargin = 0.75f;
+        mParams.flags = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
+
+        toastView = LayoutInflater.from(context).inflate(R.layout.layout_toast, null);
+        tvAlert = (TextView) toastView.findViewById(R.id.tvAlert);
+
+        start();
+    }
+
+    /**
+     * 初始化消息显示
+     *
+     * @param context
+     */
+    public static void init(Context context) {
+        if (null == mToast) {
+            mToast = new ToastUtil(context);
+        }
+    }
+
+    private Handler mHandler = new Handler(Looper.getMainLooper()) {
+
+        public void handleMessage(android.os.Message msg) {
+            int what = msg.what;
+            switch (what) {
+                case FLAG_SHOW:
+                    String str = msg.obj.toString();
+                    if (!TextUtils.isEmpty(str)) {
+                        showMsg(str);
+                    }
+                    break;
+                case FLAG_HIDE:
+                    hideMsg();
+                    break;
+                case FLAG_CLEAR:
+                    showMsg("操作异常，消息太多");
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        ;
+    };
+
+    private void showMsg(String msg) {
+        try {
+            tvAlert.setText(msg);
+            if (null == toastView.getParent()) {
+                mWindowManager.addView(toastView, mParams);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void hideMsg() {
+        try {
+            if (null != toastView.getParent()) {
+                mWindowManager.removeView(toastView);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 显示消息
+     *
+     * @param msg 显示的内容
+     */
+    public static void show(String msg) {
+        try {
+            mMsgQueue.put(msg); // block
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void show(Context context, int id) {
+        try {
+            mMsgQueue.put(context.getResources().getString(id)); // block
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 退出
+     */
+    public static void eixt() {
+        try {
+            mMsgQueue.put(QUITMSG);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void execute() {
+        try {
+            String msgStr = mMsgQueue.take();
+
+            if (QUITMSG.equals(msgStr)) {
+                exitToast();
+                return;
+            }
+
+            Message msg = mHandler.obtainMessage();
+            if (null == msg) {
+                msg = new Message();
+            }
+            msg.what = FLAG_SHOW;
+            msg.obj = msgStr;
+            mHandler.sendMessage(msg);
+
+            Thread.sleep(SHOW_TIME);
+
+            if (mMsgQueue.size() == 0) {
+                mHandler.sendEmptyMessage(FLAG_HIDE);
+            }
+
+            if (mMsgQueue.size() > QUEUE_SIZE_LIMIT) {
+                mMsgQueue.clear();
+
+                mHandler.sendEmptyMessage(FLAG_CLEAR);
+                Thread.sleep(SHOW_TIME);
+                mHandler.sendEmptyMessage(FLAG_HIDE);
+            }
+
+            System.out.println(">>>>>" + mMsgQueue.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+            mHandler.sendEmptyMessage(FLAG_HIDE);
+        }
+    }
+
+    /**
+     * 退出，清理内存
+     */
+    private void exitToast() {
+        try {
+            hideMsg();
+
+            quit();
+            mMsgQueue.clear();
+            mMsgQueue = null;
+            mToast = null;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+![Create by ttdevs](https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png)
+

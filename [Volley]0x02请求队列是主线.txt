@@ -1,0 +1,456 @@
+<p>忽忽，很意外，第二篇大家反映还不错哈，谢谢咯～～对于这篇，要写好信心不大，不过我会尽量的。</p> 
+<p><br> </p> 
+<h1>1、从哪里开始：</h1> 
+<p>从哪里开始，菜鸟能想到的当然是从最先接触的地方开始啦～～&nbsp;</p> 
+<p>首先我们看volley.java这个类：</p> 
+<p></p> 
+<pre code_snippet_id="162150" snippet_file_name="blog_20140118_1_5680445" name="code">
+     /**
+     * Creates a default instance of the worker pool and calls {@link RequestQueue#start()} on it.
+     *
+     * @param context A {@link Context} to use for creating the cache dir.
+     * @param stack An {@link HttpStack} to use for the network, or null for default.
+     * @return A started {@link RequestQueue} instance.
+     */
+    public static RequestQueue newRequestQueue(Context context, HttpStack stack) {
+        File cacheDir = new File(context.getCacheDir(), DEFAULT_CACHE_DIR);
+
+        String userAgent = "volley/0";
+        try {
+            String packageName = context.getPackageName();
+            PackageInfo info = context.getPackageManager().getPackageInfo(packageName, 0);
+            userAgent = packageName + "/" + info.versionCode;
+        } catch (NameNotFoundException e) {
+        }
+
+        if (stack == null) {
+            if (Build.VERSION.SDK_INT >= 9) {
+                stack = new HurlStack();
+            } else {
+                // Prior to Gingerbread, HttpUrlConnection was unreliable.
+                // See: http://android-developers.blogspot.com/2011/09/androids-http-clients.html
+                stack = new HttpClientStack(<a href="http://lib.csdn.net/base/android">Android</a>HttpClient.newInstance(userAgent));
+            }
+        }
+
+        Network network = new BasicNetwork(stack);
+
+        RequestQueue queue = new RequestQueue(new DiskBasedCache(cacheDir), network);
+        queue.start();
+
+        return queue;
+    }</pre>回忆下之前我们就是通过它拿到我们的请求队列，在对newRequestQueue的描述中我们也得到验证：创建一个工作池（带优先级的阻塞队列）的实例。在这里有两个静态的构造方法，除去我们之前使用过的，另一个多了一个参数HttpStack（HttpStack稍后分析）。而我们之前并没有使用这个带HttpStack的构造方法。因此就有了上面对stack==null的判断：根据不同的版本创建不同的实例。判断的原因注释中也写的很明确： Gingerbread(2.3)之前，HttpUrlConnection不可用。这里就很自然的想到这样一个问题：Gingerbread(2.3)之前和之后的版本在网络请求上有何区别（或者HTTP Client与HttpURLConnection的区别）？如果
+<a target="_blank" href="http://android-developers.blogspot.com/2011/09/androids-http-clients.html">那个网页</a>你打不开，可以在这里
+<a target="_blank" href="http://download.csdn.net/detail/ttdevs/6811275">下载英文原版</a>，或者
+<a target="_blank" href="http://blog.csdn.net/xyz_lmn/article/details/12200133">去看大牛翻译好的</a>。完成HttpStack的创建之后紧接着有创建了一个Network和RequestQueue对象：Network执行网络请求；RequestQueue是A request dispatch queue with a thread pool of dispatchers。下面我们将围绕着RequestQueue进行展开。对了，还有一个HttpStack接口，只有一个方法，这里简单提一下：
+<br> 
+<p></p> 
+<pre code_snippet_id="162150" snippet_file_name="blog_20140118_2_696172" name="code">public interface HttpStack {
+    /**
+     * Performs an HTTP request with the given parameters.
+     *
+     * &lt;p&gt;A GET request is sent if request.getPostBody() == null. A POST request is sent otherwise,
+     * and the Content-Type header is set to request.getPostBodyContentType().&lt;/p&gt;
+     *
+     * @param request the request to perform
+     * @param additionalHeaders additional headers to be sent together with
+     *         {@link Request#getHeaders()}
+     * @return the HTTP response
+     */
+    public HttpResponse performRequest(Request&lt;?&gt; request, Map&lt;String, String&gt; additionalHeaders)
+        throws IOException, AuthFailureError;
+
+}</pre>使用给定的参数执行HTTP请求。通过上面的判断我们知道它有两个实现类：HurlStack和HttpClientStack。这样我们就得到下面的一个关系图： 
+<p></p> 
+<p><img src="http://img.blog.csdn.net/20140105170636953?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></p> 
+<p>这样他们的关系就相当明了了。</p> 
+<p><br> </p> 
+<h1>2、请求队列：RequestQueue</h1> 
+<div>
+ 直接看关键构造函数：
+</div> 
+<div>
+ <pre code_snippet_id="162150" snippet_file_name="blog_20140118_3_7174161" name="code">   /**
+     * Creates the worker pool. Processing will not begin until {@link #start()} is called.
+     *
+     * @param cache A Cache to use for persisting responses to disk
+     * @param network A Network interface for performing HTTP requests
+     * @param threadPoolSize Number of network dispatcher threads to create
+     * @param delivery A ResponseDelivery interface for posting responses and errors
+     */
+    public RequestQueue(Cache cache, Network network, int threadPoolSize,
+            ResponseDelivery delivery) {
+        mCache = cache;
+        mNetwork = network;
+        mDispatchers = new NetworkDispatcher[threadPoolSize];
+        mDelivery = delivery;
+    }</pre>这里我们传入了一个cache、Network、线程池大小和传递响应的对象。默认的线程池大小是4。创建这个RequestQueue对象之后，我们需要调用它的start()方法，完成对调度器的初始化工作，如根据传入线程池大小创建相应数量的Dispatcher（这里我们暂时只关注网络处理线程），然后启动：
+</div> 
+<div>
+ <pre code_snippet_id="162150" snippet_file_name="blog_20140118_4_4524202" name="code">    /**
+     * Starts the dispatchers in this queue.
+     */
+    public void start() {
+        stop();  // Make sure any currently running dispatchers are stopped.
+        // Create the cache dispatcher and start it.
+        mCacheDispatcher = new CacheDispatcher(mCacheQueue, mNetworkQueue, mCache, mDelivery);
+        mCacheDispatcher.start();
+
+        // Create network dispatchers (and corresponding threads) up to the pool size.
+        for (int i = 0; i &lt; mDispatchers.length; i++) {
+            NetworkDispatcher networkDispatcher = new NetworkDispatcher(mNetworkQueue, mNetwork,
+                    mCache, mDelivery);
+            mDispatchers[i] = networkDispatcher;
+            networkDispatcher.start();
+        }
+    }</pre>NetworkDispatcher的构造函数中传入了一个mNetworkQueue对象，这是一个带优先级的阻塞队列：
+</div> 
+<div>
+ <pre code_snippet_id="162150" snippet_file_name="blog_20140118_5_3302703" name="code">/** The queue of requests that are actually going out to the network. */
+private final PriorityBlockingQueue&lt;Request&gt; mNetworkQueue = new PriorityBlockingQueue&lt;Request&gt;();</pre>另一个需要关注的就是add方法：
+</div> 
+<div>
+ <pre code_snippet_id="162150" snippet_file_name="blog_20140118_6_4414735" name="code">/**
+     * Adds a Request to the dispatch queue.
+     * @param request The request to service
+     * @return The passed-in request
+     */
+    public Request add(Request request) {
+        // Tag the request as belonging to this queue and add it to the set of current requests.
+        request.setRequestQueue(this);
+        synchronized (mCurrentRequests) {
+            mCurrentRequests.add(request);
+        }
+
+        // Process requests in the order they are added.
+        request.setSequence(getSequenceNumber());
+        request.addMarker("add-to-queue");
+
+        // If the request is uncacheable, skip the cache queue and go straight to the network.
+        if (!request.shouldCache()) {
+            mNetworkQueue.add(request);
+            return request;
+        }
+
+        // Insert request into stage if there's already a request with the same cache key in flight.
+        synchronized (mWaitingRequests) {
+            String cacheKey = request.getCacheKey();
+            if (mWaitingRequests.containsKey(cacheKey)) {
+                // There is already a request in flight. Queue up.
+                Queue&lt;Request&gt; stagedRequests = mWaitingRequests.get(cacheKey);
+                if (stagedRequests == null) {
+                    stagedRequests = new LinkedList&lt;Request&gt;();
+                }
+                stagedRequests.add(request);
+                mWaitingRequests.put(cacheKey, stagedRequests);
+                if (VolleyLog.DEBUG) {
+                    VolleyLog.v("Request for cacheKey=%s is in flight, putting on hold.", cacheKey);
+                }
+            } else {
+                // Insert 'null' queue for this cacheKey, indicating there is now a request in
+                // flight.
+                mWaitingRequests.put(cacheKey, null);
+                mCacheQueue.add(request);
+            }
+            return request;
+        }
+    }</pre>通过上面的代码我们可以看出，volley是将我们创建的Request对象直接加到上面的mNetworkQueue中。这样我们很自然的联想到，对request的处理应该是由start中创建的NetworkDispatcher完成的。NetworkDispatcher继承了Thread，run()方法是这样实现的：
+</div> 
+<div>
+ <pre code_snippet_id="162150" snippet_file_name="blog_20140118_7_9048778" name="code"> public void run() {
+        Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+        Request request;
+        while (true) {
+            try {
+                // Take a request from the queue.
+                request = mQueue.take();
+            } catch (InterruptedException e) {
+                // We may have been interrupted because it was time to quit.
+                if (mQuit) {
+                    return;
+                }
+                continue;
+            }
+
+            try {
+                request.addMarker("network-queue-take");
+
+                // If the request was cancelled already, do not perform the
+                // network request.
+                if (request.isCanceled()) {
+                    request.finish("network-discard-cancelled");
+                    continue;
+                }
+
+                // Tag the request (if API &gt;= 14)
+                if (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                    TrafficStats.setThreadStatsTag(request.getTrafficStatsTag());
+                }
+
+                // Perform the network request.
+                NetworkResponse networkResponse = mNetwork.performRequest(request);
+                request.addMarker("network-http-complete");
+
+                // If the server returned 304 AND we delivered a response already,
+                // we're done -- don't deliver a second identical response.
+                if (networkResponse.notModified &amp;&amp; request.hasHadResponseDelivered()) {
+                    request.finish("not-modified");
+                    continue;
+                }
+
+                // Parse the response here on the worker thread.
+                Response&lt;?&gt; response = request.parseNetworkResponse(networkResponse);
+                request.addMarker("network-parse-complete");
+
+                // Write to cache if applicable.
+                // TODO: Only update cache metadata instead of entire record for 304s.
+                if (request.shouldCache() &amp;&amp; response.cacheEntry != null) {
+                    mCache.put(request.getCacheKey(), response.cacheEntry);
+                    request.addMarker("network-cache-written");
+                }
+
+                // Post the response back.
+                request.markDelivered();
+                mDelivery.postResponse(request, response);
+            } catch (VolleyError volleyError) {
+                parseAndDeliverNetworkError(request, volleyError);
+            } catch (Exception e) {
+                VolleyLog.e(e, "Unhandled exception %s", e.toString());
+                mDelivery.postError(request, new VolleyError(e));
+            }
+        }
+    }</pre>首先从请求队列中取出一个请求；然后通过Network开始执行这个request请求，这个时候会拿到请求返回的结果；接着把请求的结果返给request进行处理：
+</div> 
+<div>
+ <pre code_snippet_id="162150" snippet_file_name="blog_20140118_8_3923585" name="code">Response&lt;?&gt; response = request.parseNetworkResponse(networkResponse);</pre>request处理之后会返回一个response，这个response和request最后会传递到ResponseDeliveryRunnable中处理：
+</div> 
+<div>
+ <pre code_snippet_id="162150" snippet_file_name="blog_20140118_9_1273626" name="code">   /**
+     * A Runnable used for delivering network responses to a listener on the
+     * main thread.
+     */
+    @SuppressWarnings("rawtypes")
+    private class ResponseDeliveryRunnable implements Runnable {
+        private final Request mRequest;
+        private final Response mResponse;
+        private final Runnable mRunnable;
+
+        public ResponseDeliveryRunnable(Request request, Response response, Runnable runnable) {
+            mRequest = request;
+            mResponse = response;
+            mRunnable = runnable;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void run() {
+            // If this request has canceled, finish it and don't deliver.
+            if (mRequest.isCanceled()) {
+                mRequest.finish("canceled-at-delivery");
+                return;
+            }
+
+            // Deliver a normal response or error, depending.
+            if (mResponse.isSuccess()) {
+                mRequest.deliverResponse(mResponse.result);
+            } else {
+                mRequest.deliverError(mResponse.error);
+            }
+
+            // If this is an intermediate response, add a marker, otherwise we're done
+            // and the request can be finished.
+            if (mResponse.intermediate) {
+                mRequest.addMarker("intermediate-response");
+            } else {
+                mRequest.finish("done");
+            }
+
+            // If we have been provided a post-delivery runnable, run it.
+            if (mRunnable != null) {
+                mRunnable.run();
+            }
+       }
+    }</pre>这里我们可以看到，如果请求的响应是成功的，会去调用request的deliverResponse，这样一个完整的请求响应过程就完成了。
+</div> 
+<div>
+ 细心的你可能已经发现，从RequestQueue的add()方法开始，到NetworkDispatcher的run()方法结束，很多地方调用了request.addMarker("**-**-**");这个方法，通过里面的字符串，我们可以方便的理解整个处理流程：add-to-queue、network-queue-take、network-http-complete、network-parse-complete、network-cache-written、post-response/post-error、intermediate-response，另外还有request.finish("***-***");这个也可以帮助我们理解整个处理流程。
+</div> 
+<div>
+ <img src="http://img.blog.csdn.net/20140105205333171?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="">
+ <br> 如上图（这个图我想修改下，但是不知道怎么改，都是拖出来的）。
+</div> 
+<div>
+ <br> 
+</div> 
+<h1>3、请求的细节</h1> 
+<div>
+ 从NetworkDispatcher的run()开始（代码上方有贴）。
+</div> 
+<div>
+ <br> 
+</div> 
+<h2>3.1 第一次取消</h2> 
+<div>
+ <pre code_snippet_id="162150" snippet_file_name="blog_20140118_10_5592024" name="code">                request.addMarker("network-queue-take");
+
+                // If the request was cancelled already, do not perform the
+                // network request.
+                if (request.isCanceled()) {
+                    request.finish("network-discard-cancelled");
+                    continue;
+                }</pre>此时状态是刚从队列中取出：network-queue-take。首先，判断此请求是否已经取消，若取消直接调用request的finish()方法。这个时候我们会想到，怎么知道已经取消，或者用户怎么取消请求呢？到request中我们可以找到一个cancel()方法，就是通过此方法来取消请求的。注销 这个方法，我们可以看到在RequestQueue中有调用此方法，它们是：
+</div> 
+<div>
+ <pre code_snippet_id="162150" snippet_file_name="blog_20140118_11_782475" name="code">    /**
+     * Cancels all requests in this queue for which the given filter applies.
+     * @param filter The filtering function to use
+     */
+    public void cancelAll(RequestFilter filter) {
+        synchronized (mCurrentRequests) {
+            for (Request&lt;?&gt; request : mCurrentRequests) {
+                if (filter.apply(request)) {
+                    request.cancel();
+                }
+            }
+        }
+    }
+
+    /**
+     * Cancels all requests in this queue with the given tag. Tag must be non-null
+     * and equality is by identity.
+     */
+    public void cancelAll(final Object tag) {
+        if (tag == null) {
+            throw new IllegalArgumentException("Cannot cancelAll with a null tag");
+        }
+        cancelAll(new RequestFilter() {
+            @Override
+            public boolean apply(Request&lt;?&gt; request) {
+                return request.getTag() == tag;
+            }
+        });
+    }</pre>这样，我们就可以知道，取消一个请求可以通过RequestQueue中的cancelAll()方法进行。这个时候取消的话，我们的请求是不会发出去的。当然，取消在任何时候都会发生，下面还会讲到，请求返回后取消的话结果是不会传递给用户的。
+ <br> 
+ <br> 
+</div> 
+<h2>3.2 发起网络请求</h2> 
+<div>
+ <pre code_snippet_id="162150" snippet_file_name="blog_20140118_12_5657281" name="code">                // Perform the network request.
+                NetworkResponse networkResponse = mNetwork.performRequest(request);
+                request.addMarker("network-http-complete");
+</pre>通过执行network的performRequest()方法拿到一个请求结果。执行完这个时候，我们就得到了请求的结果。此处是可以自定义的，我们看下默认实现：
+</div> 
+<div>
+ <pre code_snippet_id="162150" snippet_file_name="blog_20140118_13_4751426" name="code">    @Override
+    public NetworkResponse performRequest(Request&lt;?&gt; request) throws VolleyError {
+        long requestStart = SystemClock.elapsedRealtime();
+        while (true) {
+            HttpResponse httpResponse = null;
+            byte[] responseContents = null;
+            Map&lt;String, String&gt; responseHeaders = new HashMap&lt;String, String&gt;();
+            try {
+                // Gather headers.
+                Map&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();
+                addCacheHeaders(headers, request.getCacheEntry());
+                httpResponse = mHttpStack.performRequest(request, headers);
+                StatusLine statusLine = httpResponse.getStatusLine();
+                int statusCode = statusLine.getStatusCode();
+
+                responseHeaders = convertHeaders(httpResponse.getAllHeaders());
+                // Handle cache validation.
+                if (statusCode == HttpStatus.SC_NOT_MODIFIED) {
+                    return new NetworkResponse(HttpStatus.SC_NOT_MODIFIED,
+                            request.getCacheEntry().data, responseHeaders, true);
+                }
+
+                // Some responses such as 204s do not have content.  We must check.
+                if (httpResponse.getEntity() != null) {
+                  responseContents = entityToBytes(httpResponse.getEntity());
+                } else {
+                  // Add 0 byte response as a way of honestly representing a
+                  // no-content request.
+                  responseContents = new byte[0];
+                }
+
+                // if the request is slow, log it.
+                long requestLifetime = SystemClock.elapsedRealtime() - requestStart;
+                logSlowRequests(requestLifetime, request, responseContents, statusLine);
+
+                if (statusCode &lt; 200 || statusCode &gt; 299) {
+                    throw new IOException();
+                }
+                return new NetworkResponse(statusCode, responseContents, responseHeaders, false);
+            } catch (SocketTimeoutException e) {
+                attemptRetryOnException("socket", request, new TimeoutError());
+            } catch (ConnectTimeoutException e) {
+                attemptRetryOnException("connection", request, new TimeoutError());
+            } catch (MalformedURLException e) {
+                throw new RuntimeException("Bad URL " + request.getUrl(), e);
+            } catch (IOException e) {
+                int statusCode = 0;
+                NetworkResponse networkResponse = null;
+                if (httpResponse != null) {
+                    statusCode = httpResponse.getStatusLine().getStatusCode();
+                } else {
+                    throw new NoConnectionError(e);
+                }
+                VolleyLog.e("Unexpected response code %d for %s", statusCode, request.getUrl());
+                if (responseContents != null) {
+                    networkResponse = new NetworkResponse(statusCode, responseContents,
+                            responseHeaders, false);
+                    if (statusCode == HttpStatus.SC_UNAUTHORIZED ||
+                            statusCode == HttpStatus.SC_FORBIDDEN) {
+                        attemptRetryOnException("auth",
+                                request, new AuthFailureError(networkResponse));
+                    } else {
+                        // TODO: Only throw ServerError for 5xx status codes.
+                        throw new ServerError(networkResponse);
+                    }
+                } else {
+                    throw new NetworkError(networkResponse);
+                }
+            }
+        }
+    }</pre>关键部分：httpResponse = mHttpStack.performRequest(request, headers);通过这个执行网络请求。具体的细节还是可以自定义的。代码贴的太多就不继续贴了，两个实现大家可以具体去看看，比如网络请求超时时间的设置都是通过：request.getTimeoutMs();得到的。再到Request中你就可以知道设置超时是通过下面代码实现的：
+ <br> 
+ <pre code_snippet_id="162150" snippet_file_name="blog_20140118_14_9069824" name="code">/**
+     * Sets the retry policy for this request.
+     */
+    public void setRetryPolicy(RetryPolicy retryPolicy) {
+        mRetryPolicy = retryPolicy;
+    }</pre>
+</div> 
+<div>
+ <br> 
+</div> 
+<h2>3.3 解析请求结果</h2> 
+<div>
+ <pre code_snippet_id="162150" snippet_file_name="blog_20140118_15_1959764" name="code">		// Parse the response here on the worker thread.
+                Response&lt;?&gt; response = request.parseNetworkResponse(networkResponse);
+                request.addMarker("network-parse-complete");</pre>这个是不是很熟悉，我们在request中实现的parseNetworkResponse()。
+</div> 
+<div>
+ <br> 
+</div> 
+<div> 
+ <h2>3.4 最后结果的处理</h2> 这就说了，大家可以继续看默认的代码实现。值得提的是，在这里我们会发现，又一次调用了mRequest.isCanceled()决定是否将结果传递给用户。
+</div> 
+<div>
+ <br> 
+</div> 
+<h1>4、总结</h1> 
+<div>
+ Volley.java&nbsp;这个类的目的很明确，就是获取一个RequestQueue对象。从代码中可以看出，为了达到这个目的，我们至少要创建三个关键对象，Cache、Network、HttpStack。Cache是一个处理响应的缓存；Network是执行网络请求的接口；HttpStack是真正的执行网络请求的接口。Network和HttpStack都是接口，这样volley给我们预留了充足的自定义空间。如果完全自定义，我们可以创建自己的HttpStack和Network实现，这样我们就可以不再使用volley.java这个类了。
+</div> 
+<div>
+ <br> 
+</div> 
+<div>
+ 这篇文章写了半个月，也算完整的伴随最近的感情变迁。虽然后面写的越来越糟糕，不过现在终于写完了。欢迎各位指教～～
+</div> 
+<div>
+ <br> 
+</div> 
+<div>
+ <br> 
+</div>

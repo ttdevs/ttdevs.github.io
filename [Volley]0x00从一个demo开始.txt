@@ -1,0 +1,63 @@
+<p>
+ 五月份的<a href="http://lib.csdn.net/base/go"><a href="http://lib.csdn.net/base/go">Go</a></a>ogle I/O 2013开发者大会上，Google发布了开源的网络框架volley，听说反应很好，因此决定花点时间研究一下。</p> 
+<p><br> </p> 
+<h1>1、Volley是干什么的</h1> 
+<p>
+ Volley is a library that makes networking for <a href="http://lib.csdn.net/base/android">Android</a> apps easier and most importantly, faster.（From：<a target="_blank" href="https://developers.google.com/events/io/sessions/325304728">https://developers.google.com/events/io/sessions/325304728</a>）。这个句话还是比较抽象的，更快更容易体现在哪些方面，在什么时候使用？这些都需要我们来慢慢了解～～</p> 
+<p><br> </p> 
+<h1>2、从获取开始</h1> 
+<p>volley获取地址（如果文中所列地址访问不了，请自行想办法，你该懂得）：<br> </p> 
+<p></p> 
+<pre code_snippet_id="129017" snippet_file_name="blog_20131226_1_3456543" name="code">git clone https://android.googlesource.com/platform/frameworks/volley</pre> 
+<p>下载下来之后，你可以把它作为一个library导入你的项目，或者打包之后导入你的项目，这样我们就可以使用了。我下载的源码和生成的jar可以在这里<a target="_blank" href="http://download.csdn.net/detail/ttdevs/6772833">下载</a>。</p> 
+<p><br> </p> 
+<h1>3、开始一个简单的demo</h1> 
+<div>
+ volley的使用流程大致是这样的。首先，我们拿到volley的请求队列，接着创建自己的请求对象，然后将其放入请求队列，再然后呢？再然后就是等请求结果吧～～是不是太简单了？其实就是这么简单。所以就直接上代码吧：
+ <pre code_snippet_id="129017" snippet_file_name="blog_20131226_2_7155623" name="code">public class MainActivity extends Activity implements OnClickListener {
+
+	private static final String URL = "http://www.baidu.com/";
+	private RequestQueue mQueue; // volley的请求队列
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		
+		// 通过此种方式拿到请求队列，当然实际使用中我们不会这么做，通常会作为一个全局变量来使用
+		mQueue = Volley.newRequestQueue(getApplicationContext()); 
+	}
+
+	@Override
+	public void onClick(View v) {
+		volleyRequest();
+	}
+
+	/**
+	 * 创建一个请求，这里我们做一个最简单的通过GET方式请求网页源码的操作。请求成功后打印结果。
+	 */
+	private void volleyRequest() {
+		StringRequest request = new StringRequest(Method.GET, URL, new Listener&lt;String&gt;() {
+
+			@Override
+			public void onResponse(String arg0) {
+				Toast.makeText(getApplicationContext(), arg0, Toast.LENGTH_LONG).show();
+				Log.d("onResponse", arg0);
+			}
+		}, new ErrorListener() {
+
+			@Override
+			public void onErrorResponse(VolleyError arg0) {
+				Toast.makeText(getApplicationContext(), arg0.toString(), Toast.LENGTH_LONG).show();
+				Log.d("onErrorResponse", arg0.toString());
+			}
+		});
+		mQueue.add(request);
+	}
+}</pre>
+</div> 
+<p><br> </p> 
+<h1>4、总结</h1> 
+<p>相信你已经对这个流程有了大概的认识，的确很简单，想要的结果就这么出来了，而且也没有在主线程中创建一个子线程来跑请求的代码。可能你会有些疑问了，GET请求通过URL来传递参数，我们可以把参数直接加在字符串后面，那POST请求呢？还有就是volley就这些功能吗？还有其他的吗？她的优点在哪些方面体现？哈哈，这篇就说这些，下篇继续～～</p> 
+<p>最后在补充一下volley发布会的视频和一个PDF（也就是最上面那个页面中的内容），<a target="_blank" href="http://pan.baidu.com/s/1dDyz23v">下载点这里：http://pan.baidu.com/s/1dDyz23v</a>。</p> 
+<p></p>

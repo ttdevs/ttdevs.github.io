@@ -1,0 +1,261 @@
+<p>
+     需要实现一个相册的展示，默认最多显示九张，超过了就显示前九张。很常见的功能，比如新浪微博、<a href="http://lib.csdn.net/base/wechat">微信</a>等：</p> 
+<p style="text-align:center"><img src="http://img.blog.csdn.net/20140313095744687?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" width="300" height="450" alt="">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<img src="http://img.blog.csdn.net/20140313100524750?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" width="300" height="450" alt=""><br> </p> 
+<p style="text-align:left">不打算再弄个新标题，就在图片加载的后面来个二级标题——九张图片相册的展示(微信微博等)。下面开始进入正题。</p> 
+<p style="text-align:left"><br> </p> 
+<h1 style="text-align:left">1、分析</h1> 
+<p style="text-align:left"><br> </p> 
+<p style="text-align:left">&nbsp; &nbsp; 选择的上面两张图片还是比较有代表性的，先来分析下他们。</p> 
+<p style="text-align:left">a、九张图片3×3的显示，很自然的想到，其他的比如6张3×2，五张的话3+2的显示；比较特殊的就是四张图片显示时时2×2，而不是3+1的显示。</p> 
+<p style="text-align:left">b、图片之间有间隔</p> 
+<p style="text-align:left">c、点击图片跳到下一个界面展示</p> 
+<p style="text-align:left">d、另外一点也是不定的一点，这个相册宽度要不要充满屏幕，还是固定宽度，这个就看自己需求咯。</p> 
+<p style="text-align:left">&nbsp; &nbsp; 用UI Automator Viewer查看，新浪的整个就是一个view，微信的是FrameLayout + n * view。网上搜了下，有没有现成的实现，貌似不好搜，不知道用什么关键字，带九的话都是关于.9图片的。找不到就算了，利用自己现在掌握的，从头写个吧。</p> 
+<p style="text-align:left">&nbsp; &nbsp; 第一个想到的还是自己去继承一个已经存在的布局，比如LinearLayout，TableLayout等。不过又想起周一的面试被鄙视的情形，没有自己画过一个view，都是继承、拼凑的，所以想，这次自己写吧。然后可能需要自己去画图片，实现监听，等等，代价很大，还是放弃咯。最后选择方案：继承ViewGroup，里面添加ImageView，这样不用关心单击事件和Image的绘制。</p> 
+<p style="text-align:left">
+     view上决定了剩下的就是处理这个控件对外的接口。设置一个监听，处理图片的点击事件；设置展示图片的数据源；在加几个小的设置，比如设置默认加载的图片size，加载图片之前的显示，加载失败的显示。设置图片的数据源，这个是传一个url还是Bitmap或者其他，最后选择了url，在内部实现图片的记载。所以为什么标题用了一个二级标题——还是用volley的ImageLoader实现图片的加载。在<a href="http://lib.csdn.net/base/softwaretest">测试</a>的时候发现，可能还需要自己去实现图片的本地保存，这个后面再说。</p> 
+<p style="text-align:left"><br> </p> 
+<h1>2、实现</h1> 
+<p></p> 
+<p style="text-align:left"><br> </p> 
+<p style="text-align:left">&nbsp; &nbsp; 直接贴代码吧，注释写的都比较详细：</p> 
+<p style="text-align:left"></p>
+<pre code_snippet_id="233116" snippet_file_name="blog_20140313_1_497269" name="code">
+ /**
+ * 
+ * 九张图片相册的展示
+ * http://blog.csdn.net/ttdevs
+ * @author ttdevs 2014年3月13日
+ * 
+ */
+public class NineImageView extends ViewGroup implements OnClickListener {
+
+	/** 该view的item单击事件接口 */
+	public interface OnItemClickListener {
+		/**
+		 * 单击回调，会把所有的url都返回，用户自己计算当前url在所有url中的位置
+		 * 
+		 * @param mLists
+		 *            相册所有的url
+		 * @param url
+		 *            当前被点击的url
+		 */
+		public void onItemClick(List<String> mLists, String url);
+	}
+
+	/** 图片的边距 */
+	private static final int ITEM_PADDING = 4;
+	/** 图片的默认尺寸 */
+	private static final int ITEM_WIDTH = 300;
+
+	private OnItemClickListener mListener;
+	private ImageLoader mImageLoader;
+	private List<Image<a href="http://lib.csdn.net/base/docker">Container</a>> containerList; // 还没有充分的利用，用来取消请求
+	private List<ImageView> cacheViewList;
+	private List<ImageView> viewList;
+	private List<String> mLists;
+
+	private int mDefaultImageId;
+	private int mErrorImageId;
+
+	public NineImageView(Context context) {
+		this(context, null);
+	}
+
+	public NineImageView(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		mImageLoader = VolleyQueue.getImageLoader(); // 拿到ImageLoader
+		cacheViewList = new ArrayList<ImageView>();
+	}
+
+	@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		if (mLists != null && mLists.size() > 0) {
+			int width = MeasureSpec.getSize(widthMeasureSpec);
+			int height = width;
+			// 开始继续自己的高度
+			// 是宽的1倍(7-9张)还是1/3(1-3张)或者2/3(4-6张)
+			int size = mLists.size();
+			if (size <= 3) {
+				height = width / 3;
+			} else if (size <= 6) {
+				height = 2 * width / 3;
+			} else {
+				height = width;
+			}
+			setMeasuredDimension(width, height);
+		} else {
+			super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+		}
+
+		// 发起请求，不知道这个地方是不是合适。
+		// 暂时没发现问题（所有请求都是异步的）
+		startReqeustImage(); // TODO
+	}
+
+	/** 发起网络请求 */
+	private void startReqeustImage() {
+		for (ImageView image : viewList) {
+			requestImageFromNetWork(image);
+		}
+	}
+
+	@Override
+	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+		if (mLists != null && mLists.size() > 0) {
+			int width = (right - left) / 3; // 每张图片的宽占整个父view的1/3
+			int height = width; // 宽和好一样，也就是一个正方形的图片
+			layoutItemImage(width, height);
+		}
+	}
+
+	/** 对相册中的图片进行布局 */
+	private void layoutItemImage(int width, int height) {
+		// 脑袋不好使，第一次写的很恶心，后来优化成这个样子
+		int size = mLists.size() >= 9 ? 9 : mLists.size(); // 只处理9条，大于9时只处理前9条
+		int mod = (size == 4) ? 2 : 3; // 4条的时候是2*2，其他都是3*X
+		int sLeft, sTop, sRight, sBottom;
+		for (int i = 0; i < size; i++) {
+			sLeft = (i % mod) * width + ITEM_PADDING;
+			sTop = (i / mod) * height + ITEM_PADDING;
+			sRight = ((i % mod) + 1) * width - ITEM_PADDING;
+			sBottom = ((i / mod) + 1) * height - ITEM_PADDING;
+			viewList.get(i).layout(sLeft, sTop, sRight, sBottom);
+		}
+	}
+
+	@Override
+	protected void onDetachedFromWindow() {
+		// TODO 这个地方不知道是否合适
+		if (containerList != null && containerList.size() > 0) {
+			for (ImageContainer container : containerList) {
+				container.cancelRequest();
+			}
+		}
+		super.onDetachedFromWindow();
+	}
+
+	@Override
+	protected void drawableStateChanged() {
+		super.drawableStateChanged();
+		invalidate();
+	}
+
+	/**
+	 * 设置数据源：数据源的字符串集合
+	 * 
+	 * @param lists
+	 *            数据源
+	 * @param defaultImage
+	 *            默认显示的图片
+	 * @param errorImage
+	 *            加载失败时候显示的图片
+	 */
+	public void setImageList(List<String> lists, int defaultImage, int errorImage) {
+		if (defaultImage == 0 || errorImage == 0) {
+			return;
+		} else {
+			mDefaultImageId = defaultImage;
+			mErrorImageId = errorImage;
+		}
+
+		if (mLists == null) {
+			mLists = new ArrayList<String>();
+		} else {
+			mLists.clear();
+		}
+		mLists.addAll(lists);
+
+		if (viewList == null) {
+			viewList = new ArrayList<ImageView>();
+		} else {
+			viewList.clear();
+		}
+		if (containerList == null) {
+			containerList = new ArrayList<ImageContainer>();
+		} else {
+			for (ImageContainer container : containerList) {
+				container.cancelRequest();
+			}
+			containerList.clear();
+		}
+		
+		int size = (mLists.size()) >= 9 ? 9 : mLists.size(); // 默认最多显示9个
+		// 这部分是用来实现对view的复用，
+		// 当某时刻的某个相册大于等于9就等同于初始化的时候就创建了9个ImageView
+		if (size > cacheViewList.size()) { // 维护自己的复用ImageView
+			int add = size - cacheViewList.size();
+			for (int i = 0; i < add ; i++) {
+				ImageView ivImage = new ImageView(getContext());
+				ivImage.setImageResource(mDefaultImageId);
+				ivImage.setOnClickListener(this);
+				ivImage.setScaleType(ScaleType.CENTER_CROP);
+				cacheViewList.add(ivImage);
+			}
+		}
+		for (int i = 0; i < size; i++) {
+			ImageView ivImage = cacheViewList.get(i);
+			ivImage.setImageResource(mDefaultImageId);
+			ivImage.setTag(mLists.get(i));
+			viewList.add(ivImage);
+			addView(ivImage);
+		}
+		invalidate();// requestLayout();
+	}
+
+	/** 请求网络图片 */
+	private void requestImageFromNetWork(final ImageView ivImage) {
+
+		int width = getMeasuredWidth();
+		width = (width == 0) ? ITEM_WIDTH : (width / 3);
+
+		ImageContainer container = mImageLoader.get((String) ivImage.getTag(), new ImageListener() {
+
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				if (mErrorImageId != 0) {
+					ivImage.setImageResource(mErrorImageId);
+				}
+			}
+
+			@Override
+			public void onResponse(ImageContainer response, boolean isImmediate) {
+				if (response.getBitmap() != null) {
+					ivImage.setImageBitmap(response.getBitmap());
+				} else if (mDefaultImageId != 0) {
+					ivImage.setImageResource(mDefaultImageId);
+				}
+			}
+		}, width, width);
+		containerList.add(container);
+	}
+
+	/**
+	 * 监听item的单击事件
+	 * 
+	 * @param listener
+	 */
+	public void setOnItemClickListener(OnItemClickListener listener) {
+		mListener = listener;
+	}
+
+	/**
+	 * item(imageview) onclick
+	 */
+	@Override
+	public void onClick(View v) {
+		if (mListener != null) {
+			mListener.onItemClick(mLists, (String) v.getTag());
+		}
+	}
+}
+</pre>
+<p></p> 
+<p><br> </p> 
+<h1 style="text-align:left">3、总结</h1> 
+<p style="text-align:left"><br> </p> 
+<p style="text-align:left">&nbsp; &nbsp; 需要用到volley中的ImageLoader。剩下的就可以直接在你的布局中使用了。不熟悉view的整个处理流程，对部分资源的回收还不知道如何处理。等看明白了再回来优化。开始的时候提到可能要做图片缓存的情况，是因为在测试的时候发现网络加载图片很卡顿，不过我测试的都是1MB以上的图片。考虑到节约流量，可能需要在缓存的时候将图片保存到本地，避免下次去请求。</p> 
+<p style="text-align:left">最终效果如下：</p> 
+<p style="text-align:center"><img src="http://img.blog.csdn.net/20140313112432671?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br> </p> 
+<p style="text-align:left"><br> </p> 
+<p style="text-align:left"><br> </p>

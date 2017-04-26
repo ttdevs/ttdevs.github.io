@@ -1,0 +1,250 @@
+<p>上篇文章简单的介绍了volley的使用，这篇偶将继续和大家一起分享volley的使用。</p> 
+<p>其实忘记一件很重要的事情，我相信也是很多初识volley的人困惑的地方，就是从哪里开始学习，认识volley，使用volley，可能你谷歌或者百度到的最多的就是一个简单demo或者对volley介绍的翻译，如果你很牛可能理解起来很容易，但是对于我等菜鸟还是有点难度的。虽然偶的水平有限，但是我会尽量遵照自己这段时间对volley的认识过程来总结。</p> 
+<p><br> </p> 
+<h1>1、volley的部署</h1> 
+<p>上篇提到我们不会直接在Activiy中创建volley的请求队列对象，因为这个对象我们只要一个就够了。既然不这样那我们该怎么做呢，这里给一个建议。先上一张项目结构图：</p> 
+<p><img src="http://img.blog.csdn.net/20131226171018187?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""><br> </p> 
+<p>思路是这样的：我们在application中对volley进行初始化。然后通过静态方法拿到这个对象，即可在所有地方使用，关键代码如下（来自：https://github.com/ogrebgr）：</p> 
+<p></p> 
+<pre code_snippet_id="129954" snippet_file_name="blog_20131227_1_6259407" name="code">/**
+ * 这段代码来自这里：https://github.com/ogrebgr
+ * 
+ * @author ttdevs
+ */
+public class VolleyQueue {
+	private static RequestQueue mRequestQueue;
+	private static ImageLoader mImageLoader;
+
+	private VolleyQueue() {
+
+	}
+
+	/**
+	 * 初始化我们的请求队列。这个地方有一个BitmapLruCache，这个是在后面做图片加载的时候会提到的图片缓存策略
+	 * 
+	 * @param context
+	 */
+	static void init(Context context) {
+		mRequestQueue = Volley.newRequestQueue(context);
+
+		int memClass = ((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
+		// Use 1/8th of the available memory for this memory cache.
+		int cacheSize = 1024 * 1024 * memClass / 8;
+		mImageLoader = new ImageLoader(mRequestQueue, new BitmapLruCache(cacheSize));
+	}
+
+	public static RequestQueue getRequestQueue() {
+		if (mRequestQueue != null) {
+			return mRequestQueue;
+		} else {
+			throw new IllegalStateException("RequestQueue not initialized");
+		}
+	}
+
+	public static ImageLoader getImageLoader() {
+		if (mImageLoader != null) {
+			return mImageLoader;
+		} else {
+			throw new IllegalStateException("ImageLoader not initialized");
+		}
+	}
+}</pre>这样我们就可以在想要的地方随意使用了。 
+<p></p> 
+<p><br> </p> 
+<h1>2、自定义请求</h1> 
+<div>
+ 通过第一步拿到请求队列对象之后我们就可肆意的发请求了～～简单的GET请求我们之前已经展示过，下面要说的就是POST方式的请求和自定义自己的请求对象。在此之前，我们先来看一下volley源码的结构，这里也直接上两张图：
+</div> 
+<div style="text-align:center">
+ <img src="http://img.blog.csdn.net/20131226173129031?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="">
+ <img src="http://img.blog.csdn.net/20131226172623703?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="">
+ <br> 
+</div> 
+<div style="text-align:left">
+ 红线标注的部分我们看到了熟悉的StringRequest，这个就是我们之前使用的那个请求类。具体源码大家可以去先看一下，这样对下面的代码理解会有很大帮助。
+</div> 
+<div style="text-align:left">
+ 当你简单查看上图的几个*****Request类之后你会发现他们有一个共同的特点：都是继承了Request类。这里先告诉大家，自定义请求类也是继承这个Request类的。我们照着StringRequest类可以得到一个下面的自定义请求类：
+</div> 
+<div style="text-align:left">
+ <pre code_snippet_id="129954" snippet_file_name="blog_20131227_2_2290456" name="code">public class CustomReqeust extends Request&lt;String&gt; {
+
+	private final Listener&lt;String&gt; mListener;
+
+	public CustomReqeust(int method, String url, Listener&lt;String&gt; listener, ErrorListener errorListener) {
+		super(method, url, errorListener);
+		mListener = listener;
+	}
+
+	@Override
+	protected Response&lt;String&gt; parseNetworkResponse(NetworkResponse response) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected void deliverResponse(String response) {
+		// TODO Auto-generated method stub
+
+	}
+}</pre>我们简单的分析下这几行代码。首先是构造函数，通过super我们发现，构造函数中我们需要提供三个参数，分别是：method、url、errorListener，它们的意思分别是：请求方式，即POST/GET；请求的URL；出错时的回调监听器。而StringRequest的构造函数中多了一个Listener&lt;String&gt; listener，这个通过前面的demo大家应该知道它是用来处理请求结果的，当然大部分情况我们是需要这个东西的，因此我们把它加上。这样就完整了。下面还有两个必须实现的方法，这个是干什么的呢？我们先来看看StringRequest中这两个方法的实现：
+</div> 
+<div style="text-align:left">
+ <pre code_snippet_id="129954" snippet_file_name="blog_20131227_3_1352365" name="code">    @Override
+    protected void deliverResponse(String response) {
+        mListener.onResponse(response);
+    }
+
+    @Override
+    protected Response&lt;String&gt; parseNetworkResponse(NetworkResponse response) {
+        String parsed;
+        try {
+            parsed = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+        } catch (UnsupportedEncodingException e) {
+            parsed = new String(response.data);
+        }
+        return Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response));
+    }</pre>
+ <br> 
+</div> 
+<div style="text-align:left">
+ <pre code_snippet_id="129954" snippet_file_name="blog_20131227_4_9749964" name="code">protected void deliverResponse(String response) {}</pre>传递响应，通过我们初始化时候设置的成功监听器来传递HTTP响应结果。
+</div> 
+<div style="text-align:left">
+ <pre code_snippet_id="129954" snippet_file_name="blog_20131227_5_1415661" name="code">protected Response&lt;String&gt; parseNetworkResponse(NetworkResponse response){}</pre>
+</div> 
+<div style="text-align:left">
+ 通过名称我们猜测是解析网络响应，对StringRequest类源码分析我们大致得出结论它应该是根据HTTP头的编码解析HTTP包体。当我们处理特殊的或者自定义的HTTP请求时就可以在此处实现对HTTP包体进行解析。
+ <br> 
+</div> 
+<div style="text-align:left">
+ <br> 
+</div> 
+<div style="text-align:left">
+ 说了这么多我们还是没有说到如何进行HTTP的POST请求，因为我们还没讲到如何设置POST方式的请求参数。
+ <br> 
+ <br> 
+</div> 
+<div style="text-align:left">
+ 自习翻阅volley源码中的几个request类的子类，我们可以在JsonRequest类中发现如下代码：
+</div> 
+<div style="text-align:left">
+ <pre code_snippet_id="129954" snippet_file_name="blog_20131227_6_7350393" name="code">   /**
+     * Returns the raw POST or PUT body to be sent.
+     *
+     * @throws AuthFailureError in the event of auth failure
+     */
+    @Override
+    public byte[] getBody() {
+        try {
+            return mRequestBody == null ? null : mRequestBody.getBytes(PROTOCOL_CHARSET);
+        } catch (UnsupportedEncodingException uee) {
+            VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s",
+                    mRequestBody, PROTOCOL_CHARSET);
+            return null;
+        }
+    }</pre>对，你猜的没错，他就是处理我们请求参数的方法，在这里我们组织好要传的参数，然后转换成byte数组即可。这样我们就可以开始实现自己自定义的请求了。下面贴一个简单的完整例子供参考：
+</div> 
+<div style="text-align:left">
+ <pre code_snippet_id="129954" snippet_file_name="blog_20131227_7_2716351" name="code">public class CustomReqeust extends Request&lt;String&gt; {
+	/** http请求编码方式 */
+	private static final String PROTOCOL_CHARSET = "utf-8";
+
+	private Listener&lt;String&gt; mListener;
+	private String mUserName;
+
+	public CustomReqeust(String url, String userName, Listener&lt;String&gt; listener, ErrorListener errorListener) {
+		super(Method.POST, url, errorListener);
+		mUserName = userName;
+		mListener = listener;
+	}
+
+	@Override
+	protected Response&lt;String&gt; parseNetworkResponse(NetworkResponse response) {
+		String parsed;
+		try {
+			parsed = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+		} catch (UnsupportedEncodingException e) {
+			parsed = new String(response.data);
+		}
+		return Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response));
+	}
+
+	@Override
+	protected void deliverResponse(String response) {
+		mListener.onResponse(response);
+	}
+
+	@Override
+	public byte[] getBody() {
+		try {
+			return mUserName == null ? null : mUserName.getBytes(PROTOCOL_CHARSET);
+		} catch (UnsupportedEncodingException uee) {
+			VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mUserName, PROTOCOL_CHARSET);
+			return null;
+		}
+	}
+}</pre>调用代码不想不贴，但是要用到，还是贴一下（这里的URL还是www.baidu.com）：
+</div> 
+<div style="text-align:left">
+ <pre code_snippet_id="129954" snippet_file_name="blog_20131227_8_6794769" name="code">	private void customRequest() {
+		CustomReqeust request = new CustomReqeust(URL, "CustomVolley", new Listener&lt;String&gt;() {
+
+			@Override
+			public void onResponse(String arg0) {
+				Toast.makeText(getApplicationContext(), arg0, Toast.LENGTH_LONG).show();
+				Log.d("onResponse", arg0);
+			}
+		}, new ErrorListener() {
+
+			@Override
+			public void onErrorResponse(VolleyError arg0) {
+				Toast.makeText(getApplicationContext(), arg0.toString(), Toast.LENGTH_LONG).show();
+				Log.d("onErrorResponse", arg0.toString());
+			}
+		});
+		mQueue.add(request);
+	}</pre>
+ 由于没有<a href="http://lib.csdn.net/base/softwaretest">测试</a>服务器，因此就简单的抓包看一下，结果如下：
+</div> 
+<div style="text-align:left">
+ <img src="http://img.blog.csdn.net/20131227004744765?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="">
+ <br> 
+</div> 
+<div style="text-align:left">
+ 从图中可以看到，我们的请求时正确的。至此我们就完成了自定义请求的实现。
+</div> 
+<div style="text-align:left">
+ <br> 
+</div> 
+<h1>3、总结</h1> 
+<div style="text-align:left">
+ 可以自定义的地方远远不止这些，更多的HTTP请求参数大家可以从几个Request子类入手，如JsonRequest类中用到的设置ContentType类型，getRetryPolicy()等。当你了解了这些东西之后你会发现volley真的是高端大气上档次。当然还有很多细节没有讲到，比如取消一个请求，设置请求超时等等，这些细节如果在分析源码的时候遇到会和大家分享。有时间会接着和大家分享volley对图片的加载。从下一篇开始，和大家分享volley的整个<a href="http://lib.csdn.net/base/architecture">架构</a>。最后，有不当之处欢迎吐槽。 
+</div> 
+<div style="text-align:left">
+ request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 1, 1.0f));
+ <br> 
+</div> 
+<div style="text-align:left">
+ <br> 
+</div> 
+<h1>后记：</h1> 
+<div>
+ 现在时间是1：01分，吐槽两句：代码不是一切，这么晚了还在敲代码还是越少越好，还有更重要的事情等着你。谨此Mark下可能将要失去的坚持了五年的恋爱。最后祝所有的单身程序猿都能找到自己的她……
+</div> 
+<div style="text-align:left">
+ <br> 
+</div> 
+<div style="text-align:left">
+ <br> 
+</div> 
+<div style="text-align:left">
+ <br> 
+</div> 
+<div style="text-align:left">
+ <br> 
+</div> 
+<div style="text-align:left">
+ <br> 
+ <br> 
+</div>

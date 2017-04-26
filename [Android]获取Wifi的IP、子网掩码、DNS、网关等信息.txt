@@ -1,0 +1,94 @@
+
+## 0x01 获取网络信息
+
+使用 DhcpInfo 获取这些信息，返回的是一个int型数据，转换下得到想要的信息，代码如下：
+
+``` java
+public class MainActivity extends Activity {
+    private WifiManager my_wifiManager;
+    private WifiInfo wifiInfo;
+    private DhcpInfo dhcpInfo;
+    private TextView tvResult;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        my_wifiManager = ((WifiManager) getSystemService("wifi"));
+        dhcpInfo = my_wifiManager.getDhcpInfo();
+        wifiInfo = my_wifiManager.getConnectionInfo();
+
+        tvResult = (TextView) findViewById(R.id.tvResult);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        StringBuilder sb = new StringBuilder();
+        sb.append("网络信息：");
+        sb.append("\nipAddress：" + intToIp(dhcpInfo.ipAddress));
+        sb.append("\nnetmask：" + intToIp(dhcpInfo.netmask));
+        sb.append("\ngateway：" + intToIp(dhcpInfo.gateway));
+        sb.append("\nserverAddress：" + intToIp(dhcpInfo.serverAddress));
+        sb.append("\ndns1：" + intToIp(dhcpInfo.dns1));
+        sb.append("\ndns2：" + intToIp(dhcpInfo.dns2));
+        sb.append("\n");
+        System.out.println(intToIp(dhcpInfo.ipAddress));
+        System.out.println(intToIp(dhcpInfo.netmask));
+        System.out.println(intToIp(dhcpInfo.gateway));
+        System.out.println(intToIp(dhcpInfo.serverAddress));
+        System.out.println(intToIp(dhcpInfo.dns1));
+        System.out.println(intToIp(dhcpInfo.dns2));
+        System.out.println(dhcpInfo.leaseDuration);
+
+        sb.append("Wifi信息：");
+        sb.append("\nIpAddress：" + intToIp(wifiInfo.getIpAddress()));
+        sb.append("\nMacAddress：" + wifiInfo.getMacAddress());
+        tvResult.setText(sb.toString());
+    }
+
+    private String intToIp(int paramInt) {
+        return (paramInt & 0xFF) + "." + (0xFF & paramInt >> 8) + "." + (0xFF & paramInt >> 16) + "."
+                + (0xFF & paramInt >> 24);
+    }
+}
+```
+
+  
+效果如下：
+
+![DHCP Info](http://img.blog.csdn.net/20130724093302265?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)  
+
+
+## 0x02 网络地址转换
+
+android.net.NetworkUtils  
+
+``` java
+/**
+ * Convert a IPv4 address from an integer to an InetAddress.
+ *
+ * @param hostAddress an int corresponding to the IPv4 address in network byte order
+ */
+public static InetAddress intToInetAddress(int hostAddress) {
+    byte[] addressBytes = {(byte) (0xff & hostAddress),
+            (byte) (0xff & (hostAddress >> 8)),
+            (byte) (0xff & (hostAddress >> 16)),
+            (byte) (0xff & (hostAddress >> 24))};
+
+    try {
+        return InetAddress.getByAddress(addressBytes);
+    } catch (UnknownHostException e) {
+        throw new AssertionError();
+    }
+}
+```
+
+
+## 0x02 下载
+
+[http://download.csdn.net/detail/ttdevs/5805127](http://download.csdn.net/detail/ttdevs/5805127)  
+
+![Create by ttdevs](https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png)
+
