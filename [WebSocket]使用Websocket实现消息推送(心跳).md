@@ -164,6 +164,7 @@ public abstract class RealWebSocket implements WebSocket {
 
 在实际的测试中，可能会遇到一些异常，比如在我们自己的生产环境：当客户端发送带了简单数据的Ping帧后，服务器立马返回Pong帧，但是它会将携带的数据丢弃。这个就是服务端的问题了。
 
+
 ## 0xFF 参考
 
 1. RFC6455: https://datatracker.ietf.org/doc/rfc6455/

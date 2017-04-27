@@ -2,7 +2,6 @@
 
 最近又把volley拿出来整理了下。之前没有遇到过的一些小问题又来了，在此记录下：
 
-  
 
 ##  1、HttpUrlConnection DELETE 方式无法添加body的问题：java.net.ProtocolException:
 DELETE does not support writing

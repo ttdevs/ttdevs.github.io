@@ -3,11 +3,13 @@ GPIO：General Purpose Input/Output pins on the Raspberry Pi
 
 >General purpose input/output; in this specific case the pins on the Raspberry Pi and what you can do with them. So called because you can use them for all sorts of purposes; most can be used as either inputs or outputs, depending on your program.
 
+
 ## 0x00 GPIO
 
 有些事情坚持了，就做出来了，不坚持，就放弃了，就这么简单。之前想写个树莓派的入门文章，一下子写了几篇之后，就停下来了。可能最近确是比较忙，或者，承认没有严格要求自己，好吧，拖了这么久，今天，再写一篇。
 
 不管你信不信，树莓派最吸引我的就是它的GPIO口。即使是现在，想到GPIO还是非常的兴奋呢。为什么呢？对于通用计算机，我们能操作的基本都是USB、串口等一些接口。与这些接口相比，GPIO口有明显的不同，我们可以直接操作一个IO口的状态：是高电平还是低电平。根据这个特性，我们就可以完成首次接触单片机完成的小实验：控制我们的LED灯，制作跑马灯，模拟交通灯等等有趣的实验。如果你想通过其他设备来完成这些操作，可能需要掌握其他对初学者来说比较困难的技术。另外，大学时期有玩过 89C51，对IO口还是恋恋不舍，曾经想通过其产生PWM信号控制舵机，很遗憾没实现，现在正好可以完成这个心愿。
+
 
 ## 0x01 从一个LED说开去
 
@@ -90,6 +92,7 @@ finally:
 
 运行上面的代码，我们需要安装 `RPi.GPIO` 库，Raspbian 默认是安装好了。简单的浏览上面的代码，我们可以发现，首先设置 GPIO mode，这里设置为BCM；然后定义GPIO的状态，GPIO口我们可以定义两种状态，GPIO.IN 和 GPIO.OUT，分别对应输入和输出；最后就是操作我们的GPIO口了。由于`RPi.GPIO` 库已经给我们封装复杂的操作，所以我们用起来特别简便。更多可 `RPi.GPIO` 信息可参考[这里](https://pypi.python.org/pypi/RPi.GPIO/0.6.2)。
 
+
 ## 0x02 Raspberry Pi的GPIO针脚
 
 根据上面的demo程序，我们再来详细的介绍下GPIO。
@@ -137,6 +140,7 @@ finally:
 Raspberry Pi 2 Model B 使用了 BCM2836芯片，Raspberry Pi Model A, B, B+, Compute Module and Raspberry Pi Zero使用了BCM2835芯片，这里我们以BCM2835为例（作为一般使用者，可以不关心这个）。BCM2835有3个GPIO bank，这个3个bank都有自己的VDD，并且由3V3电压提供支持。`如果我们的输入电压超过3V3，就有可能烧毁SoC上的GPIO bank`。由于我也是业余的，说的再专业我也听不懂，因此简单的来说，使用外部传感器，它的输入信号电压是3V3的就没问题。当然，传感器的驱动电压可以不是3V3。比如上面使用的 `HC-SR501` 它的驱动电压是5V，输入信号电压是3V3，这样接在外面的 Raspberry Pi 就完全没问题，而且不需要额外电源为其供电，因为 Raspberry Pi 2 Model B 有两个5V的针脚（就是右上角的两个，2和4）。
 
 更多的关于GPIO的上拉下拉悬浮等状态，可以参考[这里](http://dreamcolor.net/archives/rpi-gpio-module-inputs.html)的介绍。
+
 
 ## 0x03 GPIO进阶
 

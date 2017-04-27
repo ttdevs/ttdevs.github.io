@@ -2,11 +2,13 @@
 
 这个小功能github有很多。不同的应用需求会有少许差别，比如listview滑动时字母是不是跟随滑动；手动点击字母是不是在屏幕中间显示一个提示；点击时索引的背景显示出来，离开后背景消失等等，当然这些都是细节问题。实现思路上也可以有多种，比如自己去draw每个字母，然后处理滑动、借助TextView来展示字母列表等。看了几个demo，感觉和自己的需求有些差别，而且这些demo为了实现”大而全”有些多余的东西，因此决定自己写个。
 
+
 ## 0x01 分析
 
 我们的需求是这样的：中文参与索引，字母或者其他开头的item不参与索引，直接放到第一个“#”里；点击字母索引其被点击字母列表颜色跟随变化；手动滑动listview字母索引的字母颜色也跟随变化；自己顺手加了个点击某个字母弹出提示的接口。最后效果如下图：
 
 ![Letter Index](http://img.blog.csdn.net/20140831140659685?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)  
+
 
 ## 0x02 实现
 

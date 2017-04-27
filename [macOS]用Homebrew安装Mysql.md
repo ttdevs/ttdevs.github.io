@@ -115,6 +115,7 @@ Starting MySQL
 - Emoji表情的支持请使用编码：`utf8mb4`
 - TODO 2016-09-07
 
+
 ## 0xFF 参考
 
 1. https://segmentfault.com/q/1010000000475470

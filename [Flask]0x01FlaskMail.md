@@ -5,6 +5,7 @@
 
 Flask-Mail 提供了一个简单的接口，让我们可以方便的在 Flask 应用中使用 SMTP协议 发送邮件。
 
+
 ## 0x01 安装
 
 `pip install Flask-Mail`
@@ -14,6 +15,7 @@ Flask-Mail 提供了一个简单的接口，让我们可以方便的在 Flask �
 如果你不想使用这个工具，可以找找其他的，不过你会发现，其他的可能更老，也是醉了=_=
 
 如果时间充足，我们可以去读读 Flask-Mail 的源码，你会发现，最终是用系统自带的 smtplib 实现的。
+
 
 ## 0x02 使用
 
@@ -136,6 +138,7 @@ image = 'umbrella_伞.jpg' with app.open_resource(image) as fp:
 	msg.attach(image, 'image/jpg', fp.read())
 ```
 
+
 ## 0x03 Demo
 
 下面是一个简单的Demo，装好相关的类库， 直接可以跑，大家可以参考：
@@ -199,7 +202,8 @@ if __name__ == '__main__':
 	打开 `QQ邮箱` > `设置` > `POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV服务` > `生成授权码`
 	
 最后别忘了打开SMTP服务～～
-	
+
+
 ## 0x04 其他 
 
 （TODO 留坑，其实暂时还没学到～～）
@@ -213,6 +217,7 @@ if __name__ == '__main__':
 ### 信号量
 
 ### API
+
 
 ## 0xFF 参考
 

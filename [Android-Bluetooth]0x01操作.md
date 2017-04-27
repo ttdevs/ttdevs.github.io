@@ -3,6 +3,7 @@
 
 这个小硬件已经是Android机器的标配了，由于平时不怎么用，因此到现在都没有去研究过。现在有一个简单的小需求：通过蓝牙连接一个串口设备读取其上面的数据，即从已配对的设备列表中选择我们的串口蓝牙设备（从），连接，然后读取数据。遂写此文。
 
+
 ## 0x01 简单使用
 
 蓝牙设备的详细使用，可以参考[Android关于蓝牙的官方文档](https://developer.android.google.cn/guide/topics/connectivity/bluetooth.html)。如果你和我一样，之前没有研究过蓝牙，估计看看完后也会有一堆问题存在：什么主设备、从设备、UUID是干嘛的，如何免密钥配对等等。不着急，我们慢慢来。
@@ -93,6 +94,7 @@
    }
     ```
 
+
 ## 0x02 总结
    
 Android蓝牙（主从）的操作：
@@ -107,6 +109,7 @@ Android蓝牙（主从）的操作：
 这里只讲了检查部分操作，涉及的扫描与配对可能是更复杂一些的，在接下来讲述。
 
 最后，项目代码可参考这里[github/ttdevs/air](https://github.com/ttdevs/android/tree/master/apps/air)。
+
 
 ## 0x03 Java线程的封装
 
@@ -177,6 +180,7 @@ public abstract class BaseWorkerThread extends Thread {
     }
 }
 ```
+
 
 ## 0x04 参考
 

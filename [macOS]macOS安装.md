@@ -15,6 +15,7 @@
 
 好了，言归正传，自从升级了macOS 就出现各种小问题，python用不了了，adb经常断，系统变卡了，每个小问题都要去整一下。想想还是算了，花点时间，在另一台 Mac Mini 上重新安装，然后用 Time Machine 还原到 Mac Book上。
 
+
 ## 0x01 系统安装
 
 电脑上有一份最新的macOS安装文件，打算去做安装U盘。下班回去准备操作的时候，发现做U盘安装盘的速度好慢慢好慢啊。想，还是算了吧，睡觉之前使用网络安装，第二天醒来应该可以装好。
@@ -141,6 +142,7 @@ alias of='open -a Finder .'
 alias vv='virtualenv'
 alias weather='curl http://wttr.in/shanghai'
 ```
+
 
 ## 0x02 继续装逼
 

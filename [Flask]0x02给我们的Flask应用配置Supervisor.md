@@ -7,6 +7,7 @@
 
 > [Supervisor is a client/server system that allows its users to monitor and control a number of processes on UNIX-like operating systems.](http://supervisord.org/)
 
+
 ## 0x01 安装
 
 这个比较简单，我们直接使用 `apt-get` 即可安装。
@@ -18,6 +19,7 @@
 当然，你也可以用 `pip` 进行安装：
 
 `sudo pip install supervisor`
+
 
 ## 0x02 配置
 
@@ -77,6 +79,7 @@ username=ttdevs            ; (default is no username (open server))
 password=admin             ; (default is no password (open server))
  ```
 
+
 ## 0x03 操作
 
 安装好以后，我们有两个命令可以使用，一个是 `supervisord`，另一个是 `supervisorctl`，`supervisord` 负责启动服务，`supervisorctl` 负责操作服务，C/S模式。
@@ -88,6 +91,7 @@ password=admin             ; (default is no password (open server))
 - 启动/重启/停止某个我们配置的进程：`supervisorctl start/restart/stop programABC`
 
 另外在上面的配置中，我们还可以使用浏览器访问 `http://192.168.1.56:9000/`对我们的进程进行管理。
+
 
 ## 0xFF 参考
 

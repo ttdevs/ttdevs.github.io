@@ -38,7 +38,7 @@ public class MyClient {
 这样，在外面创建MyClient对象的时候，构造方法中传入的参数就必须为 `ONE, RECORD, STATUS` 其中之一，从而达到类似enum的效果。
 
 
-参考：
+参考
 ------
 1. https://noobcoderblog.wordpress.com/2015/04/12/java-enum-and-android-intdefstringdef-annotation/
 2. [The price of ENUMs](https://www.youtube.com/watch?v=Hzs6OBcvNQE)

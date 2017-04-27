@@ -244,6 +244,5 @@ public class DataBaseManager {
 
 接下来就是数据库的常用操作了
 
-
 ![Create by ttdevs](https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png)
 
