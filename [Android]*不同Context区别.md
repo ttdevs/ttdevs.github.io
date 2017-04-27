@@ -35,4 +35,9 @@ android.view.WindowManager$BadTokenException: Unable to add window -- token null
 其中context是通 `getApplicationContext()` 获取的，将其换成 `Activity` 问题解决。
 
 
+## 0xFF 参考
+
+1. http://blog.csdn.net/lmj623565791/article/details/40481055
+
+
 
