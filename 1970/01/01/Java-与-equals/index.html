@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「Java」(==)与(equals) | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/Java-与-equals/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「Java」(==)与(equals)</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <h2 id="0x01-两种比较方法"><a href="/1970/01/01/Java-与-equals/#0x01-两种比较方法" class="headerlink" title="0x01 两种比较方法"></a>0x01 两种比较方法</h2><ul>
+<li><p><code>==</code></p>
+<ul>
+<li><p>基本类型</p>
+<p>  对于基本类型，<code>==</code> 的功能是比较值。</p>
+</li>
+<li><p><code>Object</code></p>
+<p>  比较对象在内存中的地址。</p>
+</li>
+</ul>
+</li>
+<li><p><code>equals</code></p>
+<p>  基本类型无equals方法。Object对象默认equals的实现如下：</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * ...</div><div class="line"> * <span class="doctag">@param</span>   obj   the reference object with which to compare.</div><div class="line"> * <span class="doctag">@return</span>  &#123;<span class="doctag">@code</span> true&#125; if this object is the same as the obj</div><div class="line"> *          argument; &#123;<span class="doctag">@code</span> false&#125; otherwise.</div><div class="line"> * <span class="doctag">@see</span>     #hashCode()</div><div class="line"> * <span class="doctag">@see</span>     java.util.HashMap</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> (<span class="keyword">this</span> == obj);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<pre><code>有很长一段注释，最终的实现我们可以看到还是用的 `==` 来比较两个对象在内存中的地址。
+</code></pre><h2 id="0x02-equals-amp-hashCode"><a href="/1970/01/01/Java-与-equals/#0x02-equals-amp-hashCode" class="headerlink" title="0x02 equals() &amp; hashCode()"></a>0x02 equals() &amp; hashCode()</h2><p>对于equals的默认实现——比较对象在内存中的地址——有时候可能并不是我们期望的，比如有一个Student类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span></span>&#123;</div><div class="line">   <span class="keyword">private</span> <span class="keyword">int</span> id;</div><div class="line">   <span class="keyword">private</span> String name;</div><div class="line"></div><div class="line">   <span class="function"><span class="keyword">public</span> <span class="title">Student</span><span class="params">(<span class="keyword">int</span> id)</span></span>&#123;</div><div class="line">       <span class="keyword">this</span>.id = id;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="comment">// ... getter and setter</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>当 Student.id 相同时，我们更愿意认为这是同一个学生，而下面这个测试是无法通过的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Test</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">equalsStudent</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">   Student st1 = <span class="keyword">new</span> Student(<span class="number">2333</span>);</div><div class="line">   Student st2 = <span class="keyword">new</span> Student(<span class="number">2333</span>);</div><div class="line">   assertEquals(st1, st2);</div><div class="line">   <span class="comment">// assertNotEquals(st1, st2);</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>为了达到我们的目的——相同的学号就认为是同一个人——我们可以重写Student类的 equals 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span> </span>&#123;</div><div class="line">   <span class="keyword">private</span> <span class="keyword">int</span> id;</div><div class="line">   <span class="keyword">private</span> String name;</div><div class="line"></div><div class="line">   <span class="function"><span class="keyword">public</span> <span class="title">Student</span><span class="params">(<span class="keyword">int</span> id)</span> </span>&#123;</div><div class="line">       <span class="keyword">this</span>.id = id;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="meta">@Override</span></div><div class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object o)</span> </span>&#123;</div><div class="line">       <span class="keyword">if</span> (<span class="keyword">null</span> == o) &#123;</div><div class="line">           <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">       &#125;</div><div class="line">       Student std = (Student) o;</div><div class="line">       <span class="keyword">if</span> (<span class="keyword">this</span>.id == std.id) &#123;</div><div class="line">           <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">       &#125;</div><div class="line">       <span class="keyword">return</span> <span class="keyword">super</span>.equals(o);</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="comment">// ... getter and setter</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>修改之后上面的测试就可以通过了。Demo毕竟是简单的，当我们在实际的使用中需要重写equals方法时还是需要遵守它的生成规则，这里贴出来供参考：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">public boolean equals(Object obj)</div><div class="line"></div><div class="line">    指示其他某个对象是否与此对象“相等”。</div><div class="line"></div><div class="line">    equals 方法在非空对象引用上实现相等关系：</div><div class="line"></div><div class="line">        自反性：对于任何非空引用值 x，x.equals(x) 都应返回 true。</div><div class="line">        对称性：对于任何非空引用值 x 和 y，当且仅当 y.equals(x) 返回 true 时，x.equals(y) 才应返回 true。</div><div class="line">        传递性：对于任何非空引用值 x、y 和 z，如果 x.equals(y) 返回 true，并且 y.equals(z) 返回 true，那么 x.equals(z) 应返回 true。</div><div class="line">        一致性：对于任何非空引用值 x 和 y，多次调用 x.equals(y) 始终返回 true 或始终返回 false，前提是对象上 equals 比较中所用的信息没有被修改。</div><div class="line">        对于任何非空引用值 x，x.equals(null) 都应返回 false。 </div><div class="line"></div><div class="line">    Object 类的 equals 方法实现对象上差别可能性最大的相等关系；即，对于任何非空引用值 x 和 y，当且仅当 x 和 y 引用同一个对象时，此方法才返回 true（x == y 具有值 true）。</div><div class="line"></div><div class="line">    注意：当此方法被重写时，通常有必要重写 hashCode 方法，以维护 hashCode 方法的常规协定，该协定声明相等对象必须具有相等的哈希码。</div><div class="line"></div><div class="line">    参数：</div><div class="line">        obj - 要与之比较的引用对象。 </div><div class="line">    返回：</div><div class="line">        如果此对象与 obj 参数相同，则返回 true；否则返回 false。</div><div class="line">    另请参见：</div><div class="line">        hashCode(), Hashtable</div><div class="line">``` </div><div class="line"></div><div class="line">事情还没有结束。看下面代码：</div><div class="line"></div><div class="line">``` java</div><div class="line">@Test</div><div class="line">public void studentSet() throws Exception &#123;</div><div class="line">   Student st1 = new Student(2333);</div><div class="line">   Student st2 = new Student(2333);</div><div class="line"></div><div class="line">   Set&lt;Student&gt; stds = new HashSet&lt;&gt;();</div><div class="line">   stds.add(st1);</div><div class="line">   stds.add(st2);</div><div class="line">   assertEquals(1, stds.size());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>你会发现这段代码测试不通过。set不是重复对象只会保留一份吗，为什么不是 1 呢？</p>
+<p>这里就要介绍 hashCode() 方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public int hashCode()</div><div class="line"></div><div class="line">    返回该对象的哈希码值。支持此方法是为了提高哈希表（例如 java.util.Hashtable 提供的哈希表）的性能。</div><div class="line"></div><div class="line">    hashCode 的常规协定是：</div><div class="line"></div><div class="line">        在 Java 应用程序执行期间，在对同一对象多次调用 hashCode 方法时，必须一致地返回相同的整数，前提是将对象进行 equals 比较时所用的信息没有被修改。从某一应用程序的一次执行到同一应用程序的另一次执行，该整数无需保持一致。</div><div class="line">        如果根据 equals(Object) 方法，两个对象是相等的，那么对这两个对象中的每个对象调用 hashCode 方法都必须生成相同的整数结果。</div><div class="line">        如果根据 equals(java.lang.Object) 方法，两个对象不相等，那么对这两个对象中的任一对象上调用 hashCode 方法不 要求一定生成不同的整数结果。但是，程序员应该意识到，为不相等的对象生成不同整数结果可以提高哈希表的性能。 </div><div class="line"></div><div class="line">    实际上，由 Object 类定义的 hashCode 方法确实会针对不同的对象返回不同的整数。（这一般是通过将该对象的内部地址转换成一个整数来实现的，但是 JavaTM 编程语言不需要这种实现技巧。）</div><div class="line"></div><div class="line">    返回：</div><div class="line">        此对象的一个哈希码值。</div><div class="line">    另请参见：</div><div class="line">        equals(java.lang.Object), Hashtable</div></pre></td></tr></table></figure>
+<p>当我们使用用哈希表实现的工具类时，这个方法的价值就体现了。由于之前我们没有重写这个方法，把Student对象存入HashSet时还是按照之前系统默认的方式计算他们的hash值，导致Set中存在两个Student对象。</p>
+<p>下面做一个简单修改：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span> </span>&#123;</div><div class="line">   <span class="keyword">private</span> <span class="keyword">int</span> id;</div><div class="line">   <span class="keyword">private</span> String name;</div><div class="line"></div><div class="line">   <span class="function"><span class="keyword">public</span> <span class="title">Student</span><span class="params">(<span class="keyword">int</span> id)</span> </span>&#123;</div><div class="line">       <span class="keyword">this</span>.id = id;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="meta">@Override</span></div><div class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object o)</span> </span>&#123;</div><div class="line">       <span class="keyword">if</span> (<span class="keyword">null</span> == o) &#123;</div><div class="line">           <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       <span class="comment">// 有时候instanceof不合适的时候可以考虑用getClass()方法</span></div><div class="line">       <span class="keyword">if</span> (getClass() != o.getClass()) &#123;</div><div class="line">           <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       <span class="keyword">if</span> (o <span class="keyword">instanceof</span> Student) &#123;</div><div class="line">           Student std = (Student) o;</div><div class="line">           <span class="keyword">if</span> (<span class="keyword">this</span>.id == std.id) &#123;</div><div class="line">               <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       <span class="keyword">return</span> <span class="keyword">super</span>.equals(o);</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="meta">@Override</span></div><div class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</div><div class="line">       <span class="keyword">return</span> <span class="keyword">this</span>.id; </div><div class="line">       <span class="comment">// return super.hashCode();</span></div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="comment">// ... getter and setter</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>再运行下面的测试，你会发现和我们期待的一致了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Test</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">studentSet</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">   Student st1 = <span class="keyword">new</span> Student(<span class="number">2333</span>);</div><div class="line">   Student st2 = <span class="keyword">new</span> Student(<span class="number">2333</span>);</div><div class="line"></div><div class="line">   Set&lt;Student&gt; stds = <span class="keyword">new</span> HashSet&lt;&gt;();</div><div class="line">   stds.add(st1);</div><div class="line">   stds.add(st2);</div><div class="line">   assertEquals(<span class="number">1</span>, stds.size());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Demo中直接将id作为hashcode返回不是一种好的生成方式，具体的生成规则请参考上面的注释。</p>
+<h2 id="0x03-Demo"><a href="/1970/01/01/Java-与-equals/#0x03-Demo" class="headerlink" title="0x03 Demo"></a>0x03 Demo</h2><p>再来看一个demo：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Test</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stringTest</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">   String str1 = <span class="string">"abc"</span>;</div><div class="line">   String str2 = <span class="string">"abc"</span>;</div><div class="line">   String str3 = <span class="keyword">new</span> String(<span class="string">"abc"</span>);</div><div class="line"></div><div class="line">   System.out.println(str1 == str2);</div><div class="line">   System.out.println(str1 == str3);</div><div class="line"></div><div class="line">   assertEquals(str1, str2);</div><div class="line">   assertEquals(str1, str3);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>结果会怎样？没错，测试通过，输出：true，false。</p>
+<p>首先我们来看下String类重写的equals()和hashCOde():</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span> </div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object other)</span> </span>&#123;</div><div class="line">   <span class="keyword">if</span> (other == <span class="keyword">this</span>) &#123;</div><div class="line">     <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">   &#125;</div><div class="line">   <span class="keyword">if</span> (other <span class="keyword">instanceof</span> String) &#123;</div><div class="line">       String s = (String)other;</div><div class="line">       <span class="keyword">int</span> count = <span class="keyword">this</span>.count;</div><div class="line">       <span class="keyword">if</span> (s.count != count) &#123;</div><div class="line">           <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">       &#125;</div><div class="line">       <span class="keyword">if</span> (hashCode() != s.hashCode()) &#123;</div><div class="line">           <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">       &#125;</div><div class="line">       <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; count; ++i) &#123;</div><div class="line">           <span class="keyword">if</span> (charAt(i) != s.charAt(i)) &#123;</div><div class="line">               <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line">       <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">   &#125; <span class="keyword">else</span> &#123;</div><div class="line">       <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">   &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="meta">@Override</span> </div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</div><div class="line">   <span class="keyword">int</span> hash = hashCode;</div><div class="line">   <span class="keyword">if</span> (hash == <span class="number">0</span>) &#123;</div><div class="line">       <span class="keyword">if</span> (count == <span class="number">0</span>) &#123;</div><div class="line">           <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">       &#125;</div><div class="line">       <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; count; ++i) &#123;</div><div class="line">           hash = <span class="number">31</span> * hash + charAt(i);</div><div class="line">       &#125;</div><div class="line">       hashCode = hash;</div><div class="line">   &#125;</div><div class="line">   <span class="keyword">return</span> hash;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>从上面可以看出，String类重写了这两个方法，equals()中的逻辑是比较字符串中每个字符是否相同。因此 str1, str2, str3相同就可以理解了。<br>对于 <code>str1 == str2</code> 和 <code>str1 != str3</code> 这涉及到不同字符串创建方法。</p>
+<blockquote>
+<p><a href="https://github.com/GeniusVJR/LearningNotes/blob/master/Part2/JavaSE/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.md" target="_blank" rel="external">在开始这个例子之前，同学们需要知道JVM处理String的一些特性。Java的虚拟机在内存中开辟出一块单独的区域，用来存储字符串对象，这块内存区域被称为字符串缓冲池。当使用 String a = “abc”这样的语句进行定义一个引用的时候，首先会在字符串缓冲池中查找是否已经相同的对象，如果存在，那么就直接将这个对象的引用返回给a，如果不存在，则需要新建一个值为”abc”的对象，再将新的引用返回a。String a = new String(“abc”);这样的语句明确告诉JVM想要产生一个新的String对象，并且值为”abc”，于是就在堆内存中的某一个小角落开辟了一个新的String对象。</a> </p>
+</blockquote>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/Android-Bluetooth-0x01操作/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「Android-Bluetooth」0x01操作</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>

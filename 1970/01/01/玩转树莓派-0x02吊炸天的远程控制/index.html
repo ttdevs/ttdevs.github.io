@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「玩转树莓派」0x02吊炸天的远程控制 | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/玩转树莓派-0x02吊炸天的远程控制/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「玩转树莓派」0x02吊炸天的远程控制</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/玩转树莓派/">玩转树莓派</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <h2 id="0x00-吊炸天的远程控制"><a href="/1970/01/01/玩转树莓派-0x02吊炸天的远程控制/#0x00-吊炸天的远程控制" class="headerlink" title="0x00 吊炸天的远程控制"></a>0x00 吊炸天的远程控制</h2><p>Connect to Raspberry Pi</p>
+<p>安装好了系统，接下来我们就可以开始操作 Raspberry Pi 了。如果你不是拿来做家庭媒体中心，看视频之类，我们完全不需要给 Raspberry Pi 配置显示器，通过远程连接工具就可以完成我们所有的日常操作。由于连接显示器操作比较直观，这里仅给大家介绍无显示器的远程操作方法。</p>
+<h2 id="0x01-SSH"><a href="/1970/01/01/玩转树莓派-0x02吊炸天的远程控制/#0x01-SSH" class="headerlink" title="0x01 SSH"></a>0x01 SSH</h2><p>先看一段介绍，来自<a href="https://zh.wikipedia.org/wiki/Secure_Shell" target="_blank" rel="external">维基百科</a>：</p>
+<blockquote>
+<p>Secure Shell（缩写为SSH），由IETF的网络工作小组（Network Working Group）所制定；SSH为一项创建在应用层和传输层基础上的安全协议，为计算机上的Shell（壳层）提供安全的传输和使用环境。<br>传统的网络服务程序，如rsh、FTP、POP和Telnet其本质上都是不安全的；因为它们在网络上用明文传送数据、用户帐号和用户口令，很容易受到中间人（man-in-the-middle）攻击方式的攻击。就是存在另一个人或者一台机器冒充真正的服务器接收用户传给服务器的数据，然后再冒充用户把数据传给真正的服务器。<br>而SSH是目前较可靠，专为远程登录会话和其他网络服务提供安全性的协议。利用SSH协议可以有效防止远程管理过程中的信息泄露问题。通过SSH可以对所有传输的数据进行加密，也能够防止DNS欺骗和IP欺骗。<br>SSH之另一项优点为其传输的数据可以是经过压缩的，所以可以加快传输的速度。SSH有很多功能，它既可以代替Telnet，又可以为FTP、POP、甚至为PPP提供一个安全的“通道”。</p>
+</blockquote>
+<p>上面的介绍是不是太抽象～～还是我来说吧。折腾 Raspberry Pi ，ssh作为一个重要的远程连接工具（或者理解为把 Raspberry Pi 的终端拿到本地来），日常操作中是必不可少的！在没有显示器的情况下，我们可以使用ssh完成绝大多数（甚至所有的）操作。因此，这里我必须着重介绍。我们装的 Raspbian 系统默认是打开ssh的（否则在没有显示器的情况下我们是无法操作的，当然你非得说用USB转TTL也行），因此，我们不需要做任何配置就可以直接使用ssh。</p>
+<h3 id="安装SSH"><a href="/1970/01/01/玩转树莓派-0x02吊炸天的远程控制/#安装SSH" class="headerlink" title="安装SSH"></a>安装SSH</h3><p>Windows系统推荐使用免费、小巧、无需安装、并且功能强大的ssh工具。</p>
+<blockquote>
+<p><code>PuTTY</code> 是一个Telnet、SSH、rlogin、纯TCP以及串行接口连接软件。</p>
+</blockquote>
+<p>大家可以到他的<a href="http://www.putty.org/" target="_blank" rel="external">官网</a>下载，或者到这里<a href="/1970/01/01/玩转树莓派-0x02吊炸天的远程控制/file/putty.exe">下载</a>，非常小，519KB。打开是界面如下：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1801981-b8c35c7e12a4d367.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="PuTTY"></p>
+<p>使用也是非常的简单，在 <code>Host Name(or IP address)</code> 中填入你的域名或者IP，在 <code>Port</code> 中填入你的端口，默认是 <code>22</code> （如果你修改了默认端口，在此改成新的端口即可），然后点击 <code>Open</code> 就开始连接，打开一个 terminal ，按照提示操作即可：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1801981-c0bfadc447cdac8c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="PuTTY login"></p>
+<p>Mac和Linux系统中默认已经安装了 ssh 工具，我们可以直接在命令行中操作即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">➜  ~ ssh -V</div><div class="line">OpenSSH_6.9p1, LibreSSL 2.1.8</div><div class="line">➜  ~ ssh</div><div class="line">usage: ssh [-1246AaCfGgKkMNnqsTtVvXxYy] [-b bind_address] [-c cipher_spec]</div><div class="line">           [-D [bind_address:]port] [-E log_file] [-e escape_char]</div><div class="line">           [-F configfile] [-I pkcs11] [-i identity_file]</div><div class="line">           [-L [bind_address:]port:host:hostport] [-l login_name] [-m mac_spec]</div><div class="line">           [-O ctl_cmd] [-o option] [-p port]</div><div class="line">           [-Q cipher | cipher-auth | mac | kex | key]</div><div class="line">           [-R [bind_address:]port:host:hostport] [-S ctl_path] [-W host:port]</div><div class="line">           [-w local_tun[:remote_tun]] [user@]hostname [command]</div><div class="line">➜  ~</div></pre></td></tr></table></figure>
+<h3 id="使用SSH"><a href="/1970/01/01/玩转树莓派-0x02吊炸天的远程控制/#使用SSH" class="headerlink" title="使用SSH"></a>使用SSH</h3><p>ssh的使用比较简单，直接在我们本地的终端中输入 <code>ssh pi@&lt;your domain or ip&gt;</code> 命令，按照提示输入密码即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">➜  ~ ssh pi@ttdevs.com</div><div class="line">pi@ttdevs.com&apos;s password:</div><div class="line"></div><div class="line">The programs included with the Debian GNU/Linux system are free software;</div><div class="line">the exact distribution terms for each program are described in the</div><div class="line">individual files in /usr/share/doc/*/copyright.</div><div class="line"></div><div class="line">Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent</div><div class="line">permitted by applicable law.</div><div class="line">Last login: Thu Mar 31 17:38:44 2016 from 58.11.22.33</div><div class="line">pi@raspberry:~ $</div></pre></td></tr></table></figure>
+<p>完成ssh的登录，你就可以在本地直接操作 Raspberry Pi 了，而且体验和直接登录 Raspberry Pi 操作一样。</p>
+<h3 id="修改端口号"><a href="/1970/01/01/玩转树莓派-0x02吊炸天的远程控制/#修改端口号" class="headerlink" title="修改端口号"></a>修改端口号</h3><p>如果你跟我一样比较悲催——22端口 也 被电信封了（或者很不稳定），那你就需要给ssh换（或者增加）一个端口。如何判断22端口是否被封了？最简单就是如果你在内网通过ssh可以访问Raspberry Pi，外网却访问不了，那么22端口就有可能被运营商或者你的防火墙给封了。既然端口有问题，那最简单的办法换个端口，就可以规避这个问题，下面介绍如何操作：</p>
+<ul>
+<li><p>编辑ssh配置文件 <code>/etc/ssh/sshd_config</code> 修改端口</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">sudo nano /etc/ssh/sshd_config</div><div class="line"></div><div class="line"># Package generated configuration file</div><div class="line"># See the sshd_config(5) manpage for details</div><div class="line"></div><div class="line"># What ports, IPs and protocols we listen for</div><div class="line">Port 22</div><div class="line">Port 2333</div><div class="line">...</div></pre></td></tr></table></figure>
+<p>  找到<code>Port 22</code>，在这行下面增加一行 <code>Port 2333</code>。当然你也可以直接把22改成你要设置的端口号。他们的区别是：<strong>增加一行可以增加一个ssh端口号</strong>。如上面的写法，我可以使用ssh通过 22 或 2333 端口来访问Raspberry Pi。</p>
+</li>
+<li><p>使配置生效</p>
+<ol>
+<li>重启ssh：<code>sudo service ssh restart</code></li>
+<li>最简单你也可以直接重启设备：<code>sudo reboot</code> or <code>sudo init 6</code></li>
+</ol>
+</li>
+<li><p>使用新端口登录</p>
+<p>  使用新端口的登录方式如下：<br>  <code>ssh -p &lt;your new port&gt; &lt;username&gt;@&lt;ip-address or domain&gt;</code><br>  如： <code>ssh -p 2333 pi@ttdevs.com</code></p>
+</li>
+</ul>
+<h3 id="无密码登录"><a href="/1970/01/01/玩转树莓派-0x02吊炸天的远程控制/#无密码登录" class="headerlink" title="无密码登录"></a>无密码登录</h3><p><a href="https://www.raspberrypi.org/documentation/remote-access/ssh/passwordless.md" target="_blank" rel="external">无密码登录</a>就是把我们从每次登录 Raspberry Pi 都需要输入密码的繁琐中解脱出来。配置完成后，我们只需要 <code>ssh &lt;your domain or ip&gt;</code> 即可登录我们的设备而不需要输入密码。</p>
+<p>这个配置很简单，只需要将我们的public秘钥传到Raspberry Pi的 <code>~/.ssh/authorized_keys</code> 文件中即可。执行下面的命令（假设你的本地已经生成了相关的key）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cat ~/.ssh/id_rsa.pub | ssh &lt;username&gt;@&lt;ip-address or domain&gt; &apos;cat &gt;&gt; .ssh/authorized_keys&apos;</div></pre></td></tr></table></figure>
+<p>其中<code>id_rsa.pub</code>为你的公钥。如果没有问题，当你再次尝试使用ssh登录的话就不需要密码了。如果有问题，请参考<a href="https://www.raspberrypi.org/documentation/remote-access/ssh/passwordless.md" target="_blank" rel="external">这里</a>。</p>
+<h2 id="0x02-VNC"><a href="/1970/01/01/玩转树莓派-0x02吊炸天的远程控制/#0x02-VNC" class="headerlink" title="0x02 VNC"></a>0x02 VNC</h2><p>虽然ssh可以完成我们的绝大多说操作。但是如果习惯了图形界面的你，一时半会很难上手这种命令行方式，会想有个桌面操作环境，那接下来我们介绍下VNC，因为他可以满足你对GUI的要求。VNC的配置，我们可以在如下<a href="https://www.raspberrypi.org/documentation/remote-access/vnc/README.md" target="_blank" rel="external"> Raspberry Pi 官方文档</a>中找到。当然，你也可以到<a href="https://www.realvnc.com" target="_blank" rel="external">VNC的官方网站</a>查看。</p>
+<h3 id="安装VNC"><a href="/1970/01/01/玩转树莓派-0x02吊炸天的远程控制/#安装VNC" class="headerlink" title="安装VNC"></a>安装VNC</h3><ul>
+<li><p>安装VNC</p>
+<p>  我们可以使用这个命令来安装VNC服务： <code>sudo apt-get install tightvncserver</code></p>
+</li>
+<li><p>设置密码</p>
+<p>  在启动服务之前，我们需要设置一个访问密码，命令为<code>tightvncserver</code>，操作如下：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">pi@raspberrypi:~/.vnc $ tightvncserver</div><div class="line">perl: warning: Setting locale failed.</div><div class="line">perl: warning: Please check that your locale settings:</div><div class="line">	LANGUAGE = (unset),</div><div class="line">	LC_ALL = (unset),</div><div class="line">	LC_CTYPE = &quot;zh_CN.UTF-8&quot;,</div><div class="line">	LANG = &quot;en_GB.UTF-8&quot;</div><div class="line">    are supported and installed on your system.</div><div class="line">perl: warning: Falling back to a fallback locale (&quot;en_GB.UTF-8&quot;).</div><div class="line"></div><div class="line">You will require a password to access your desktops.</div><div class="line"></div><div class="line">Password:</div><div class="line">Verify:</div><div class="line">Would you like to enter a view-only password (y/n)? y</div><div class="line">Password:</div><div class="line">Warning: password truncated to the length of 8.</div><div class="line">Verify:</div><div class="line"></div><div class="line">New &apos;X&apos; desktop is raspberrypi:5</div><div class="line"></div><div class="line">Starting applications specified in /home/pi/.vnc/xstartup</div><div class="line">Log file is /home/pi/.vnc/raspberrypi:5.log</div><div class="line"></div><div class="line">pi@raspberrypi:~/.vnc $</div></pre></td></tr></table></figure>
+<p>   <code>PS：密码无回显</code></p>
+</li>
+<li><p>运行一个vnc display</p>
+<p>  <code>vncserver :1 -geometry 1920x1080 -depth 24</code></p>
+<p>  这样你就可以通过VNC客户端（如：<a href="http://www.realvnc.com/download/viewer/" target="_blank" rel="external">VNC Viewer</a>）连接到我们的树莓派了，客户端的配置，你可以参考<a href="http://www.realvnc.com/products/vnc/documentation/5.3/" target="_blank" rel="external">这里</a>。下面是我的效果图：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1801981-ec796d19a6d150b5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="VNC Viewer"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1801981-526bdab4c819637a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="VNC Viewer logined"></p>
+<blockquote>
+<ol>
+<li>VNC Viewer中我们需要指定连接哪个display，由于我们上面用的是 display 1，因此地址写：<code>ttdevs.com:1</code></li>
+<li>另外，上面的命令是在display 1位置启动，如果你考虑节省资源可以关闭display 0，执行命令：<code>service lightdm stop</code></li>
+</ol>
+</blockquote>
+</li>
+</ul>
+<h3 id="配置VNC自启动"><a href="/1970/01/01/玩转树莓派-0x02吊炸天的远程控制/#配置VNC自启动" class="headerlink" title="配置VNC自启动"></a>配置VNC自启动</h3><p>通过上面的配置我们就可以使用VNC了，但是如果我们重新启动设备，之前的配置失效，VNC就连不上了。因此最好能<a href="http://manpages.ubuntu.com/manpages/precise/man8/update-rc.d.8.html" target="_blank" rel="external">把启动VNC的操作添加到系统的自启动项中</a>。具体操作如下：</p>
+<ul>
+<li>切换到root账户：<code>sudo su</code></li>
+<li>进到/etc/init.d/目录：<code>cd /etc/init.d/</code></li>
+<li>创建vncboot文件：<code>touch vncboot</code></li>
+<li><p>编辑vncboot文件，输入下面内容：<code>sudo nano vncboot</code></p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">#! /bin/sh</div><div class="line"># /etc/init.d/vncboot</div><div class="line"></div><div class="line">### BEGIN INIT INFO</div><div class="line"># Provides: vncboot</div><div class="line"># Required-Start: $remote_fs $syslog</div><div class="line"># Required-Stop: $remote_fs $syslog</div><div class="line"># Default-Start: 2 3 4 5</div><div class="line"># Default-Stop: 0 1 6</div><div class="line"># Short-Description: Start VNC Server at boot time</div><div class="line"># Description: Start VNC Server at boot time.</div><div class="line">### END INIT INFO</div><div class="line"></div><div class="line">USER=pi</div><div class="line">HOME=/home/pi</div><div class="line"></div><div class="line">export USER HOME</div><div class="line"></div><div class="line">case &quot;$1&quot; in</div><div class="line"> start)</div><div class="line">  echo &quot;Starting VNC Server&quot;</div><div class="line">  #Insert your favoured settings for a VNC session</div><div class="line">  su - $USER -c &quot;/usr/bin/vncserver :1 -geometry 1280x800 -depth 16 -pixelformat rgb565&quot;</div><div class="line">  ;;</div><div class="line"></div><div class="line"> stop)</div><div class="line">  echo &quot;Stopping VNC Server&quot;</div><div class="line">  /usr/bin/vncserver -kill :1</div><div class="line">  ;;</div><div class="line"></div><div class="line"> *)</div><div class="line">  echo &quot;Usage: /etc/init.d/vncboot &#123;start|stop&#125;&quot;</div><div class="line">  exit 1</div><div class="line">  ;;</div><div class="line">esac</div><div class="line"></div><div class="line">exit 0</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>修改vncboot的权限：<code>chmod 755 vncboot</code></li>
+<li>设置VNC为默认启动：<code>update-rc.d vncboot defaults</code></li>
+<li><p>最后，完整脚本如下</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">pi@raspberrypi:~ $ sudo su</div><div class="line">root@raspberrypi:/home/pi# cd /etc/init.d/</div><div class="line">root@raspberrypi:/etc/init.d# touch vncboot</div><div class="line">root@raspberrypi:/etc/init.d# sudo nano vncboot</div><div class="line">root@raspberrypi:/etc/init.d# chmod 755 vncboot</div><div class="line">root@raspberrypi:/etc/init.d# update-rc.d vncboot defaults</div><div class="line">perl: warning: Setting locale failed.</div><div class="line">perl: warning: Please check that your locale settings:</div><div class="line">	LANGUAGE = (unset),</div><div class="line">	LC_ALL = (unset),</div><div class="line">	LC_CTYPE = &quot;zh_CN.UTF-8&quot;,</div><div class="line">	LANG = &quot;en_GB.UTF-8&quot;</div><div class="line">    are supported and installed on your system.</div><div class="line">perl: warning: Falling back to a fallback locale (&quot;en_GB.UTF-8&quot;).</div><div class="line">root@raspberrypi:/etc/init.d# ls -al</div><div class="line">total 308</div><div class="line">drwxr-xr-x   2 root root  4096 Mar 22 05:41 .</div><div class="line">drwxr-xr-x 109 root root  4096 Mar 21 15:01 ..</div><div class="line">-rw-r--r--   1 root root  1745 Mar 22 05:43 .depend.boot</div><div class="line">-rw-r--r--   1 root root   930 Mar 22 05:43 .depend.start</div><div class="line">-rw-r--r--   1 root root  1009 Mar 22 05:43 .depend.stop</div><div class="line">-rw-r--r--   1 root root  2427 Apr  6  2015 README</div><div class="line">...</div><div class="line">-rwxr-xr-x   1 root root   699 Mar 22 05:42 vncboot</div><div class="line">-rwxr-xr-x   1 root root  2666 Sep 25  2013 x11-common</div><div class="line"></div><div class="line">root@raspberrypi:/etc/init.d# reboot</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="密码管理"><a href="/1970/01/01/玩转树莓派-0x02吊炸天的远程控制/#密码管理" class="headerlink" title="密码管理"></a>密码管理</h3><p>VNC的密码管理比较简单，详细描述可以参考<a href="https://www.realvnc.com/products/open/4.1/man/vncpasswd.html" target="_blank" rel="external">这里</a>，下面做简单描述：</p>
+<ol>
+<li><p>修改密码 <code>vncpasswd</code></p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">pi@raspberrypi:~ $ vncpasswd</div><div class="line">Using password file /home/pi/.vnc/passwd</div><div class="line">Password:</div><div class="line">Verify:</div><div class="line">Would you like to enter a view-only password (y/n)? y</div><div class="line">Password:</div><div class="line">Warning: password truncated to the length of 8.</div><div class="line">Verify:</div><div class="line">pi@raspberrypi:~ $</div></pre></td></tr></table></figure>
+<p> <code>PS：设置新的密码，好像并不会验证你的旧密码</code></p>
+</li>
+<li><p>忘记密码 </p>
+<p> VNC的密码文件存储在：<code>$HOME/.vnc/passwd</code>中，如果你忘记了VNC的密码，可以直接删除这个文件，运行 <code>tightvncserver</code> 即可使用新的密码。</p>
+</li>
+</ol>
+<h3 id="其他说明"><a href="/1970/01/01/玩转树莓派-0x02吊炸天的远程控制/#其他说明" class="headerlink" title="其他说明"></a>其他说明</h3><ul>
+<li>VNC默认端口号：<code>5901</code></li>
+<li>VNC配置文件：<code>~/.vnc</code></li>
+<li>VNC密码文件：<code>/.vnc/passwd</code></li>
+</ul>
+<h2 id="0x03-SCP"><a href="/1970/01/01/玩转树莓派-0x02吊炸天的远程控制/#0x03-SCP" class="headerlink" title="0x03 SCP"></a>0x03 SCP</h2><p>讲过上面的配置之后我们就可以通过这两种方式来远程操作我们的树莓派了。但是，有时候我们需要在本地和 Raspberry Pi 之间进行文件拷贝，这里我们可以有很多种选择，比如常见的FTP，SFTP等。但是由于FTP的配置比较麻烦，而且必须以服务的方式在系统常驻，因此给大家推荐 SCP。SCP 是secure copy的简写，用于在Linux下进行远程拷贝文件。我们比较常见的  <code>cp</code> 命令和 <code>scp</code> 类似，不过<code>cp</code> 只是在本机进行拷贝，不能跨服务器。考虑网络传输的安全性， <code>scp</code> 传输是加密的。默认情况，我们的Raspberry Pi 已经安装了SCP， 可以通过直接在终端输入 <code>scp</code> 来查看，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ scp</div><div class="line">usage: scp [-12346BCpqrv] [-c cipher] [-F ssh_config] [-i identity_file]</div><div class="line">           [-l limit] [-o ssh_option] [-P port] [-S program]</div><div class="line">           [[user@]host1:]file1 ... [[user@]host2:]file2</div></pre></td></tr></table></figure>
+<p>由于我用的是Mac系统，默认情况也已经安装了SCP命令。如果你使用的是Windows系统，我们可以到这里<a href="http://winscp.net/" target="_blank" rel="external">下载WinSCP</a>。</p>
+<ul>
+<li><p>本地文件拷贝到 Raspberry Pi</p>
+<ol>
+<li><p>拷贝本地文件file.txt到Raspberry Pi的用户目录下</p>
+<p> <code>scp file.txt pi@ttdevs.com:</code></p>
+</li>
+<li><p>拷贝本地文件file.txt到Raspberry Pi的用户目录下的raspi文件下，路径为<code>/home/pi/raspi/</code></p>
+<p> <code>scp file.txt pi@ttdevs.com:raspi</code></p>
+</li>
+</ol>
+</li>
+<li><p>Raspberry Pi文件拷贝到本地</p>
+<p>  <code>scp pi@ttdevs.com:file.txt .</code></p>
+<p>  拷贝远程Raspberry Pi用户目录下的file.txt到本地的当前目录</p>
+</li>
+<li><p>多文件拷贝</p>
+<p>  scp支持多文件拷贝，我们可以一次指定多个文件或者使用通配符来进行操作</p>
+<ol>
+<li><p>指定多个文件</p>
+<p> <code>scp file.txt file2.txt pi@ttdevs.com:</code></p>
+</li>
+<li><p>使用通配符</p>
+<p> <code>scp *.txt pi@ttdevs.com:</code></p>
+</li>
+</ol>
+</li>
+</ul>
+<h2 id="0x04-HTTP"><a href="/1970/01/01/玩转树莓派-0x02吊炸天的远程控制/#0x04-HTTP" class="headerlink" title="0x04 HTTP"></a>0x04 HTTP</h2><p>为什么会提到这个呢？原因很简单，在接下来的学习中大部分的编码操作都会使用python来完成。所以我们会安装python语言，而且，默认情况我们的Raspberry Pi已经安装了python 2.7版本。python2 中默认包含了SimpleHTTPServer这个库。因此我们可以直接拿来使用。说了这么多你还不知道这个东东是干嘛的。其实从名字中我们就可以看出来，他是一个http server。既然是http server，那么我们就可以用来作为下载文件服务来使用，间接完成文件的拷贝。我们可以通过如下的命令来启动一个http服务：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">~ $ python -m SimpleHTTPServer 8088</div><div class="line">Serving HTTP on 0.0.0.0 port 8088 ...</div><div class="line">...</div></pre></td></tr></table></figure>
+<p>如果你想使用80端口（请确保没有被运营商封掉），请将8088改成80，<code>sudo python -m SimpleHTTPServer 80</code>。启动好之后我们就可以在浏览器中通过打开 <code>http://&lt;your ip or domain&gt;:8088</code>  这样的方式来访问启动服务时那个位置下的所有文件。如果你想从Raspberry Pi中拷贝文件到本地，那就在 Raspberry Pi 中启动服务，如果你想把本地文件拷贝到Raspberry Pi中，在我们本地启动服务即可。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1801981-a6bed76cc26db1a6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Raspberry Pi Python Http"></p>
+<p>至此，我们可以真正开始Raspberry Pi 操作了～～</p>
+<hr>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/玩转树莓派-0x01选个系统先/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「玩转树莓派」0x01选个系统先</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/玩转树莓派-0x03初始化配置/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「玩转树莓派」0x03初始化配置</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>

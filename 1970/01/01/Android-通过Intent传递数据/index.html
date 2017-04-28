@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「Android」通过Intent传递数据 | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/Android-通过Intent传递数据/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「Android」通过Intent传递数据</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Android/">Android</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <h2 id="0x00-需求"><a href="/1970/01/01/Android-通过Intent传递数据/#0x00-需求" class="headerlink" title="0x00 需求"></a>0x00 需求</h2><p>日常开发中，我们经常遇到通过 Intent 来传递数据（如果你使用Bundle也是一样的），默认情况，我们可以看到支持的数据类型：</p>
+<p><img src="http://img.blog.csdn.net/20160807214929418" alt="intent"></p>
+<ul>
+<li><p>基本类型</p>
+<p>  boolean、byte、char 、short、double、float、int、long</p>
+</li>
+<li><p>字符串类型</p>
+<p>  String、String[]、CharSequence、CharSequence[]</p>
+</li>
+<li><p>序列化类型</p>
+<p>  Serializable、Parcelable</p>
+</li>
+<li><p>其他类型</p>
+<p>  八种基本类型的数组、IntegerArray、StringArray、CharSequenceArray、ParcelableArray</p>
+</li>
+</ul>
+<p>对于基本类型我们可以不做任何处理即可在Activity或者Service中传递。那么对于自定义类型，我们怎么做呢？</p>
+<h2 id="0x01-何谓序列化"><a href="/1970/01/01/Android-通过Intent传递数据/#0x01-何谓序列化" class="headerlink" title="0x01 何谓序列化"></a>0x01 何谓序列化</h2><p>当我们需要对JVM中的java对象进行转储时，就需要将其转化成二进制序列，然后才能存储到外部。这个序列中保存了java对象的类型，数据，数据类型等。当需要的时候，再对存储的二进制序列进行反序列化，即可将其还原。常见的场景比如：存储JVM中对象，通过Socket传递java对象，RMI等等。</p>
+<h2 id="0x02-String类型"><a href="/1970/01/01/Android-通过Intent传递数据/#0x02-String类型" class="headerlink" title="0x02 String类型"></a>0x02 String类型</h2><blockquote>
+<p>为什么把这个放在第一位呢？<br>原因很简单：简单</p>
+</blockquote>
+<p>基本类型不用说，直接传递即可，对于我们的自定义类型，如果你跟我一样，不太喜欢（熟悉 T-T）Serializable和Parcelable，那用String类型最简单了。其实这个说法还有个前提，就是我们的项目中需要集成json工具（不过至少有gson）。使用方法如下：首先通过json工具将我们的Object转换成json字符串，然后在接收处在通过json工具还原为Object。</p>
+<p>从效率来看，会比下面两种情况低。但是对初学者来说，会比下面两种用起来简单。目前还没有遇到出错的问题（可能时因为我传递的数据比较小比较简单吧）。</p>
+<h2 id="0x02-Serializable"><a href="/1970/01/01/Android-通过Intent传递数据/#0x02-Serializable" class="headerlink" title="0x02 Serializable"></a>0x02 Serializable</h2><p>Java中经常会遇到 Serializable，比如这样：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</div><div class="line">    <span class="keyword">public</span> String name;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">int</span> age;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">boolean</span> login;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">float</span> score;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>有些地方需要进行序列化时，IDE会提示我们实现一个接口：<code>Serializable</code>，然后我们乖乖地加上这个接口即可（有时候IDE还会自动生成一个静态常量：<code>private static final long serialVersionUID = 23333333333333333333L;</code>）。如果你没有去追究为什么，那么事情就此结束。通过Intent传递数据时，也是如此。好了，我们进入下一部分～～</p>
+<p>哈哈，哪能这么简单。你可能会问，为什么加个这个接口即可？Serializable是一种 标记接口，当我们实现这个接口之后，系统会自动通过反射机制将我们对象的成员进行序列化。这里会涉及一些其他信息，比如：serialVersionUID、静态常量的序列化等等，更多信息请参考<a href="http://www.ibm.com/developerworks/cn/java/j-lo-serial/index.html" target="_blank" rel="external">这里</a>。</p>
+<h2 id="0x03-Parcelable"><a href="/1970/01/01/Android-通过Intent传递数据/#0x03-Parcelable" class="headerlink" title="0x03 Parcelable"></a>0x03 Parcelable</h2><p>Parcelable是android特有的处理序列化的方法。先看简单的使用：</p>
+<ul>
+<li><p>创建一个类：</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> <span class="keyword">implements</span> <span class="title">Parcelable</span> </span>&#123;</div><div class="line">	    <span class="keyword">public</span> String userName;</div><div class="line">	    <span class="keyword">public</span> <span class="keyword">int</span> age;</div><div class="line">	    <span class="keyword">public</span> <span class="keyword">boolean</span> login;</div><div class="line">	    <span class="keyword">public</span> <span class="keyword">float</span> score;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>使用AndroidStudio的代码生成功能生成如下 模版 代码：</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> <span class="keyword">implements</span> <span class="title">Parcelable</span> </span>&#123;</div><div class="line">    <span class="keyword">public</span> String userName;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">int</span> age;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">boolean</span> login;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">float</span> score;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="title">User</span><span class="params">(Parcel in)</span> </span>&#123;</div><div class="line">        userName = in.readString();</div><div class="line">        age = in.readInt();</div><div class="line">        login = in.readByte() != <span class="number">0</span>;</div><div class="line">        score = in.readFloat();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">writeToParcel</span><span class="params">(Parcel dest, <span class="keyword">int</span> flags)</span> </span>&#123;</div><div class="line">        dest.writeString(userName);</div><div class="line">        dest.writeInt(age);</div><div class="line">        dest.writeByte((<span class="keyword">byte</span>) (login ? <span class="number">1</span> : <span class="number">0</span>));</div><div class="line">        dest.writeFloat(score);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">describeContents</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Creator&lt;User&gt; CREATOR = <span class="keyword">new</span> Creator&lt;User&gt;() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> User <span class="title">createFromParcel</span><span class="params">(Parcel in)</span> </span>&#123;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">new</span> User(in);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="keyword">public</span> User[] newArray(<span class="keyword">int</span> size) &#123;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">new</span> User[size];</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p> 对比上面的两段代码，我们可以发现：</p>
+<ul>
+<li>构造方法中接收一个 Parcel 对象，通过这个对象对成员变量赋值</li>
+<li><p>实现了 <code>Parcelable</code> 接口的方法</p>
+<ul>
+<li>在 <code>writeToParcel</code> 方法中将我们的成员变量写入 <code>Parcel</code></li>
+<li><p>在 <code>describeContents</code> 中返回一个数字 0</p>
+<blockquote>
+<p>Describe the kinds of special objects contained in this Parcelable instance’s marshaled representation. For example, if the object will include a file descriptor in the output of writeToParcel(Parcel, int), the return value of this method must include the CONTENTS_FILE_DESCRIPTOR bit.</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p>创建了一个 <code>public static final</code> 常量 <code>CREATOR</code></p>
+</li>
+</ul>
+<p>这样我们就可以通过Intent传递对象了。</p>
+<p>在android的很多文章中都可以看到，Intent中传递数据，强烈推荐使用  <code>Parcelable</code> 他的效率会比 <code>Serializable</code>更高（比如后者没有使用反射等等）。当然没有完美的事情，<code>Parcelable</code> 并不能完全取代<code>Serializable</code>，比如将JVM对象存储到磁盘等等。但是对于Android开发中的通过Intent传递数据来说，已经足够。</p>
+<h2 id="0xFF-参考"><a href="/1970/01/01/Android-通过Intent传递数据/#0xFF-参考" class="headerlink" title="0xFF 参考"></a>0xFF 参考</h2><ol>
+<li><a href="http://stackoverflow.com/questions/3611843/is-using-serializable-in-android-bad/3612364#3612364" target="_blank" rel="external">http://stackoverflow.com/questions/3611843/is-using-serializable-in-android-bad/3612364#3612364</a></li>
+<li><a href="http://www.ibm.com/developerworks/cn/java/j-lo-serial/index.html" target="_blank" rel="external">http://www.ibm.com/developerworks/cn/java/j-lo-serial/index.html</a></li>
+<li><a href="https://developer.android.com/reference/android/os/Parcelable.html" target="_blank" rel="external">https://developer.android.com/reference/android/os/Parcelable.html</a></li>
+<li><a href="http://blog.csdn.net/js931178805/article/details/8268144" target="_blank" rel="external">http://blog.csdn.net/js931178805/article/details/8268144</a></li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/Android-让RecyclerView支持加载更多-Endless-RecyclerView/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「Android」让RecyclerView支持加载更多(Endless RecyclerView)</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/Flask-0x00Welcome/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「Flask」0x00Welcome</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>

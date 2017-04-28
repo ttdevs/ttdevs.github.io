@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「Android」0x01本地数据安全尝试SQLCipher | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/Android-0x01本地数据安全尝试SQLCipher/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「Android」0x01本地数据安全尝试SQLCipher</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Android/">Android</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <h2 id="0x00"><a href="/1970/01/01/Android-0x01本地数据安全尝试SQLCipher/#0x00" class="headerlink" title="0x00"></a>0x00</h2><p>先纪念下，从今天开始，又开始写博客啦啦啦啦。话说基本上一年多没好好写博客了。回想起来，和之前写博客时相比，还是差距好大。好吧，废话不说了，进入正题。</p>
+<p>首先，开篇打算跟大家分享下你遇到的或者将来可能遇到的问题：本地数据的安全问题。多数情况，我们可能没有去考虑app的本地数据安全问题，一来公司没这样的要求，二来我们可能也没有非常需要保密的数据。那现在思考一下为将来做储备。</p>
+<p>面试的时候，可能常常会被问到这样一个问题：Android的数据存储有哪几种方式？ 对于这个问题，<a href="http://developer.android.com/guide/topics/data/data-storage.html" target="_blank" rel="external">Android的官方文档</a> 有回答：</p>
+<ul>
+<li>Shared Preferences</li>
+<li>Internal Storage</li>
+<li>External Storage</li>
+<li>SQLite Databases</li>
+<li>Network Connection</li>
+</ul>
+<p>这几种方式就不用多说了。第一种以key-value的方式存储在我们的设备内部；第二种第三种简单理解为文件存储；第四种本地数据库存储（这四种都属本地存储）。最后一种方式（暂且算是一种方式吧）不在我们考虑范围之内。现在假设一个最坏的环境：设备已经root，任何本地数据都可以被直接或者间接拿到。这时候我们自然想到的就是对我们的数据进行加密。</p>
+<h2 id="0x01"><a href="/1970/01/01/Android-0x01本地数据安全尝试SQLCipher/#0x01" class="headerlink" title="0x01"></a>0x01</h2><p>以上是开场，下面进入第一部分：本地数据库加密。<br>先回顾下本地数据库，root以后，我们可以在下面的位置找到它：<code>/data/data/you.package/databases</code>，例如我们demo的数据库：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">root@t03g:/data/data/com.ttdevs.demo/databases # ls</div><div class="line">normal_user.db</div><div class="line">normal_user.db-journal</div><div class="line">user.db</div><div class="line">root@t03g:/data/data/com.ttdevs.demo/databases #</div><div class="line">``` </div><div class="line"></div><div class="line">知道了它的位置，接下来我们就可以直接将这些数据库文件拷贝出来，然后使用SQLite浏览器浏览。</div><div class="line">我们选用网上一个开源的方案：[SQLCipher][2]（[GitHub地址][3]）。SQLCipher是在SQLite的基础上封装了加密功能，使用上和直接使用SQLite基本相同。</div><div class="line"></div><div class="line"></div><div class="line">## 0x02</div><div class="line"></div><div class="line">首先，按照说明，我们引入SQLCipher：</div><div class="line"></div><div class="line">``` gradle</div><div class="line">compile &apos;net.zetetic:android-database-sqlcipher:3.3.1-2@aar&apos;</div></pre></td></tr></table></figure>
+<p>接下来就是编写我们的数据库代码了。先创建一个DatabaseHelper：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> net.sqlcipher.database.SQLiteDatabase;</div><div class="line"><span class="keyword">import</span> net.sqlcipher.database.SQLiteOpenHelper;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DatabaseOpenHelper</span> <span class="keyword">extends</span> <span class="title">SQLiteOpenHelper</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String DATABASE_NAME = <span class="string">"user.db"</span>;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DATABASE_VERSION = <span class="number">1</span>;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String TABLE = <span class="string">"user_info"</span>;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String NAME = <span class="string">"name"</span>;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String AGE = <span class="string">"age"</span>;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String ICON = <span class="string">"icon"</span>;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String TOKEN = <span class="string">"token"</span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DatabaseOpenHelper</span><span class="params">(Context context)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>(context, DATABASE_NAME, <span class="keyword">null</span>, DATABASE_VERSION);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(SQLiteDatabase db)</span> </span>&#123;</div><div class="line">        String sql = <span class="string">"create table "</span> + TABLE +</div><div class="line">                <span class="string">" (_id integer primary key autoincrement, "</span> +</div><div class="line">                NAME + <span class="string">" text, "</span> +</div><div class="line">                AGE + <span class="string">" integer, "</span> +</div><div class="line">                ICON + <span class="string">" blob, "</span> +</div><div class="line">                TOKEN + <span class="string">" text not null);"</span>;</div><div class="line">        Log.d(<span class="string">"EventsData"</span>, <span class="string">"onCreate: "</span> + sql);</div><div class="line">        db.execSQL(sql);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onUpgrade</span><span class="params">(SQLiteDatabase db, <span class="keyword">int</span> oldVersion, <span class="keyword">int</span> newVersion)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (oldVersion &lt; newVersion) &#123;</div><div class="line">            <span class="comment">// TODO</span></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>注意，此处的SQLiteOpenHelper和SQLiteDatabase都来自net.sqlcipher.database包。</code></p>
+<p>为了便于对比，我又写了一个相同逻辑使用<code>android.database.sqlite.SQLiteOpenHelper</code>的Helper作对比。接下来使用编写数据库操作逻辑。使用中SQLiteCipher区别是打开数据库的时候需要传入用于加密的KEY。下面是测试代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SqlcipherActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> <span class="keyword">implements</span> <span class="title">View</span>.<span class="title">OnClickListener</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"&gt;&gt;&gt;&gt;&gt;"</span>;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String CIPHER_KEY = <span class="string">"123abc_!@#$%^&amp;*"</span>;</div><div class="line">    <span class="keyword">private</span> DatabaseOpenHelper mOpenHelper;</div><div class="line">    <span class="keyword">private</span> NormalDatabaseOpenHelper mNormalHelper;</div><div class="line">...</div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">writeData</span><span class="params">(<span class="keyword">boolean</span> isCipher)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (isCipher) &#123;</div><div class="line">            log(<span class="string">"Cipher:101:"</span> + System.currentTimeMillis());</div><div class="line">            SQLiteDatabase db = mOpenHelper.getWritableDatabase(PASSWORD_KEY);</div><div class="line">            log(<span class="string">"Cipher:102:"</span> + System.currentTimeMillis());</div><div class="line">            String name = <span class="string">"Cipher"</span> + (++mIndex);</div><div class="line">            ContentValues values = <span class="keyword">new</span> ContentValues();</div><div class="line">            values.put(DatabaseOpenHelper.NAME, name);</div><div class="line">            values.put(DatabaseOpenHelper.AGE, mIndex);</div><div class="line">            values.put(DatabaseOpenHelper.TOKEN, PASSWORD_KEY);</div><div class="line">            values.put(DatabaseOpenHelper.ICON, name.getBytes());</div><div class="line">            log(<span class="string">"Cipher:11:"</span> + System.currentTimeMillis());</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                db.beginTransaction();</div><div class="line">                db.insert(DatabaseOpenHelper.TABLE, <span class="keyword">null</span>, values);</div><div class="line">                db.setTransactionSuccessful();</div><div class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125; <span class="keyword">finally</span> &#123;</div><div class="line">                db.endTransaction();</div><div class="line">            &#125;</div><div class="line">            log(<span class="string">"Cipher:12:"</span> + System.currentTimeMillis());</div><div class="line">            db.close();</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            ...</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">readData</span><span class="params">(<span class="keyword">boolean</span> isCipher)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (isCipher) &#123;</div><div class="line">            SQLiteDatabase db = mOpenHelper.getReadableDatabase(PASSWORD_KEY);</div><div class="line">            Cursor cursor = db.query(DatabaseOpenHelper.TABLE, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>);</div><div class="line">            <span class="keyword">while</span> (cursor.moveToNext()) &#123;</div><div class="line">                String name = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.NAME));</div><div class="line">                <span class="keyword">int</span> age = cursor.getInt(cursor.getColumnIndex(DatabaseOpenHelper.AGE));</div><div class="line">                String token = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.TOKEN));</div><div class="line">                String result = String.format(<span class="string">"Cipher&gt;&gt;&gt;&gt; name:%s, age:%d, token:%s"</span>, name, age, token);</div><div class="line">                log(result);</div><div class="line">            &#125;</div><div class="line">            db.close();</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            android.database.sqlite.SQLiteDatabase ndb = mNormalHelper.getReadableDatabase();</div><div class="line">            android.database.Cursor cursor = ndb.query(NormalDatabaseOpenHelper.TABLE, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>);</div><div class="line">            <span class="keyword">while</span> (cursor.moveToNext()) &#123;</div><div class="line">                String name = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.NAME));</div><div class="line">                <span class="keyword">int</span> age = cursor.getInt(cursor.getColumnIndex(DatabaseOpenHelper.AGE));</div><div class="line">                String token = cursor.getString(cursor.getColumnIndex(DatabaseOpenHelper.TOKEN));</div><div class="line">                String result = String.format(<span class="string">"Normal&gt;&gt;&gt;&gt; name:%s, age:%d, token:%s"</span>, name, age, token);</div><div class="line">                log(result);</div><div class="line">            &#125;</div><div class="line">            ndb.close();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>好了，跑一下我们的测试代码，得到下面的结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">02-19 13:49:41.596 24884-24884/com.ttdevs.demo E/&gt;&gt;&gt;&gt;&gt;: &gt;&gt;&gt;&gt;&gt; Cipher &gt;&gt;&gt;&gt;&gt;</div><div class="line">02-19 13:49:41.596 24884-24884/com.ttdevs.demo E/&gt;&gt;&gt;&gt;&gt;: Cipher:101:1455860981597</div><div class="line">02-19 13:49:41.971 24884-24884/com.ttdevs.demo E/&gt;&gt;&gt;&gt;&gt;: Cipher:102:1455860981974</div><div class="line">02-19 13:49:41.971 24884-24884/com.ttdevs.demo E/&gt;&gt;&gt;&gt;&gt;: Cipher:11:1455860981974</div><div class="line">02-19 13:49:41.981 24884-24884/com.ttdevs.demo E/&gt;&gt;&gt;&gt;&gt;: Cipher:12:1455860981983</div><div class="line">02-19 13:49:42.201 24884-24884/com.ttdevs.demo E/&gt;&gt;&gt;&gt;&gt;: Cipher&gt;&gt;&gt;&gt; name:Cipher1, age:1, token:123abc_!@#$%^&amp;*</div><div class="line">02-19 13:49:42.201 24884-24884/com.ttdevs.demo I/Choreographer: Skipped 35 frames!  The application may be doing too much work on its main thread.</div><div class="line">02-19 13:49:49.471 24884-24884/com.ttdevs.demo E/&gt;&gt;&gt;&gt;&gt;: &gt;&gt;&gt;&gt;&gt; Noremal &gt;&gt;&gt;&gt;&gt;</div><div class="line">02-19 13:49:49.476 24884-24884/com.ttdevs.demo E/&gt;&gt;&gt;&gt;&gt;: Normal:101:1455860989477</div><div class="line">02-19 13:49:49.521 24884-24884/com.ttdevs.demo E/&gt;&gt;&gt;&gt;&gt;: Normal:102:1455860989525</div><div class="line">02-19 13:49:49.521 24884-24884/com.ttdevs.demo E/&gt;&gt;&gt;&gt;&gt;: Normal:11:1455860989525</div><div class="line">02-19 13:49:49.531 24884-24884/com.ttdevs.demo E/&gt;&gt;&gt;&gt;&gt;: Normal:12:1455860989535</div><div class="line">02-19 13:49:49.541 24884-24884/com.ttdevs.demo E/&gt;&gt;&gt;&gt;&gt;: Normal&gt;&gt;&gt;&gt; name:Normal2, age:2, token:123abc_!@#$%^&amp;*</div></pre></td></tr></table></figure>
+<p>通过简单的对比，我们发现，SQLCipher在打开写数据库的时候花费了375ms，时间大概是SQLite 45ms的8~9倍，所以我们在log中看到丢帧的提示。这就提示我们，简单的数据库操作，使用SQLite我们也可能需要考虑将其放在新的线程中。当然，这个测试对比不够完善，比如大文件写入，大量数据插入，事务等等，因此还需要更多、更详细的测试来检测SQLCipher的性能等，这里就暂不讨论了。</p>
+<p>跑完上面的代码，我们来看看我们本地数据库中都创建了哪些东西：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">root@t03g:/data/data/com.ttdevs.demo/databases # ls</div><div class="line">normal_user.db</div><div class="line">normal_user.db-journal</div><div class="line">user.db</div><div class="line">root@t03g:/data/data/com.ttdevs.demo/databases #</div></pre></td></tr></table></figure>
+<p>我们把这两个db文件拷贝到我们的电脑，看看里面有哪些东西。这里推荐一个工具：<a href="http://sqlitebrowser.org/" target="_blank" rel="external">sqlitebrowser</a>。打开他们的网站你会发现它有两个版本的：Standard和SQLCipher的。是的，你没看错，就是针对SQLCipher的。如果你使用Standard版本，你会发现无法打开我们加密后的user.db（当然你也可是试试其他方法）。使用SQLCipher版的，打开之前会要求输入我们加密的KEY，就是我们上面的<code>123abc_!@#$%^&amp;*</code>。这时候我们就可以看到原始的数据了，如下图：</p>
+<p><img src="http://img.blog.csdn.net/20160219151008300" alt="Browser SQLCipher Data"></p>
+<h2 id="0x03"><a href="/1970/01/01/Android-0x01本地数据安全尝试SQLCipher/#0x03" class="headerlink" title="0x03"></a>0x03</h2><p>到这里，我们基本上已经见到了SQLCipher的使用。还没有结束，再来看一个问题：在创建项目开始，我尝试跑了下项目，apk的大小是1.4MB，在Gradle中引入SQLCipher之后，体积一下子飙到了8.7MB。呵呵呵~~ 这个体积的增加还是值得我们慎重的思考一下下的。</p>
+<h2 id="0x04"><a href="/1970/01/01/Android-0x01本地数据安全尝试SQLCipher/#0x04" class="headerlink" title="0x04"></a>0x04</h2><p>说了这么多，我们可以得到这样一个结论，使用SQLiteCipher可以对我们客户端的本地数据库进行加密，但是我们需要自己存一个加密KEY，如果我们能保存好这个KEY，那我们的数据基本是安全的。但是同时，我们可能需要考虑数据库加密过程中引入的新的问题，比如：apk体积的暴增，加密对性能的影响，加密KEY的保存等等。这些问题考虑好之后，我们就可以决定是否引入SQLCipher。</p>
+<p>如果你对引入SQLiteCiper引起的新问题心存芥蒂，那接下来给大家推荐下一种方法。敬请期待：<a href="http://blog.csdn.net/ttdevs/" target="_blank" rel="external">Android本地数据安全尝试(中)</a></p>
+<p>PS：<a href="https://github.com/ttdevs/Demo" target="_blank" rel="external">Github Demo</a></p>
+<hr>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/Android-SQLite-0x01创建自己的数据库/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「Android-SQLite」0x01创建自己的数据库</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/Android-0x02本地数据安全尝试Conceal/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「Android」0x02本地数据安全尝试Conceal</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>

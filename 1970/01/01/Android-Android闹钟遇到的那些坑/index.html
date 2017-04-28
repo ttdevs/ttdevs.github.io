@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「Android」Android闹钟遇到的那些坑 | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/Android-Android闹钟遇到的那些坑/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「Android」Android闹钟遇到的那些坑</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Android/">Android</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <h2 id="0x00-做过闹钟的话你才会理解的坑"><a href="/1970/01/01/Android-Android闹钟遇到的那些坑/#0x00-做过闹钟的话你才会理解的坑" class="headerlink" title="0x00 做过闹钟的话你才会理解的坑"></a>0x00 做过闹钟的话你才会理解的坑</h2><p>第一次做闹钟程序是在2012年，那时候android最新版本是2.2，2.3发布在即，做了一个整点提醒的小工具，记得很清楚，主要的问题是锁屏之后闹钟不能准时被唤醒，总会晚那么几秒钟，后来没办法把闹钟提前设置几秒钟。不过那时候环境还好，没有遇到攻克不了的问题，重启也可以唤起闹钟的。</p>
+<p>但是随着android版本的进化，开发者节操的丢失，问题就越来越难做了。闹钟明明设置了却不能到来；不再设置的时间到来，晚了好久才到；重启之后闹钟就没了等等。当然，还有好多好多，总之很多东西不按照自己期待的来。</p>
+<p>项目上线，踩过之后挑一些做总结。</p>
+<p>由于时间关系，项目比较赶，所以没有去考虑闹钟无法及时触发的问题，假设了一个最理想的环境。（更多的信息可以参考下面的文章）</p>
+<h2 id="0x01-闹钟的创建"><a href="/1970/01/01/Android-Android闹钟遇到的那些坑/#0x01-闹钟的创建" class="headerlink" title="0x01 闹钟的创建"></a>0x01 闹钟的创建</h2><p>这里涉及到不同版本设置闹钟的方法，下面的参考文章中已经提到：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">startAlarm</span><span class="params">(Calendar calendar, PendingIntent pendingIntent)</span> </span>&#123;</div><div class="line">   <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.KITKAT) &#123;</div><div class="line">       <span class="comment">// mManager.setWindow(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 1000* 5, mFirstPIntent);</span></div><div class="line">       mManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);</div><div class="line">       <span class="comment">// mManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), mSecondPIntent);</span></div><div class="line">   &#125; <span class="keyword">else</span> &#123;</div><div class="line">       mManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="0x02-闹钟的取消"><a href="/1970/01/01/Android-Android闹钟遇到的那些坑/#0x02-闹钟的取消" class="headerlink" title="0x02 闹钟的取消"></a>0x02 闹钟的取消</h2><p>有的时候可能需要去取消一个闹钟。我们可以通过两种方式来取消：</p>
+<ul>
+<li><p>通过 <code>PendingIntent.cancel();</code> 来取消</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Cancel a currently active PendingIntent.  Only the original application</div><div class="line"> * owning a PendingIntent can cancel it.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">cancel</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        ActivityManagerNative.getDefault().cancelIntentSender(mTarget);</div><div class="line">    &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<pre><code>这种方式只有能拿到 `PendingIntent` 才可以。
+</code></pre><ul>
+<li><p>通过 <code>AlarmManager.cancel(PendingIntent);</code> 来取消</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Remove any alarms with a matching &#123;<span class="doctag">@link</span> Intent&#125;.</div><div class="line"> * Any alarm, of any type, whose Intent matches this one (as defined by</div><div class="line"> * &#123;<span class="doctag">@link</span> Intent#filterEquals&#125;), will be canceled.</div><div class="line"> *</div><div class="line"> * <span class="doctag">@param</span> operation IntentSender which matches a previously added</div><div class="line"> * IntentSender.</div><div class="line"> *</div><div class="line"> * <span class="doctag">@see</span> #set</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">cancel</span><span class="params">(PendingIntent operation)</span> </span>&#123;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        mService.remove(operation);</div><div class="line">    &#125; <span class="keyword">catch</span> (RemoteException ex) &#123;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="0x03-闹钟的查看"><a href="/1970/01/01/Android-Android闹钟遇到的那些坑/#0x03-闹钟的查看" class="headerlink" title="0x03 闹钟的查看"></a>0x03 闹钟的查看</h2><p>又个adb命令可以用来查看当前系统中存在的闹钟：</p>
+<p><code>adb shell dumpsys alarm</code></p>
+<p><img src="http://img.blog.csdn.net/20170224183136089?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
+<p>不是在所有的设备上都好使，比如在我的魅族设备上可以正常使用，而在另一台 OPPO R7C上就不可以。</p>
+<h2 id="0xFF-参考"><a href="/1970/01/01/Android-Android闹钟遇到的那些坑/#0xFF-参考" class="headerlink" title="0xFF 参考"></a>0xFF 参考</h2><ul>
+<li><a href="http://www.jianshu.com/p/1f919c6eeff6" target="_blank" rel="external">http://www.jianshu.com/p/1f919c6eeff6</a></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/Android-Android你可能要用到的自定义View分享/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「Android」Android你可能要用到的自定义View分享</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/Android-DataBinding给Button设置背景无效/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「Android」DataBinding给Button设置背景无效</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>

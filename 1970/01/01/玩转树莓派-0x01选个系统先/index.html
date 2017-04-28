@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「玩转树莓派」0x01选个系统先 | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/玩转树莓派-0x01选个系统先/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「玩转树莓派」0x01选个系统先</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/玩转树莓派/">玩转树莓派</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <h2 id="0x00-树莓派的安装配置（无显示器）"><a href="/1970/01/01/玩转树莓派-0x01选个系统先/#0x00-树莓派的安装配置（无显示器）" class="headerlink" title="0x00 树莓派的安装配置（无显示器）"></a>0x00 树莓派的安装配置（无显示器）</h2><p>树莓派没有硬盘，我们拿到设备之后是不能直接用的，因此需要先给它配置一个装好系统的存储卡。这篇文字，给大家介绍如何安装并初始化树莓派系统。</p>
+<p><a href="https://www.raspberrypi.org/downloads/raspbian/" target="_blank" rel="external">Raspbian</a> 是树莓派基金会官方支持的系统，我们可以直接下载他的安装文件或者使用官网推荐的 <a href="https://www.raspberrypi.org/downloads/noobs/" target="_blank" rel="external">NOOBS</a> 来完成安装操作。除了官方支持的系统，树莓派还有很多第三方支持的系统，如：<code>UBUNTU MATE</code>、<code>SN
+![Uploading win32diskimager_914364.png . . .]APPY UBUNTU CORE</code>、<code>WINDOWS 10 IOT CORE</code>、<code>OSMC</code>、<code>OPENELEC</code>、<code>PINET</code>、<code>RISC OS</code>、<code>WEATHER STATION</code>等，这里有我们比较熟悉的<code>WINDOWS 10 IOT</code>、<code>UBUNTU</code>、<code>OSMC</code>等。<code>UBUNTU</code>系统是非常火的一个Linux发行版本，<code>WINDOWS 10 IOT</code>是微软开发的物联网系统，<code>OSMC</code>可以作为家庭媒体中心使用，其他系统大家可以自行了解。</p>
+<blockquote>
+<p>前一篇文章简单介绍了我的硬件环境，是没有显示器和外接键盘鼠标的，因此我会基于这个前提给大家介绍如何玩转树莓派。</p>
+</blockquote>
+<p>这么多系统，初学者可能会很纠结如何选择。这里给大家推荐官方支持的Raspbian（基于Debian Jessie）系统，他预装了很多常用、编程、教育软件，如Python(python3)、Scratch、Sonic Pi、Java、Mathematica等等。Raspbian包含RASPBIAN JESSIE(Full desktop image based on Debian Jessie)和RASPBIAN JESSIE LITE(Minimal image based on Debian Jessie)两个版本，由于之后我们会用到桌面环境，因此我们最终选择RASPBIAN JESSIE，带桌面环境的版本。</p>
+<h2 id="0x01-下载"><a href="/1970/01/01/玩转树莓派-0x01选个系统先/#0x01-下载" class="headerlink" title="0x01 下载"></a>0x01 下载</h2><p>决定了使用RASPBIAN JESSIE（非RASPBIAN JESSIE LITE），我们只需要到树莓派的官网下载系统文件即可。他的最新版本是 <a href="http://downloads.raspberrypi.org/raspbian/release_notes.txt" target="_blank" rel="external">March 2016</a>：</p>
+<ul>
+<li>发布：<code>2016-3-18</code></li>
+<li>Linux内核：<code>4.1</code></li>
+<li>文件名：<a href="http://vx2-downloads.raspberrypi.org/raspbian/images/raspbian-2016-03-18/2016-03-18-raspbian-jessie.zip" target="_blank" rel="external">2016-02-26-raspbian-jessie.zip</a></li>
+<li>MD5:  <code>db41f2a8c6236c0ca9150fe4db2017c09e7871fb</code></li>
+<li>大小：<code>1.3G</code></li>
+</ul>
+<p>对下载的文件进行加压，得到<code>2016-02-26-raspbian-jessie.img</code>，大小<code>4.03G</code>，这个就是我们安装要用到的系统镜像文件。</p>
+<h2 id="0x02-安装"><a href="/1970/01/01/玩转树莓派-0x01选个系统先/#0x02-安装" class="headerlink" title="0x02 安装"></a>0x02 安装</h2><p>系统的安装比较简单，就是将我们刚下载的安装镜像文件写入到TF卡中。官方的 <a href="https://www.raspberrypi.org/documentation/installation/installing-images/README.md" target="_blank" rel="external">安装帮助文档</a> 对系统的安装进行了详细的介绍。本着简化操作的原则，这里再做简单概述。</p>
+<ul>
+<li><p>Windows系统</p>
+<p>  <a href="https://www.raspberrypi.org/documentation/installation/installing-images/windows.md" target="_blank" rel="external">Windows系统安装</a>推荐使用<a href="https://sourceforge.net/projects/win32diskimager/" target="_blank" rel="external">win32diskimager</a>，这是一个图形化工具，操作非常简单：以管理员方式打开，ImageFile选择刚下载的img镜像，Device选择我们的TF卡所在驱动器，点击Write即可。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1801981-f0f5f96ef21aa61d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="win32diskimager"></p>
+</li>
+<li><p>Mac系统</p>
+<p>  跟Windows系统一样，我们推荐图形界面的<a href="http://www.tweaking4all.com/hardware/raspberry-pi/macosx-apple-pi-baker/" target="_blank" rel="external">ApplePi-Baker</a>，操作界面如下：</p>
+</li>
+</ul>
+<p>  <img src="http://upload-images.jianshu.io/upload_images/1801981-3dc88fbb747a3390.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="ApplePi-Baker"></p>
+<pre><code>左侧选择SDCard，右侧选择我们的镜像文件，点击Restore Backup按钮即可。
+</code></pre><ul>
+<li><p>Mac系统命令行方式</p>
+<p>  由于我用的Mac系统，所以简单介绍下这种稍微复杂点的方式但也就是简单几步操作：</p>
+<ol>
+<li>插入SDCard卡，使用磁盘管理工具对其进行擦除，格式选择MS-DOS(FAT)，完成后推出SDCard（推出并不是拔出）</li>
+<li><p>使用<code>df -h</code>查看SDCard的路径，如下的 <code>/dev/disk2s1</code>，我们记下 <code>disk2</code>：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">➜  ~ df -h</div><div class="line">Filesystem      Size   Used  Avail Capacity  iused    ifree %iused  Mounted on</div><div class="line">devfs          185Ki  185Ki    0Bi   100%      640        0  100%   /dev</div><div class="line">map -hosts       0Bi    0Bi    0Bi   100%        0        0  100%   /net</div><div class="line">map auto_home    0Bi    0Bi    0Bi   100%        0        0  100%   /home</div><div class="line">/dev/disk2s1    60Mi   20Mi   40Mi    34%      512        0  100%   /Volumes/raspi</div><div class="line">➜  ~</div></pre></td></tr></table></figure>
+</li>
+<li><p>执行如下命令，将镜像文件烧录进SDCard，这个过程会因为你的SDCard卡的速度的不同而不同，期间你可以通过<code>Ctrl+T</code>来查看进度：</p>
+<p> <code>sudo dd bs=1m if=2016-02-26-raspbian-jessie.img of=/dev/rdisk2</code></p>
+<p>如果命令行方式有问题，请参考<a href="https://www.raspberrypi.org/documentation/installation/installing-images/mac.md" target="_blank" rel="external">官方说明</a>解决。</p>
+</li>
+</ol>
+</li>
+</ul>
+<p>烧录完成之后SDCard内容如下：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1801981-388688f6e1ca534c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="raspbian jessie"></p>
+<h2 id="0x03-登录树莓派"><a href="/1970/01/01/玩转树莓派-0x01选个系统先/#0x03-登录树莓派" class="headerlink" title="0x03 登录树莓派"></a>0x03 登录树莓派</h2><p>完成以上操作，将SDCard插入树莓派加电就可以顺利跑起来了。我们再强调一遍，即使<code>没有键盘鼠标显示器，也是可以操作树莓派的，包括安装时</code>。简单的拓扑如下图：</p>
+<p><img src="https://pihw.files.wordpress.com/2013/04/directconnect1.png" alt="简单拓扑"></p>
+<p>启动树莓派可以有两种方式：<code>无外接键盘鼠标显示器</code>和<code>有外接键盘鼠标显示器</code>（虽然我假设自己没有多余的键盘显示器，但是我还是会在此介绍这种方式~~）。</p>
+<p>这两种方式无论选择哪种，我们都需要先将树莓派通过RJ45接口与我们的路由器相连（说人话就是拿网线连接树莓派和路由器）。别问我为什么这么做，因为这样最简单，跟着做就好（当然，我知道你也可以直接拿根网线直接连接电脑和树莓派，但是非常不建议这么做，因为这么屌的你已经可以不用来看这篇文章了），或者你会说没有路由器，你真的没路由器？那赶紧买一个吧。</p>
+<blockquote>
+<p>这里强烈建议通过路由器的设置给树莓派分配静态IP，否则会非常麻烦。更多获取树莓派的IP的方法可参考<a href="https://www.raspberrypi.org/documentation/remote-access/ip-address.md" target="_blank" rel="external">这里</a>。</p>
+</blockquote>
+<ul>
+<li><p>无外接键盘鼠标显示器</p>
+<p>  这种方式最简单。树莓派接入网络，我们只需要登录路由器，到DHCP服务器中的客户端列表中查看我们的树莓派的IP，然后通过ssh命令登录树莓派就可以操作了。[默认的用户名密码][c2]：<code>pi</code>：<code>raspberry</code>，<code>ssh</code> 命令如下：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ssh pi@&lt;you ip address&gt;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<blockquote>
+<p>密码输入无回显</p>
+</blockquote>
+<ul>
+<li><p>外接键盘鼠标显示器</p>
+<p>  如果你有多余的键盘鼠标显示器供给树莓派使用，那么第一次启动的时候，我们需要简单配置下树莓派使其支持HDMI输出。打开我们的SDCard，在根目录下，看到有这么一个文件：<a href="https://www.raspberrypi.org/documentation/configuration/config-txt.md" target="_blank" rel="external"><code>config.txt</code></a>。我们需要修改他支持HDMI的显示（1080P的输出），下面是我配置的Demo：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line">pi@raspi:/boot $ cat config.txt</div><div class="line"># For more options and information see</div><div class="line"># http://www.raspberrypi.org/documentation/configuration/config-txt.md</div><div class="line"># Some settings may impact device functionality. See link above for details</div><div class="line"></div><div class="line"># uncomment if you get no picture on HDMI for a default &quot;safe&quot; mode</div><div class="line">#hdmi_safe=1</div><div class="line"></div><div class="line"># uncomment this if your display has a black border of unused pixels visible</div><div class="line"># and your display can output without overscan</div><div class="line">disable_overscan=1</div><div class="line"></div><div class="line"># uncomment the following to adjust overscan. Use positive numbers if console</div><div class="line"># goes off screen, and negative if there is too much border</div><div class="line">#overscan_left=16</div><div class="line">#overscan_right=16</div><div class="line">#overscan_top=16</div><div class="line">#overscan_bottom=16</div><div class="line"></div><div class="line"># uncomment to force a console size. By default it will be display&apos;s size minus</div><div class="line"># overscan.</div><div class="line">#framebuffer_width=1280</div><div class="line">#framebuffer_height=720</div><div class="line"></div><div class="line"># uncomment if hdmi display is not detected and composite is being output</div><div class="line">hdmi_force_hotplug=1</div><div class="line"></div><div class="line"># uncomment to force a specific HDMI mode (this will force VGA)</div><div class="line">hdmi_group=2</div><div class="line">hdmi_mode=82</div><div class="line"></div><div class="line"># uncomment to force a HDMI mode rather than DVI. This can make audio work in</div><div class="line"># DMT (computer monitor) modes</div><div class="line">#hdmi_drive=2</div><div class="line"></div><div class="line"># uncomment to increase signal to HDMI, if you have interference, blanking, or</div><div class="line"># no display</div><div class="line">config_hdmi_boost=4</div><div class="line"></div><div class="line"># uncomment for composite PAL</div><div class="line">#sdtv_mode=2</div><div class="line"></div><div class="line">#uncomment to overclock the arm. 700 MHz is the default.</div><div class="line">#arm_freq=800</div><div class="line"></div><div class="line"># Uncomment some or all of these to enable the optional hardware interfaces</div><div class="line">#dtparam=i2c_arm=on</div><div class="line">#dtparam=i2s=on</div><div class="line">#dtparam=spi=on</div><div class="line"></div><div class="line"># Uncomment this to enable the lirc-rpi module</div><div class="line">#dtoverlay=lirc-rpi</div><div class="line"></div><div class="line"># Additional overlays and parameters are documented /boot/overlays/README</div><div class="line"></div><div class="line"># Enable audio (loads snd_bcm2835)</div><div class="line">dtparam=audio=on</div><div class="line">device_tree=</div></pre></td></tr></table></figure>
+<p>  参考：</p>
+<ol>
+<li><a href="http://www.roboby.com/raspberry-pi-640x480.html" target="_blank" rel="external">解决Raspberry Pi只能在默认640×480模式下显示的问题</a></li>
+<li><a href="http://elinux.org/RPiconfig" target="_blank" rel="external">http://elinux.org/RPiconfig</a></li>
+</ol>
+</li>
+</ul>
+<h2 id="0x04-配置WIFI"><a href="/1970/01/01/玩转树莓派-0x01选个系统先/#0x04-配置WIFI" class="headerlink" title="0x04 配置WIFI"></a>0x04 配置WIFI</h2><p>如果你想摆脱网线的束缚，我们可以使用WIFI来接入网络。最新的树莓派3板载了WIFI，树莓派2代需要我们自己配置无线网卡。<a href="https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md" target="_blank" rel="external">官方的配置参考这里</a>。如何查看我们的无线网卡是否正确识别，可以使用<code>lsusb</code>命令，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">pi@raspi:~ $ lsusb</div><div class="line">Bus 001 Device 005: ID 0a12:0001 Cambridge Silicon Radio, Ltd Bluetooth Dongle (HCI mode)</div><div class="line">Bus 001 Device 004: ID 0bda:8178 Realtek Semiconductor Corp. RTL8192CU 802.11n WLAN Adapter</div><div class="line">Bus 001 Device 003: ID 0424:ec00 Standard Microsystems Corp. SMSC9512/9514 Fast Ethernet Adapter</div><div class="line">Bus 001 Device 002: ID 0424:9514 Standard Microsystems Corp.</div><div class="line">Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub</div></pre></td></tr></table></figure>
+<p>第二行的Devices 004 <code>RTL8192CU</code>就是我的无线网卡。RASPBIAN JESSIE系统默认集成了<code>RTL8192CU</code>的驱动，所以我插上去之后就能用了。如果你的无线网卡无法检测到，请检查驱动配置，由于无线网卡型号太多，驱动安装就不展开讲了，可以参考<a href="https://wiki.debian.org/WiFi/" target="_blank" rel="external">这里</a>。</p>
+<ul>
+<li><p>直接修改配置文件</p>
+<p>  树莓派的网络配置文件位于 <code>/etc/network/interfaces</code> 和 <code>/etc/wpa_supplicant/wpa_supplicant.conf</code>文件中，我们将通过对其修改来使用我们的WIFI。修改之前建议先做备份：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo cp /etc/network/interfaces /etc/network/interfaces.bak</div><div class="line">sudo cp /etc/wpa_supplicant/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf.bak</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<pre><code>下面是默认的 `interfaces` 配置文件：
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">$ cat interfaces</div><div class="line"># interfaces(5) file used by ifup(8) and ifdown(8)</div><div class="line"></div><div class="line"># Please note that this file is written to be used with dhcpcd</div><div class="line"># For static IP, consult /etc/dhcpcd.conf and &apos;man dhcpcd.conf&apos;</div><div class="line"></div><div class="line"># Include files from /etc/network/interfaces.d:</div><div class="line">source-directory /etc/network/interfaces.d</div><div class="line"></div><div class="line">auto lo</div><div class="line">iface lo inet loopback</div><div class="line"></div><div class="line">iface eth0 inet manual</div><div class="line"></div><div class="line">allow-hotplug wlan0</div><div class="line">iface wlan0 inet manual</div><div class="line">    wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf</div><div class="line"></div><div class="line">allow-hotplug wlan1</div><div class="line">iface wlan1 inet manual</div><div class="line">    wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf</div></pre></td></tr></table></figure>
+</code></pre><p>在默认的 <code>interfaces</code> 配置下，我们可以仅仅修改 <code>/etc/wpa_supplicant/wpa_supplicant.conf</code>来完成WIFI配置，比如我的 <code>wpa_supplicant.conf</code>文件如下：</p>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">$ sudo cat /etc/wpa_supplicant/wpa_supplicant.conf</div><div class="line">country=CN</div><div class="line">ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev</div><div class="line">update_config=1</div><div class="line"></div><div class="line">network=&#123;</div><div class="line">	ssid=&quot;my wifi ssid&quot;</div><div class="line">	psk=&quot;my password&quot;</div><div class="line">	key_mgmt=WPA-PSK</div><div class="line">&#125;</div><div class="line">``` </div><div class="line">我的WIFI加密方式是 `WPA-PSK/WPA2-PSK` 因此配置 `key_mgmt=WPA-PSK` 加密方式可以在路由器的无线安全设置中查看。接下来我们还需要重启我们的WIFI：</div><div class="line"></div><div class="line"> ``` shell</div><div class="line">sudo ifdown wlan0</div><div class="line">sudo ifup wlan0</div><div class="line"> ``` </div><div class="line">或者直接重启系统 `sudo reboot` 。通过上面的设置，就可以连接我们的WIFI了。</div><div class="line"></div><div class="line">当然，我们也可以不使用 `/etc/wpa_supplicant/wpa_supplicant.conf` 文件，仅仅修改 `interfaces` 来完成配置，如我的另一个配置：</div><div class="line"></div><div class="line">``` shell</div><div class="line"># interfaces(5) file used by ifup(8) and ifdown(8)</div><div class="line"></div><div class="line"># Please note that this file is written to be used with dhcpcd</div><div class="line"># For static IP, consult /etc/dhcpcd.conf and &apos;man dhcpcd.conf&apos;</div><div class="line"></div><div class="line"># Include files from /etc/network/interfaces.d:</div><div class="line">source-directory /etc/network/interfaces.d</div><div class="line"></div><div class="line">auto lo</div><div class="line"></div><div class="line">iface lo inet loopback</div><div class="line">iface eth0 inet dhcp</div><div class="line"></div><div class="line"># auto wlan0</div><div class="line">allow-hotplug wlan0</div><div class="line">iface wlan0 inet static</div><div class="line">address 192.168.1.56</div><div class="line">netmask 255.255.255.0</div><div class="line">gateway 192.168.1.1</div><div class="line">wpa-ssid &lt;my ssid&gt;</div><div class="line">wpa-psk &lt;my password&gt;</div></pre></td></tr></table></figure>
+
+更多的配置参数，可以参考[这里](TODO)。
+
+&gt;这里配置使用了静态IP
+</code></pre><ul>
+<li><p>通过GUI桌面环境进行配置</p>
+<p>  这个就非常简单了，连接显示器键盘鼠标，登录桌面环境，点击右上角的WIFI图标，选择自己的WIFI，然后输入密码即可，如下图：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1801981-f5ca409d28f18e39.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="GUI WIFI Config"></p>
+</li>
+</ul>
+<p>获取到IP并接入到网络，接下来，我们就可以开启我们的树莓派之旅。各位玩的开心~~</p>
+<hr>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/玩转树莓派-0x00欢迎来到树莓派的世界/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「玩转树莓派」0x00欢迎来到树莓派的世界</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/玩转树莓派-0x02吊炸天的远程控制/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「玩转树莓派」0x02吊炸天的远程控制</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「Android」LayoutInflate遇到的坑 | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/Android-LayoutInflate遇到的坑/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「Android」LayoutInflate遇到的坑</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Android/">Android</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <h2 id="0x01-问题"><a href="/1970/01/01/Android-LayoutInflate遇到的坑/#0x01-问题" class="headerlink" title="0x01 问题"></a>0x01 问题</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">initVoiceItem</span><span class="params">()</span> </span>&#123;</div><div class="line">    viewMusicList.removeAllViews();</div><div class="line">    </div><div class="line">    <span class="keyword">int</span> localResource = SysPreferences.getAlarmVoiceResource();</div><div class="line">    LayoutInflater inflater = LayoutInflater.from(<span class="keyword">this</span>);</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; VOICE_KEY.length; i++) &#123;</div><div class="line">        View view = inflater.inflate(R.layout.item_voice_name, viewMusicList); <span class="comment">// <span class="doctag">TODO:</span> 2017/2/10</span></div><div class="line">        view.setOnClickListener(mClickListener);</div><div class="line">        ...</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> View.OnClickListener mClickListener = <span class="keyword">new</span> View.OnClickListener() &#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> size = viewMusicList.getChildCount();</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++) &#123;</div><div class="line">            View view = viewMusicList.getChildAt(i);</div><div class="line">            ...</div><div class="line">            <span class="keyword">if</span> (v == view) &#123;</div><div class="line">                &#123;...<span class="number">1</span>...&#125;</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                &#123;...<span class="number">2</span>...&#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>有上面一串代码，你能发现有什么问题吗？</p>
+<p>嗯嗯，是这样的：只会执行代码块{1}，并没有像我们期待的那样点击的时候执行到代码块{2}中去。没有细究，通过下面的代码直接跨过去：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">initVoiceItem</span><span class="params">()</span> </span>&#123;</div><div class="line">   viewMusicList.removeAllViews();</div><div class="line">   </div><div class="line">   <span class="keyword">int</span> localResource = SysPreferences.getAlarmVoiceResource();</div><div class="line">   LayoutInflater inflater = LayoutInflater.from(<span class="keyword">this</span>);</div><div class="line">   <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; VOICE_KEY.length; i++) &#123;</div><div class="line">       View view = inflater.inflate(R.layout.item_voice_name, <span class="keyword">null</span>); <span class="comment">// <span class="doctag">TODO:</span> 2017/2/10</span></div><div class="line">       view.setOnClickListener(mClickListener);</div><div class="line">       ...</div><div class="line">       viewMusicList.addView(view);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>虽然不知道什么原因，但是找到解决办法，不过还是挺惭愧的······</p>
+<h2 id="0x02-分析"><a href="/1970/01/01/Android-LayoutInflate遇到的坑/#0x02-分析" class="headerlink" title="0x02 分析"></a>0x02 分析</h2><p>很多人可能跟我一样，开始学的时候，记住该怎么写，这个方法是干嘛的。但是很难避免会记错某个方法，就像我们会写错某个字一样，当别人纠正的时候才知道，这个字自己已经写错十几活着几十年了。来看一下 <code>View.inflate()</code> 这个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">* Inflate a new view hierarchy from the specified xml resource. Throws</div><div class="line">* &#123;<span class="doctag">@link</span> InflateException&#125; if there is an error.</div><div class="line">* </div><div class="line">* <span class="doctag">@param</span> resource ID for an XML layout resource to load (e.g.,</div><div class="line">*        &lt;code&gt;R.layout.main_page&lt;/code&gt;)</div><div class="line">* <span class="doctag">@param</span> root Optional view to be the parent of the generated hierarchy.</div><div class="line">* <span class="doctag">@return</span> The root View of the inflated hierarchy. If root was supplied,</div><div class="line">*         this is the root View; otherwise it is the root of the inflated</div><div class="line">*         XML file.</div><div class="line">*/</div><div class="line"><span class="function"><span class="keyword">public</span> View <span class="title">inflate</span><span class="params">(@LayoutRes <span class="keyword">int</span> resource, @Nullable ViewGroup root)</span> </span>&#123;</div><div class="line">   <span class="keyword">return</span> inflate(resource, root, root != <span class="keyword">null</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果我们传入了 <code>root</code> View，那么返回的就是root View， 如果不传，则返回根据布局文件生成的 View。而根据我上面的代码，显然被我错误的理解，无论传不传 <code>root</code> View，返回的都是根据布局文件生成的 View，而我就这么相安无事的用了好几年······</p>
+<h2 id="0x03-你以为这就这样结束了"><a href="/1970/01/01/Android-LayoutInflate遇到的坑/#0x03-你以为这就这样结束了" class="headerlink" title="0x03 你以为这就这样结束了"></a>0x03 你以为这就这样结束了</h2><p>如果你执行我的错误代码，你会看到下面这个图：</p>
+<p><img src="http://img.blog.csdn.net/20170212223305559?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
+<p>这个这个图有两个信息：</p>
+<ul>
+<li>后面几个Item显示的名称是错误的</li>
+<li>点击某个Item，其他几个Item的checkbox也被选择</li>
+</ul>
+<p>我们按照错误的代码执行的逻辑进行分析。首先：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; VOICE_KEY.length; i++) &#123;</div><div class="line">  View view = inflater.inflate(R.layout.item_voice_name, viewMusicList);</div><div class="line">  ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这段代码会循环多次，将inflate后的布局添加到viewMusicList，这样viewMusicList下面就有多个 <code>item_voice_name</code> 因此最终给我们展现的结果就是看到有多个Item。</p>
+<p>对于第一个问题，我们需要从 <code>view.findViewById()</code> 说起，从View中你会发现这两段代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">* Look for a child view with the given id.  If this view has the given</div><div class="line">* id, return this view.</div><div class="line">*</div><div class="line">* <span class="doctag">@param</span> id The id to search for.</div><div class="line">* <span class="doctag">@return</span> The view that has the given id in the hierarchy or null</div><div class="line">*/</div><div class="line"><span class="meta">@Nullable</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> View <span class="title">findViewById</span><span class="params">(@IdRes <span class="keyword">int</span> id)</span> </span>&#123;</div><div class="line">   <span class="keyword">if</span> (id &lt; <span class="number">0</span>) &#123;</div><div class="line">       <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">   &#125;</div><div class="line">   <span class="keyword">return</span> findViewTraversal(id);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line">* &#123;<span class="doctag">@hide</span>&#125;</div><div class="line">* <span class="doctag">@param</span> id the id of the view to be found</div><div class="line">* <span class="doctag">@return</span> the view of the specified id, null if cannot be found</div><div class="line">*/</div><div class="line"><span class="function"><span class="keyword">protected</span> View <span class="title">findViewTraversal</span><span class="params">(@IdRes <span class="keyword">int</span> id)</span> </span>&#123;</div><div class="line">   <span class="keyword">if</span> (id == mID) &#123;</div><div class="line">       <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">   &#125;</div><div class="line">   <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>是不是太简单，根本没找到我们期待的逻辑——ViewGroup中怎么处理，细心的你会发现ViewGroup重写了 <code>findViewTraversal()</code> 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">protected</span> View <span class="title">findViewTraversal</span><span class="params">(@IdRes <span class="keyword">int</span> id)</span> </span>&#123;</div><div class="line">   <span class="keyword">if</span> (id == mID) &#123;</div><div class="line">       <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="keyword">final</span> View[] where = mChildren;</div><div class="line">   <span class="keyword">final</span> <span class="keyword">int</span> len = mChildrenCount;</div><div class="line"></div><div class="line">   <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len; i++) &#123;</div><div class="line">       View v = where[i];</div><div class="line"></div><div class="line">       <span class="keyword">if</span> ((v.mPrivateFlags &amp; PFLAG_IS_ROOT_NAMESPACE) == <span class="number">0</span>) &#123;</div><div class="line">           v = v.findViewById(id);</div><div class="line"></div><div class="line">           <span class="keyword">if</span> (v != <span class="keyword">null</span>) &#123;</div><div class="line">               <span class="keyword">return</span> v;</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>从这段代码可以看出，在ViewGroup中根据ID查找，找到就返回，而找到的永远是最前面的View。这就解释了为什么第一个Item和其他的不同了。</p>
+<p>（对于点击某个Item，其他Item也出现波纹效果，猜测可能是因为波纹效果是根据ID来实现的。TODO ）</p>
+<h2 id="0x04-总结"><a href="/1970/01/01/Android-LayoutInflate遇到的坑/#0x04-总结" class="headerlink" title="0x04 总结"></a>0x04 总结</h2><p>上面遇到的View inflate是我个人遇到的问题，主要是因为对基础知识掌握有问题。另外在使用inflate的时候，可能还会遇到LayoutParam设置无效的问题，这个可以通过套一个View的方式解决，仅此记录。 </p>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/Android-DataBinding给Button设置背景无效/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「Android」DataBinding给Button设置背景无效</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/Android-MediaPlayer单曲循环不卡顿/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「Android」MediaPlayer单曲循环不卡顿</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「Flask」0x02给我们的Flask应用配置Supervisor | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/Flask-0x02给我们的Flask应用配置Supervisor/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「Flask」0x02给我们的Flask应用配置Supervisor</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Flask/">Flask</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <h2 id="0x00-场景"><a href="/1970/01/01/Flask-0x02给我们的Flask应用配置Supervisor/#0x00-场景" class="headerlink" title="0x00 场景"></a>0x00 场景</h2><blockquote>
+<p> Nginx ＋ uWSGI ＋ Flask 的场景中，当我们的代码出现异常或者其他一些原因导致服务挂掉，我们会希望能自动重启 <code>uWSGI</code></p>
+</blockquote>
+<p>这个时候我们我们可以考虑使用 <code>supervisor</code>来达到我们的目的。此文接上一篇，因此我的系统还是Raspbian(Debian)。这里分享一些简单的配置使用。先看一下 <code>supervisor</code> 的介绍：</p>
+<blockquote>
+<p><a href="http://supervisord.org/" target="_blank" rel="external">Supervisor is a client/server system that allows its users to monitor and control a number of processes on UNIX-like operating systems.</a></p>
+</blockquote>
+<h2 id="0x01-安装"><a href="/1970/01/01/Flask-0x02给我们的Flask应用配置Supervisor/#0x01-安装" class="headerlink" title="0x01 安装"></a>0x01 安装</h2><p>这个比较简单，我们直接使用 <code>apt-get</code> 即可安装。</p>
+<p><code>pi@raspberrypi:~ $ sudo apt-get install supervisor</code> </p>
+<p>(卸载用：apt-get remove)</p>
+<p>当然，你也可以用 <code>pip</code> 进行安装：</p>
+<p><code>sudo pip install supervisor</code></p>
+<h2 id="0x02-配置"><a href="/1970/01/01/Flask-0x02给我们的Flask应用配置Supervisor/#0x02-配置" class="headerlink" title="0x02 配置"></a>0x02 配置</h2><p><code>supervisor</code> 的配置文件位于 <code>/etc/supervisor/</code> 下，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">pi@raspberrypi:/etc/supervisor $ ls</div><div class="line">conf.d  supervisord.conf</div></pre></td></tr></table></figure>
+<p><code>supervisord.conf</code> 是默认的配置文件，我们无需修改，在 <code>conf.d</code> 目录下，我们创建自己的配置文件即可，这里我建了一个 <code>uwsgi.conf</code>  文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">pi@raspberrypi:/etc/supervisor $ cd conf.d/</div><div class="line">pi@raspberrypi:/etc/supervisor/conf.d $ touch uwsgi.conf</div><div class="line">pi@raspberrypi:/etc/supervisor/conf.d $ sudo nano uwsgi.conf</div></pre></td></tr></table></figure>
+<p><code>uwsgi.conf</code> 文件内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">[program:raspi]</div><div class="line">command=/home/pi/raspi/venv/bin/uwsgi /home/pi/raspi/uwsgi.ini</div><div class="line">directory=/home/pi/raspi</div><div class="line">user=pi</div><div class="line">autostart=true</div><div class="line">autorestart=true</div><div class="line">stdout_logfile=/home/pi/raspi/logs/uwsgi_supervisor.log</div><div class="line">stderr_logfile=/home/pi/raspi/logs/uwsgi_supervisor_err.log</div></pre></td></tr></table></figure>
+<ul>
+<li>command：执行的命令</li>
+<li>directory：工作的目录，在执行前会进行切换，由于上面我使用的绝对路径，可以不配置</li>
+<li><p>stdout_logfile 和 stderr_logfile 配置我们日志输出位置</p>
+<p>这个配置文件的更多可选参数可参考<a href="http://supervisord.org/configuration.html#program-x-section-settings" target="_blank" rel="external">这里</a>。</p>
+</li>
+</ul>
+<p><code>supervisor</code> 还提供了一个web管理界面，我们需要先对其进行配置，修改 <code>/etc/supervisor/supervisord.conf</code> 文件，增加如下内容即可：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"> [supervisorctl]</div><div class="line">serverurl=unix:///var/run/supervisor.sock ; use a unix:// URL  for a unix socket</div><div class="line">serverurl=http://192.168.1.56:9000</div><div class="line">username=ttdevs            ; (default is no username (open server))</div><div class="line">password=admin             ; (default is no password (open server))</div><div class="line">; The [include] section can just contain the &quot;files&quot; setting.  This</div><div class="line">; setting can list multiple files (separated by whitespace or</div><div class="line">; newlines).  It can also contain wildcards.  The filenames are</div><div class="line">; interpreted as relative to this file.  Included files *cannot*</div><div class="line">; include files themselves.</div><div class="line"></div><div class="line">[include]</div><div class="line">files = /etc/supervisor/conf.d/*.conf</div><div class="line"></div><div class="line">[inet_http_server]         ; inet (TCP) server disabled by default</div><div class="line">port=192.168.1.56:9000 	           ; (ip_address:port specifier, *:port for all iface)</div><div class="line">username=ttdevs            ; (default is no username (open server))</div><div class="line">password=admin             ; (default is no password (open server))</div></pre></td></tr></table></figure>
+<h2 id="0x03-操作"><a href="/1970/01/01/Flask-0x02给我们的Flask应用配置Supervisor/#0x03-操作" class="headerlink" title="0x03 操作"></a>0x03 操作</h2><p>安装好以后，我们有两个命令可以使用，一个是 <code>supervisord</code>，另一个是 <code>supervisorctl</code>，<code>supervisord</code> 负责启动服务，<code>supervisorctl</code> 负责操作服务，C/S模式。</p>
+<ul>
+<li><p>启动 <code>supervisor</code>： <code>sudo supervisord</code></p>
+<p>  更多的启动参数可以参考<a href="http://supervisord.org/running.html#supervisord-command-line-options" target="_blank" rel="external">这里</a>。</p>
+</li>
+<li><p>启动/重启/停止某个我们配置的进程：<code>supervisorctl start/restart/stop programABC</code></p>
+</li>
+</ul>
+<p>另外在上面的配置中，我们还可以使用浏览器访问 <code>http://192.168.1.56:9000/</code>对我们的进程进行管理。</p>
+<h2 id="0xFF-参考"><a href="/1970/01/01/Flask-0x02给我们的Flask应用配置Supervisor/#0xFF-参考" class="headerlink" title="0xFF 参考"></a>0xFF 参考</h2><ol>
+<li><a href="http://blog.chinaunix.net/uid-26000296-id-4759916.html" target="_blank" rel="external">http://blog.chinaunix.net/uid-26000296-id-4759916.html</a></li>
+<li><a href="http://liyangliang.me/posts/2015/06/using-supervisor/" target="_blank" rel="external">http://liyangliang.me/posts/2015/06/using-supervisor/</a></li>
+<li><a href="http://www.restran.net/2015/10/04/supervisord-tutorial/" target="_blank" rel="external">http://www.restran.net/2015/10/04/supervisord-tutorial/</a></li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/Flask-0x01FlaskMail/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「Flask」0x01FlaskMail</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/Flask-0x03树莓派上使用Nginx和uWSGI部署Flask应用/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「Flask」0x03树莓派上使用Nginx和uWSGI部署Flask应用</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「Android」MediaPlayer单曲循环不卡顿 | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/Android-MediaPlayer单曲循环不卡顿/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「Android」MediaPlayer单曲循环不卡顿</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Android/">Android</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <h2 id="0x00-需求"><a href="/1970/01/01/Android-MediaPlayer单曲循环不卡顿/#0x00-需求" class="headerlink" title="0x00 需求"></a>0x00 需求</h2><p>单曲循环播放歌曲，要求过度连贯，听不出来卡顿感觉。</p>
+<h2 id="0x01-解决思路"><a href="/1970/01/01/Android-MediaPlayer单曲循环不卡顿/#0x01-解决思路" class="headerlink" title="0x01 解决思路"></a>0x01 解决思路</h2><ol>
+<li><p>MediaPlayer</p>
+<p> 对于常见的音乐播放，我们第一时间想到的应该就是它，它有一个方法</p>
+<p> <code>MediaPlayer.setLooping(true);</code></p>
+<p> 就是用来进行单曲循环的。但是很遗憾，如果你简单的这么做，上面的目的是达不到的，会出现上一遍结束出现一个明显的停止才开始播放下一次的现象。</p>
+<p> 不过最后就是用的这个组件，不过不是简单的设置 <code>setLooping(true)</code>。</p>
+</li>
+<li><p>SoundPool</p>
+<p>一段时间内可能会播放很多音乐的时候，我们首先应该选择这个。</p>
+</li>
+<li><p>第三方组件</p>
+<p> 如果没有特殊的需求，这个不是首选，特别是当引入的组件特别重的时候。    </p>
+</li>
+</ol>
+<p>因为之前踩过坑：iOS上直接播放mp3文件，单曲循环的时候播放的间隙特别长，卡顿的感觉无法接受，解决方法是将mp3转换成m4a，基本上听不出中间的过度间隙。<br>首先尝试了使用 <code>MediaPlayer</code> 来播放，在我的机器（MX4 Pro）上播放还勉强能接受，间隙不是非常明显，换到配置差一点的机器上就不能忍了。然后尝试了 <code>SoudPool</code> ，无论是预加载一次循环播放，还是预加载两次循环播放，中间的卡顿感觉和用 <code>MediaPlayer.setLooping(true);</code> 一样一样的。再然后，尝试macOS 下编译 <code>vlc for android</code> ，我失败了╮(╯▽╰)╭）问题总要解决的，再找其他办法。</p>
+<h2 id="0x02-死循环"><a href="/1970/01/01/Android-MediaPlayer单曲循环不卡顿/#0x02-死循环" class="headerlink" title="0x02 死循环"></a>0x02 死循环</h2><p>找了很多资料，最后使用一个循环播放的方法解决了这个问题：</p>
+<ul>
+<li>创建第一个播放器，播放；</li>
+<li>同时创建第二个播放器，准备；</li>
+<li>第一个播放器播放完毕立马启动第二个；</li>
+<li>然后创建第三个播放器，准备；</li>
+<li>如此往复，直到用户停止…</li>
+</ul>
+<p>由于对 <code>MediaPlayer</code> 没有过深入的研究和使用，这个思路来一时半会自己还是想不出来的（总是会想只要创建一个播放器就够了）。这么做下来真的循环播放就没有间隙感了……</p>
+<p>由于 <code>mPlayer.setLooping(true);</code> 是native方法，所以没有去跟具体的实现逻辑。猜测可能是重新加载或者其他原因导致单曲循环中间间隙较大（原谅我的懒，没有去拿大文件尝试）。而使用上面的方式，当播放时间大于预加载时间的时候，第一个播放器播放的时候有第二个播放器有充足的机会去完成加载然后等待播放（播放时间小于加载时间的可能性不是很大）。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> MediaPlayer mPlayer, mNextPlayer;</div><div class="line"><span class="keyword">private</span> <span class="keyword">int</span> mPlayResId = R.raw.water;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testLoopPlayer</span><span class="params">()</span> </span>&#123;</div><div class="line">    mPlayer = MediaPlayer.create(<span class="keyword">this</span>, mPlayResId);</div><div class="line">    mPlayer.setOnPreparedListener(<span class="keyword">new</span> MediaPlayer.OnPreparedListener() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onPrepared</span><span class="params">(MediaPlayer mediaPlayer)</span> </span>&#123;</div><div class="line">            mPlayer.start();</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">    createNextMediaPlayer();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">createNextMediaPlayer</span><span class="params">()</span> </span>&#123;</div><div class="line">    mNextPlayer = MediaPlayer.create(<span class="keyword">this</span>, mPlayResId);</div><div class="line">    mPlayer.setNextMediaPlayer(mNextPlayer);</div><div class="line">    mPlayer.setOnCompletionListener(<span class="keyword">new</span> MediaPlayer.OnCompletionListener() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCompletion</span><span class="params">(MediaPlayer mp)</span> </span>&#123;</div><div class="line">            mp.release();</div><div class="line"></div><div class="line">            mPlayer = mNextPlayer;</div><div class="line"></div><div class="line">            createNextMediaPlayer();</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="0x03-总结"><a href="/1970/01/01/Android-MediaPlayer单曲循环不卡顿/#0x03-总结" class="headerlink" title="0x03 总结"></a>0x03 总结</h2><p>这更像一个开脑洞的问题。</p>
+<h2 id="0x04-参考"><a href="/1970/01/01/Android-MediaPlayer单曲循环不卡顿/#0x04-参考" class="headerlink" title="0x04 参考"></a>0x04 参考</h2><ul>
+<li><a href="http://stackoverflow.com/questions/26274182/not-able-to-achieve-gapless-audio-looping-so-far-on-android" target="_blank" rel="external">http://stackoverflow.com/questions/26274182/not-able-to-achieve-gapless-audio-looping-so-far-on-android</a></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/Android-LayoutInflate遇到的坑/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「Android」LayoutInflate遇到的坑</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/Android-Toobar的一个简单封装/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「Android」Toobar的一个简单封装</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>

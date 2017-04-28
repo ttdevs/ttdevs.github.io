@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「Volley」0x04一些细节 | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/Volley-0x04一些细节/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「Volley」0x04一些细节</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Volley/">Volley</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <p>最近又把volley拿出来整理了下。之前没有遇到过的一些小问题又来了，在此记录下：</p>
+<h2 id="1、HttpUrlConnection-DELETE-方式无法添加body的问题：java-net-ProtocolException"><a href="/1970/01/01/Volley-0x04一些细节/#1、HttpUrlConnection-DELETE-方式无法添加body的问题：java-net-ProtocolException" class="headerlink" title="1、HttpUrlConnection DELETE 方式无法添加body的问题：java.net.ProtocolException:"></a>1、HttpUrlConnection DELETE 方式无法添加body的问题：java.net.ProtocolException:</h2><p>DELETE does not support writing</p>
+<p>这个可以算是一个系统级的bug，为什么这么说，请看这里，这个问题在java8中才得以解决。没办法直接过去，咱就绕过去。查看HttpUrlConnection<br>，我们发现他是一个抽象类，因此可以试试能不能通过它的其他实现来达到我们的目的。最终我们决定使用 <a href="https://github.com/square/okhttp" target="_blank" rel="external"> okhttp
+</a> 这个实现。地址为： <a href="https://github.com/square/okhttp" target="_blank" rel="external"><br>https://github.com/square/okhttp </a> 。</p>
+<p>接着我们还得去看看volley的源码，由于我们的app兼容的最低版本是4.0，因此我们知道最终调用的是HurlStack：</p>
+<pre><code>    public static RequestQueue newRequestQueue(Context context, HttpStack stack) {
+...
+        if (stack == null) {
+            if (Build.VERSION.SDK_INT &gt;= 9) {
+                stack = new HurlStack();
+            } else {
+                // Prior to Gingerbread, HttpUrlConnection was unreliable.
+                // See: http://android-developers.blogspot.com/2011/09/androids-http-clients.html
+                stack = new HttpClientStack(AndroidHttpClient.newInstance(userAgent));
+            }
+        }
+...
+    }
+</code></pre><p>因此我们只需要将HurlStack的相关代码修改即可，如下：</p>
+<p>volley.java</p>
+<pre><code>public static RequestQueue newRequestQueue(Context context, HttpStack stack) {
+...
+        if (stack == null) {
+            if (Build.VERSION.SDK_INT &gt;= 9) {
+                // old way: stack = new HurlStack();
+                    // http://square.github.io/okhttp/
+                stack = new HurlStack(null, null, new OkUrlFactory(new OkHttpClient()));
+            } else {
+                // Prior to Gingerbread, HttpUrlConnection was unreliable.
+                // See: http://android-developers.blogspot.com/2011/09/androids-http-clients.html
+                stack = new HttpClientStack(AndroidHttpClient.newInstance(userAgent));
+            }
+        }
+...
+    }
+</code></pre><p>HurlStack.java</p>
+<pre><code>/**
+ * An {@link HttpStack} based on {@link HttpURLConnection}.
+ */
+public class HurlStack implements HttpStack {
+
+    private final OkUrlFactory mOkUrlFactory; 
+
+    /**
+     * @param urlRewriter Rewriter to use for request URLs
+     * @param sslSocketFactory SSL factory to use for HTTPS connections
+     * @param okUrlFactory solution delete body(https://github.com/square/okhttp)
+     */
+    public HurlStack(UrlRewriter urlRewriter, SSLSocketFactory sslSocketFactory, OkUrlFactory okUrlFactory) {
+        mUrlRewriter = urlRewriter;
+        mSslSocketFactory = sslSocketFactory;
+        mOkUrlFactory = okUrlFactory;
+    }
+    /**
+     * Create an {@link HttpURLConnection} for the specified {@code url}.
+     */
+    protected HttpURLConnection createConnection(URL url) throws IOException {
+        if(null != mOkUrlFactory){
+            return mOkUrlFactory.open(url);
+        }
+        return (HttpURLConnection) url.openConnection();
+    }
+
+
+    @SuppressWarnings(&quot;deprecation&quot;)
+    /* package */ 
+    static void setConnectionParametersForRequest(HttpURLConnection connection,
+            Request&lt;?&gt; request) throws IOException, AuthFailureError {
+        switch (request.getMethod()) {
+            ...
+            case Method.DELETE:
+                connection.setRequestMethod(&quot;DELETE&quot;);
+                addBodyIfExists(connection, request);
+                break;
+            ...
+            default:
+                throw new IllegalStateException(&quot;Unknown method type.&quot;);
+        }
+    }
+
+...
+}
+</code></pre><p>2015-04-26更新：</p>
+<p>再次使用到需要使用到okhttp，回头看下上面的代码，不知道当时怎么想的，使用这么复杂的方法引入Okhttp，估计是脑袋进水了。再来看下这个方法：newRe<br>questQueue(Context context, HttpStack<br>stack)，有两个参数：context和HttpStack，这里是要传入自己的HttpStack就好了。那么我们用OKhttp的实现：</p>
+<pre><code>/**
+ * An {@link com.android.volley.toolbox.HttpStack HttpStack} implementation which
+ * uses OkHttp as its transport.
+ */
+public class OkHttpStack extends HurlStack {
+  private final OkHttpClient client;
+
+  public OkHttpStack() {
+    this(new OkHttpClient());
+  }
+
+  public OkHttpStack(OkHttpClient client) {
+    if (client == null) {
+      throw new NullPointerException(&quot;Client must not be null.&quot;);
+    }
+    this.client = client;
+  }
+
+  @Override protected HttpURLConnection createConnection(URL url) throws IOException {
+    return client.open(url);
+  }   
+}
+</code></pre><p>参考： <a href="https://gist.github.com/JakeWharton/5616899" target="_blank" rel="external"> https://gist.github.com/JakeWharton/5616899
+</a></p>
+<h2 id="2、关于（修改）volley的缓存"><a href="/1970/01/01/Volley-0x04一些细节/#2、关于（修改）volley的缓存" class="headerlink" title="2、关于（修改）volley的缓存"></a>2、关于（修改）volley的缓存</h2><p>volley有完整的一套缓存机制。而目前我们想做个简单的需求：部分界面（几乎不会改动的）简单的做一定时间的缓存，研究了下代码发现很容易修改达到自己的目的（有<br>时间在分析下volley的缓存机制，这个一定要做）。简单来说修改一个地方：request.  parseNetworkResponse中的</p>
+<p>HttpHeaderParser（此处突然感慨volley的设计TMD灵活了，想怎么改就怎么改）。  HttpHeaderParser修改后的代码如下：</p>
+<pre><code>/**
+ * 修改后的，用户处理缓存
+ */
+public class BHHttpHeaderParser {
+
+    /**
+     * Extracts a {@link Cache.Entry} from a {@link NetworkResponse}.
+     *
+     * @param response The network response to parse headers from
+     * @return a cache entry for the given response, or null if the response is not cacheable.
+     */
+    public static Cache.Entry parseCacheHeaders(NetworkResponse response, boolean isCustomCache) {
+...
+        if(isCustomCache){
+                softExpire = now + Config.HTTP_CACHE_TTL;
+        } else {
+                if (hasCacheControl) {
+                softExpire = now + maxAge * 1000;
+            } else if (serverDate &gt; 0 &amp;&amp; serverExpires &gt;= serverDate) {
+                // Default semantic for Expire header in HTTP specification is softExpire.
+                softExpire = now + (serverExpires - serverDate);
+            }
+        }
+
+        Cache.Entry entry = new Cache.Entry();
+        entry.data = response.data;
+        entry.etag = serverEtag;
+        entry.softTtl = softExpire;
+        entry.ttl = entry.softTtl;
+        entry.serverDate = serverDate;
+        entry.responseHeaders = headers;
+
+        return entry;
+    }
+...
+}
+</code></pre><p>此处大家可以发现，我们主要是根据自定义的变量决定如何修改cache的TTL来达到自己的目的。</p>
+<h1 id="3、HttpUrlConnection与PATCH（2015-04-26）"><a href="/1970/01/01/Volley-0x04一些细节/#3、HttpUrlConnection与PATCH（2015-04-26）" class="headerlink" title="3、HttpUrlConnection与PATCH（2015-04-26）"></a>3、HttpUrlConnection与PATCH（2015-04-26）</h1><p>在使用Volley发送PATCH请求的时候，我们可能会遇到这样的问题：Unknown method ‘PATCH’; must be one of<br>[OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE]。这个时候你的第一反应是什么呢？是Volley不支持PATCH请<br>求吗？换成OkHttp是不是可以呢？查看了下Volley的源码，在HurlHttp.java中发现如下一段：</p>
+<pre><code>/* package */ 
+static void setConnectionParametersForRequest(HttpURLConnection connection,
+            Request&lt;?&gt; request) throws IOException, AuthFailureError {
+        switch (request.getMethod()) {
+            case Method.DEPRECATED_GET_OR_POST:
+                // This is the deprecated way that needs to be handled for backwards compatibility.
+                // If the request&apos;s post body is null, then the assumption is that the request is
+                // GET.  Otherwise, it is assumed that the request is a POST.
+                byte[] postBody = request.getPostBody();
+                if (postBody != null) {
+                    // Prepare output. There is no need to set Content-Length explicitly,
+                    // since this is handled by HttpURLConnection using the size of the prepared
+                    // output stream.
+                    connection.setDoOutput(true);
+                    connection.setRequestMethod(&quot;POST&quot;);
+                    connection.addRequestProperty(HEADER_CONTENT_TYPE,
+                            request.getPostBodyContentType());
+                    DataOutputStream out = new DataOutputStream(connection.getOutputStream());
+                    out.write(postBody);
+                    out.close();
+                }
+                break;
+            case Method.GET:
+                // Not necessary to set the request method because connection defaults to GET but
+                // being explicit here.
+                connection.setRequestMethod(&quot;GET&quot;);
+                break;
+            case Method.DELETE:
+                connection.setRequestMethod(&quot;DELETE&quot;);
+                break;
+            case Method.POST:
+                connection.setRequestMethod(&quot;POST&quot;);
+                addBodyIfExists(connection, request);
+                break;
+            case Method.PUT:
+                connection.setRequestMethod(&quot;PUT&quot;);
+                addBodyIfExists(connection, request);
+                break;
+            case Method.HEAD:
+                connection.setRequestMethod(&quot;HEAD&quot;);
+                break;
+            case Method.OPTIONS:
+                connection.setRequestMethod(&quot;OPTIONS&quot;);
+                break;
+            case Method.TRACE:
+                connection.setRequestMethod(&quot;TRACE&quot;);
+                break;
+            case Method.PATCH:
+                connection.setRequestMethod(&quot;PATCH&quot;);
+                addBodyIfExists(connection, request);
+                break;
+            default:
+                throw new IllegalStateException(&quot;Unknown method type.&quot;);
+        }
+    }
+</code></pre><p>通过这段代码，我们知道，Volley对PATCH还是支持的。在细看下错误这个是有HttpUrlConnection抛出的。因此我们需要在这方面下手。这里有一<br>个参考：</p>
+<p><a href="https://github.com/adriancole/retrofit/commit/e704b800878b2e37f5a
+c98b0139cb4994618ace0" target="_blank" rel="external"> https://github.com/adriancole/retrofit/commit/e704b800878b2e37f5ac98b0139cb4<br>994618ace0 </a>  </p>
+<p>以后有其他关于volley的总结都记录在此。  </p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/Retrofit-0x04POST方式提交JSON数据/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「Retrofit」0x04POST方式提交JSON数据</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/WebSocket-使用Websocket实现消息推送-上/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「WebSocket」使用Websocket实现消息推送(上)</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>

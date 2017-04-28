@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「Retrofit」0x00初探 | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/Retrofit-0x00初探/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「Retrofit」0x00初探</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Retrofit/">Retrofit</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <h2 id="0x00-Retrofit"><a href="/1970/01/01/Retrofit-0x00初探/#0x00-Retrofit" class="headerlink" title="0x00 Retrofit"></a>0x00 Retrofit</h2><p>很久以前就计划要研究一下，但是一直拖到现在，不知道是因为优先级放的比较低还是因为拖延症。总只，现在要完整的看一遍。</p>
+<p>由于这个已经出来很久了，所以我就直接选择了Refrofit2，没有去关注Refrofit1，等看完Refrofit2有时间的话再去看看Refrofit1，看看它们的变迁。好了，先从Refrofit2开始吧。</p>
+<h2 id="0x01-简介"><a href="/1970/01/01/Retrofit-0x00初探/#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h2><h3 id="简介"><a href="/1970/01/01/Retrofit-0x00初探/#简介" class="headerlink" title="简介"></a>简介</h3><p>如果你接触Android时间比较长，从最初的自己封装线程，到使用异步任务，到开源的各种第三方网络请求框架如xUtils，到谷歌的Volley，androider总在探索一种更好的网络请求形式。Retrofit就是这样的一款产品。</p>
+<p>PS：从上面一句话，我们也可以看到，android生态在不断的进步和完善～～</p>
+<h3 id="引入"><a href="/1970/01/01/Retrofit-0x00初探/#引入" class="headerlink" title="引入"></a>引入</h3><p>两个问题，gradle和混淆：</p>
+<ul>
+<li><p>Gradle：</p>
+<ul>
+<li>Retrofit： <code>compile &#39;com.squareup.retrofit2:retrofit:2.1.0&#39;</code></li>
+<li>JSON解析器： <code>compile &#39;com.squareup.retrofit2:converter-gson:2.1.0&#39;</code></li>
+</ul>
+</li>
+<li><p>Proguard：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line">-dontwarn retrofit2.**</div><div class="line">-keep class retrofit2.** &#123; *; &#125;</div><div class="line">-keepattributes Signature</div><div class="line">-keepattributes Exceptions</div><div class="line">	``` </div><div class="line"></div><div class="line"></div><div class="line">## 0x02 从一个demo开始</div><div class="line"></div><div class="line">``` java </div><div class="line">public class ExampleUnitTest &#123;</div><div class="line">    @Test</div><div class="line">    public void test_retrofit() throws Exception&#123;</div><div class="line">        String url = &quot;http://api.github.com/&quot;;</div><div class="line">        OkHttpClient client = new OkHttpClient.Builder()</div><div class="line">                .build();</div><div class="line">        Retrofit.Builder builder = new Retrofit.Builder()</div><div class="line">                .client(client)</div><div class="line">                .baseUrl(url)</div><div class="line">                .addConverterFactory(GsonConverterFactory.create());</div><div class="line">        Retrofit retrofit = builder.build();</div><div class="line">        GitHubService github = retrofit.create(GitHubService.class);</div><div class="line">        Call&lt;User&gt; ttdevs = github.userInfo(&quot;ttdevs&quot;);</div><div class="line"></div><div class="line">        final CountDownLatch countDownLatch = new CountDownLatch(1);</div><div class="line">        ttdevs.enqueue(new Callback&lt;User&gt;() &#123;</div><div class="line">            @Override</div><div class="line">            public void onResponse(Call&lt;User&gt; call, Response&lt;User&gt; response) &#123;</div><div class="line">                User ttdevs = response.body();</div><div class="line">                </div><div class="line">                String message = String.format(</div><div class="line">                        &quot;I&apos;m %s.\n%s&quot;, </div><div class="line">                        ttdevs.getName(), </div><div class="line">                        ttdevs.getHtml_url());</div><div class="line">                System.out.println(message);</div><div class="line"></div><div class="line">                countDownLatch.countDown();</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            @Override</div><div class="line">            public void onFailure(Call&lt;User&gt; call, Throwable t) &#123;</div><div class="line">                countDownLatch.countDown();</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">        countDownLatch.await();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="0x03-第一个问题：Header"><a href="/1970/01/01/Retrofit-0x00初探/#0x03-第一个问题：Header" class="headerlink" title="0x03 第一个问题：Header"></a>0x03 第一个问题：Header</h2><p>执行上面的小demo，我们通过抓包发现它的header信息如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Host: api.github.com:443</div><div class="line">Proxy-Connection: Keep-Alive</div><div class="line">User-Agent: okhttp/3.3.0</div></pre></td></tr></table></figure>
+<p>这个header信息是不是很简单，如果你用这样的请求去写爬虫的话，多数情况下是得不到结果的。而实际情况也是：我们需要在header中使用标准http头信息，也可能需要加入自定义的头信息，比如token等。Retrofit2没有直接给他们提供这样的方法，但是我们知道，Retrofit2用的是Okhttp3，因此，我们可以从Okhttp3中下手，代码如下：</p>
+<ul>
+<li><p>创建 <code>HeadersInterceptor</code> 类，代码如下：</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HeadersInterceptor</span> <span class="keyword">implements</span> <span class="title">Interceptor</span> </span>&#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Response <span class="title">intercept</span><span class="params">(Chain chain)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">        Request original = chain.request();</div><div class="line"></div><div class="line">        Request request = original.newBuilder()</div><div class="line">                .header(<span class="string">"User-Agent"</span>, <span class="string">"ttdevs"</span>)</div><div class="line">                .header(<span class="string">"Content-Type"</span>, <span class="string">"application/json; charset=utf-8"</span>)</div><div class="line">                .header(<span class="string">"Accept"</span>, <span class="string">"application/json"</span>)</div><div class="line">                .header(<span class="string">"token"</span>, <span class="string">"abcdefg_ttdevs_hijklmn"</span>)</div><div class="line">                .header(<span class="string">"user_key"</span>, <span class="string">"ttdevs"</span>)</div><div class="line">                .method(original.method(), original.body())</div><div class="line">                .build();</div><div class="line"></div><div class="line"></div><div class="line">        <span class="keyword">long</span> t1 = System.nanoTime();</div><div class="line">        String requestHeader = String.format(<span class="string">"&gt;&gt;&gt;&gt;&gt;Sending request %s on %s%n%s"</span>,</div><div class="line">                request.url(), chain.connection(), request.headers())</div><div class="line">        System.out.println(requestHeader);</div><div class="line"></div><div class="line">        Response response = chain.proceed(request);</div><div class="line"></div><div class="line">        <span class="keyword">long</span> t2 = System.nanoTime();</div><div class="line">        System.out.println(String.format(<span class="string">"&gt;&gt;&gt;&gt;&gt;Received response for %s in %.1fms%n%s"</span>,</div><div class="line">                response.request().url(), (t2 - t1) / <span class="number">1e6</span>d, response.headers()));</div><div class="line"></div><div class="line">        System.out.println(<span class="string">"====================================================="</span>);</div><div class="line">        <span class="keyword">return</span> response;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>在 <code>Okhttp</code> 中加入 <code>HeadersInterceptor</code></p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">String url = <span class="string">"http://api.github.com/"</span>;</div><div class="line">OkHttpClient client = <span class="keyword">new</span> OkHttpClient.Builder()</div><div class="line">        .addInterceptor(<span class="keyword">new</span> HeadersInterceptor())</div><div class="line">        .build();</div><div class="line">Retrofit.Builder builder = <span class="keyword">new</span> Retrofit.Builder()</div><div class="line">        .client(client)</div><div class="line">        .baseUrl(url)</div><div class="line">        .addConverterFactory(GsonConverterFactory.create());</div><div class="line">Retrofit retrofit = builder.build();</div><div class="line">GitHubService github = retrofit.create(GitHubService.class);</div><div class="line">Call&lt;User&gt; ttdevs = github.userInfo(<span class="string">"ttdevs"</span>);</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>这样在运行上面的代码，我们就可以在 Http 请求的 Header 中看到我们加入的信息了。</p>
+<p>源码参考：<a href="https://github.com/ttdevs/android/tree/master/modules/retrofit" target="_blank" rel="external">ttdevs</a></p>
+<h2 id="0xFF-参考"><a href="/1970/01/01/Retrofit-0x00初探/#0xFF-参考" class="headerlink" title="0xFF 参考"></a>0xFF 参考</h2><ol>
+<li><a href="https://github.com/square/retrofit" target="_blank" rel="external">https://github.com/square/retrofit</a></li>
+<li><a href="http://square.github.io/retrofit/" target="_blank" rel="external">http://square.github.io/retrofit/</a></li>
+<li><a href="https://futurestud.io/blog/retrofit-add-custom-request-header" target="_blank" rel="external">https://futurestud.io/blog/retrofit-add-custom-request-header</a></li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/Python-文件拷贝工具Shutil介绍/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「Python」文件拷贝工具Shutil介绍</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/Retrofit-0x01请求参数/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「Retrofit」0x01请求参数</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「WebSocket」使用Websocket实现消息推送(上) | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/WebSocket-使用Websocket实现消息推送-上/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「WebSocket」使用Websocket实现消息推送(上)</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/WebSocket/">WebSocket</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <h2 id="0x00-Websocket"><a href="/1970/01/01/WebSocket-使用Websocket实现消息推送-上/#0x00-Websocket" class="headerlink" title="0x00 Websocket"></a>0x00 Websocket</h2><p>联系客服功能在项目中很难避免，一般有下面三种实现方式：</p>
+<ul>
+<li>使用http的get方式轮询</li>
+<li>接入第三方IM系统</li>
+<li>自己的IM系统<ul>
+<li>基于socket</li>
+<li>基于websocket</li>
+</ul>
+</li>
+</ul>
+<p>第一种方式，最low的，实现简单，但是浪费用户流量；第二种方式，接入简单，功能强大，但是可能需要一定的成本（比如付费）；第三种方式，需要一定的开发成本（服务器托管费用忽略）。对于第三种情况的 socket，实现IM的文字加音视频聊天，做过的话你可以也会直接懵逼。但是，简单的文字聊天还好，不过你还是需要去定义一些协议来实现这样一个功能。如果我们使用websocket，那事情就变的简单很多。</p>
+<blockquote>
+<p>WebSocket一种在单个 TCP 连接上进行全双工通讯的协议。WebSocket通信协议于2011年被IETF定为标准RFC 6455，并被RFC7936所补充规范，WebSocketAPI被W3C定为标准。</p>
+<p>WebSocket 是独立的、创建在 TCP 上的协议，和 HTTP 的唯一关联是使用 HTTP 协议的101状态码进行协议切换，使用的 TCP 端口是80，可以用于绕过大多数防火墙的限制。</p>
+<p>WebSocket 使得客户端和服务器之间的数据交换变得更加简单，允许服务端直接向客户端推送数据而不需要客户端进行请求，在 WebSocket API 中，浏览器和服务器只需要完成一次握手，两者之间就直接可以创建持久性的连接，并允许数据进行双向传送。</p>
+<p>目前常见的浏览器如 Chrome、IE、Firefox、Safari、Opera 等都支持 WebSocket，同时需要服务端程序支持 WebSocket。</p>
+</blockquote>
+<p><a href="https://zh.wikipedia.org/wiki/WebSocket" target="_blank" rel="external">来自维基百科 https://zh.wikipedia.org/wiki/WebSocket</a></p>
+<p>websocket只是一种协议，类似http，因此与语言无关。这里我使用java来做服务端，同时提供android和html的客户端，通过一个简单的demo来介绍websocket的使用，接下来的一篇会对websocket进行分析。</p>
+<h2 id="0x01-服务端"><a href="/1970/01/01/WebSocket-使用Websocket实现消息推送-上/#0x01-服务端" class="headerlink" title="0x01 服务端"></a>0x01 服务端</h2><p>这里我使用 <a href="https://github.com/TooTallNate/Java-WebSocket" target="_blank" rel="external">Java-WebSocket</a> 这个库来实现 websocket server。需要的jar包位于项目的 <code>/Java-WebSocket/dist/java-websocket.jar</code> 位置。效果如下：</p>
+<p><img src="http://img.blog.csdn.net/20160826172546089" alt="server"></p>
+<p>代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SocketServer</span> <span class="keyword">extends</span> <span class="title">WebSocketServer</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> PORT = <span class="number">2333</span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        SocketServer server = <span class="keyword">new</span> SocketServer(PORT);</div><div class="line">        server.start();</div><div class="line"></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            String ip = InetAddress.getLocalHost().getHostAddress();</div><div class="line">            <span class="keyword">int</span> port = server.getPort();</div><div class="line">            print(String.format(<span class="string">"服务已启动: %s:%d"</span>, ip, port));</div><div class="line">        &#125; <span class="keyword">catch</span> (UnknownHostException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        InputStreamReader in = <span class="keyword">new</span> InputStreamReader(System.in);</div><div class="line">        BufferedReader reader = <span class="keyword">new</span> BufferedReader(in);</div><div class="line"></div><div class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                String msg = reader.readLine();</div><div class="line">                server.broadcastMessage(msg);</div><div class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SocketServer</span><span class="params">(<span class="keyword">int</span> port)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>(<span class="keyword">new</span> InetSocketAddress(port));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SocketServer</span><span class="params">(InetSocketAddress address)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>(address);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onOpen</span><span class="params">(WebSocket webSocket, ClientHandshake clientHandshake)</span> </span>&#123;</div><div class="line">        String address = webSocket.getRemoteSocketAddress().getAddress().getHostAddress();</div><div class="line">        String message = String.format(<span class="string">"(%s) &lt;加入&gt;"</span>, address);</div><div class="line">        broadcastMessage(message);</div><div class="line">        print(message);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClose</span><span class="params">(WebSocket webSocket, <span class="keyword">int</span> code, String reason, <span class="keyword">boolean</span> remote)</span> </span>&#123;</div><div class="line">        String address = webSocket.getRemoteSocketAddress().getAddress().getHostAddress();</div><div class="line">        String message = String.format(<span class="string">"(%s) &lt;离开&gt;"</span>, address);</div><div class="line">        broadcastMessage(message);</div><div class="line">        print(message);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onMessage</span><span class="params">(WebSocket webSocket, String msg)</span> </span>&#123;</div><div class="line">        String address = webSocket.getRemoteSocketAddress().getAddress().getHostAddress();</div><div class="line">        String message = String.format(<span class="string">"(%s) %s"</span>, address, msg);</div><div class="line">        broadcastMessage(message);</div><div class="line">        print(message);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onError</span><span class="params">(WebSocket webSocket, Exception e)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> != webSocket) &#123;</div><div class="line">            <span class="keyword">if</span> (!webSocket.isClosed()) &#123;</div><div class="line">                webSocket.close(<span class="number">0</span>);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        e.printStackTrace();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 广播收到消息</div><div class="line">     *</div><div class="line">     * <span class="doctag">@param</span> msg</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">broadcastMessage</span><span class="params">(String msg)</span> </span>&#123;</div><div class="line">        Collection&lt;WebSocket&gt; connections = connections();</div><div class="line">        <span class="keyword">synchronized</span> (connections) &#123;</div><div class="line">            <span class="keyword">for</span> (WebSocket client : connections) &#123;</div><div class="line">                client.send(msg);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">(String msg)</span> </span>&#123;</div><div class="line">        System.out.println(String.format(<span class="string">"[%d] %s"</span>, System.currentTimeMillis(), msg));</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="0x02-客户端"><a href="/1970/01/01/WebSocket-使用Websocket实现消息推送-上/#0x02-客户端" class="headerlink" title="0x02 客户端"></a>0x02 客户端</h2><ul>
+<li><p>Android</p>
+<p>  这里也是用java-websocket这个库，效果如下：</p>
+<p>  <img src="http://img.blog.csdn.net/20160826172640594" alt="android"></p>
+<p>  核心代码：</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div></pre></td><td class="code"><pre><div class="line">	<span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WebSocketActivity</span> <span class="keyword">extends</span> <span class="title">BaseActivity</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> STATUS_CLOSE = <span class="number">0</span>;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> STATUS_CONNECT = <span class="number">1</span>;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> STATUS_MESSAGE = <span class="number">2</span>;</div><div class="line"></div><div class="line">    <span class="meta">@Bind</span>(R.id.etIP)</div><div class="line">    EditText etIP;</div><div class="line">    <span class="meta">@Bind</span>(R.id.etPort)</div><div class="line">    EditText etPort;</div><div class="line">    <span class="meta">@Bind</span>(R.id.tvStatus)</div><div class="line">    TextView tvStatus;</div><div class="line">    <span class="meta">@Bind</span>(R.id.tvMsg)</div><div class="line">    TextView tvMsg;</div><div class="line">    <span class="meta">@Bind</span>(R.id.rgVersion)</div><div class="line">    RadioGroup rgVersion;</div><div class="line">    <span class="meta">@Bind</span>(R.id.etMessage)</div><div class="line">    EditText etMessage;</div><div class="line">    <span class="meta">@Bind</span>(R.id.svContent)</div><div class="line">    ScrollView svContent;</div><div class="line">    <span class="meta">@Bind</span>(R.id.viewMain)</div><div class="line">    View viewMain;</div><div class="line"></div><div class="line">    <span class="meta">@Bind</span>(R.id.btConnect)</div><div class="line">    Button btConnect;</div><div class="line">    <span class="meta">@Bind</span>(R.id.btDisconnect)</div><div class="line">    Button btDisconnect;</div><div class="line">    <span class="meta">@Bind</span>(R.id.btSend)</div><div class="line">    Button btSend;</div><div class="line"></div><div class="line">    <span class="meta">@OnClick</span>(&#123;R.id.btConnect, R.id.btDisconnect, R.id.btSend&#125;)</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View view)</span> </span>&#123;</div><div class="line">        <span class="keyword">switch</span> (view.getId()) &#123;</div><div class="line">            <span class="keyword">case</span> R.id.btConnect:</div><div class="line">                connectToServer();</div><div class="line">                <span class="keyword">break</span>;</div><div class="line">            <span class="keyword">case</span> R.id.btDisconnect:</div><div class="line">                <span class="keyword">if</span> (<span class="keyword">null</span> != mClient) &#123;</div><div class="line">                    mClient.close();</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">break</span>;</div><div class="line">            <span class="keyword">case</span> R.id.btSend:</div><div class="line">                <span class="keyword">if</span> (<span class="keyword">null</span> != mClient) &#123;</div><div class="line">                    String msg = etMessage.getText().toString();</div><div class="line">                    <span class="keyword">if</span> (!TextUtils.isEmpty(msg)) &#123;</div><div class="line">                        <span class="keyword">try</span> &#123;</div><div class="line">                            mClient.send(msg);</div><div class="line">                        &#125; <span class="keyword">catch</span> (NotYetConnectedException e) &#123;</div><div class="line">                            e.printStackTrace();</div><div class="line">                            <span class="keyword">return</span>;</div><div class="line">                        &#125;</div><div class="line">                        etMessage.setText(<span class="string">""</span>);</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">break</span>;</div><div class="line"></div><div class="line">            <span class="keyword">default</span>:</div><div class="line">                <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> Client mClient;</div><div class="line">    <span class="keyword">private</span> Handler mHandle = <span class="keyword">new</span> Handler() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">            String message = String.format(<span class="string">"[%d] %s\n"</span>, System.currentTimeMillis(), msg.obj.toString());</div><div class="line">            tvMsg.append(message);</div><div class="line"></div><div class="line">            <span class="keyword">switch</span> (msg.what) &#123;</div><div class="line">                <span class="keyword">case</span> STATUS_CONNECT:</div><div class="line">                    btConnect.setEnabled(<span class="keyword">false</span>);</div><div class="line">                    btDisconnect.setEnabled(<span class="keyword">true</span>);</div><div class="line">                    btSend.setEnabled(<span class="keyword">true</span>);</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">                <span class="keyword">case</span> STATUS_CLOSE:</div><div class="line">                    btConnect.setEnabled(<span class="keyword">true</span>);</div><div class="line">                    btDisconnect.setEnabled(<span class="keyword">false</span>);</div><div class="line">                    btSend.setEnabled(<span class="keyword">false</span>);</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">                <span class="keyword">case</span> STATUS_MESSAGE:</div><div class="line">                    <span class="comment">// <span class="doctag">TODO:</span> 16/8/24</span></div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">                <span class="keyword">default</span>:</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">            &#125;</div><div class="line">            svContent.postDelayed(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">                <span class="meta">@Override</span></div><div class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">                    svContent.fullScroll(View.FOCUS_DOWN);</div><div class="line">                &#125;</div><div class="line">            &#125;, <span class="number">100</span>);</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_web_socket);</div><div class="line">        ButterKnife.bind(<span class="keyword">this</span>);</div><div class="line"></div><div class="line"></div><div class="line">        System.setProperty(<span class="string">"java.net.preferIPv6Addresses"</span>, <span class="string">"false"</span>);</div><div class="line">        System.setProperty(<span class="string">"java.net.preferIPv4Stack"</span>, <span class="string">"true"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">connectToServer</span><span class="params">()</span> </span>&#123;</div><div class="line">        String ip = etIP.getText().toString();</div><div class="line">        String port = etPort.getText().toString();</div><div class="line">        <span class="keyword">if</span> (TextUtils.isEmpty(ip) || TextUtils.isEmpty(port)) &#123;</div><div class="line">            Snackbar.make(viewMain, <span class="string">"IP and Port 不能为空"</span>, Snackbar.LENGTH_LONG).show();</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line">        String address = String.format(<span class="string">"ws://%s:%s"</span>, ip, port);</div><div class="line">        Draft draft = <span class="keyword">null</span>;</div><div class="line">        <span class="keyword">switch</span> (rgVersion.getCheckedRadioButtonId()) &#123;</div><div class="line">            <span class="keyword">case</span> R.id.rbDraft10:</div><div class="line">                draft = <span class="keyword">new</span> Draft_10();</div><div class="line">                <span class="keyword">break</span>;</div><div class="line">            <span class="keyword">case</span> R.id.rbDraft17:</div><div class="line">                draft = <span class="keyword">new</span> Draft_17();</div><div class="line">                <span class="keyword">break</span>;</div><div class="line">            <span class="keyword">case</span> R.id.rbDraft75:</div><div class="line">                draft = <span class="keyword">new</span> Draft_75();</div><div class="line">                <span class="keyword">break</span>;</div><div class="line">            <span class="keyword">case</span> R.id.rbDraft76:</div><div class="line">                draft = <span class="keyword">new</span> Draft_76();</div><div class="line">                <span class="keyword">break</span>;</div><div class="line"></div><div class="line">            <span class="keyword">default</span>:</div><div class="line">                draft = <span class="keyword">new</span> Draft_17();</div><div class="line">                <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            URI uri = <span class="keyword">new</span> URI(address);</div><div class="line">            mClient = <span class="keyword">new</span> Client(uri, draft);</div><div class="line">            mClient.connect();</div><div class="line">        &#125; <span class="keyword">catch</span> (URISyntaxException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        tvStatus.setText(address);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">Client</span> <span class="keyword">extends</span> <span class="title">WebSocketClient</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Client</span><span class="params">(URI serverURI)</span> </span>&#123;</div><div class="line">            <span class="keyword">super</span>(serverURI);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Client</span><span class="params">(URI serverUri, Draft draft)</span> </span>&#123;</div><div class="line">            <span class="keyword">super</span>(serverUri, draft);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onOpen</span><span class="params">(ServerHandshake handShakeData)</span> </span>&#123;</div><div class="line">            Message msg = <span class="keyword">new</span> Message();</div><div class="line">            msg.what = STATUS_CONNECT;</div><div class="line">            msg.obj = String.format(<span class="string">"[Welcome：%s]"</span>, getURI());</div><div class="line">            mHandle.sendMessage(msg);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onMessage</span><span class="params">(String message)</span> </span>&#123;</div><div class="line">            Message msg = <span class="keyword">new</span> Message();</div><div class="line">            msg.what = STATUS_MESSAGE;</div><div class="line">            msg.obj = message;</div><div class="line">            mHandle.sendMessage(msg);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClose</span><span class="params">(<span class="keyword">int</span> code, String reason, <span class="keyword">boolean</span> remote)</span> </span>&#123;</div><div class="line">            Message msg = <span class="keyword">new</span> Message();</div><div class="line">            msg.what = STATUS_CLOSE;</div><div class="line">            msg.obj = String.format(<span class="string">"[Bye：%s]"</span>, getURI());</div><div class="line">            mHandle.sendMessage(msg);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onError</span><span class="params">(Exception ex)</span> </span>&#123;</div><div class="line">            ex.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>Html</p>
+<p>  H5使用了这个库：<a href="https://github.com/sstephenson/prototype" target="_blank" rel="external">sstephenson/prototype</a>，效果如下：</p>
+<p>  <img src="http://img.blog.csdn.net/20160826172728638" alt="html5"></p>
+<p>  核心代码如下：</p>
+  <figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="undefined"></span></div><div class="line">    document.observe("dom:loaded", function () &#123;</div><div class="line">        function log(text) &#123;</div><div class="line">            var value = (new Date).getTime();</div><div class="line">            value += ": ";</div><div class="line">            value += text.escapeHTML();</div><div class="line">            value += $("log").innerHTML;</div><div class="line">            $("log").innerHTML = value;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (!window.WebSocket) &#123;</div><div class="line">            alert("浏览器不支持,换一个吧");</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        var ws;</div><div class="line"></div><div class="line">        $("connectForm").observe("submit", function (e) &#123;</div><div class="line">            e.stop();</div><div class="line">            ws = new WebSocket($F("uri"));</div><div class="line">            ws.onopen = function () &#123;</div><div class="line">                log("连接到服务器\n");</div><div class="line">            &#125;</div><div class="line">            ws.onmessage = function (e) &#123;</div><div class="line">                log("服务器信息: " + e.data + "\n");</div><div class="line">            &#125;</div><div class="line">            ws.onclose = function () &#123;</div><div class="line">                log("断开服务器连接\n");</div><div class="line"></div><div class="line">                $("uri", "connect").invoke("enable");</div><div class="line">                $("close").disable();</div><div class="line">                ws = null;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            $("uri", "connect").invoke("disable");</div><div class="line">            $("close").enable();</div><div class="line">        &#125;);</div><div class="line">        $("close").observe("click", function (e) &#123;</div><div class="line">            e.stop();</div><div class="line">            if (ws) &#123;</div><div class="line">                ws.close();</div><div class="line">                ws = null;</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">        $("sendForm").observe("submit", function (e) &#123;</div><div class="line">            e.stop();</div><div class="line">            if (ws) &#123;</div><div class="line">                var message = $("message");</div><div class="line">                ws.send(message.value);</div><div class="line">                message.value = "";</div><div class="line">                message.focus();</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line"></div><div class="line">    &#125;);</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>所有的代码都可以到github查看：<a href="https://github.com/ttdevs/android/tree/master/modules/webscoket" target="_blank" rel="external">ttdevs</a>。</p>
+<p>下一篇将通过对websocket协议的分析，来对其做进一步的了解。</p>
+<h2 id="0xFF-参考"><a href="/1970/01/01/WebSocket-使用Websocket实现消息推送-上/#0xFF-参考" class="headerlink" title="0xFF 参考"></a>0xFF 参考</h2><ol>
+<li><a href="https://github.com/sstephenson/prototype" target="_blank" rel="external">https://github.com/sstephenson/prototype</a></li>
+<li><a href="https://github.com/TooTallNate/Java-WebSocket/" target="_blank" rel="external">https://github.com/TooTallNate/Java-WebSocket/</a></li>
+<li><a href="http://www.cnblogs.com/wlfcolin/p/5193583.html" target="_blank" rel="external">http://www.cnblogs.com/wlfcolin/p/5193583.html</a></li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/Volley-0x04一些细节/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「Volley」0x04一些细节</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/WebSocket-使用Websocket实现消息推送-下/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「WebSocket」使用Websocket实现消息推送(下)</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>
