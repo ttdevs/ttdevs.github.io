@@ -1,4 +1,18 @@
 
+---
+title: 「Flask」0x02给我们的Flask应用配置Supervisor
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Flask
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x00 场景
 
 >  Nginx ＋ uWSGI ＋ Flask 的场景中，当我们的代码出现异常或者其他一些原因导致服务挂掉，我们会希望能自动重启 `uWSGI`

@@ -1,4 +1,18 @@
 
+---
+title: 「Android」0x02本地数据安全尝试Conceal
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Android
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x00
 
 上一篇我们提到使用SQLCipher对本地的数据进行加密。在保证数据安全的同时，我们又引入了一些新的问题，比如安装包体积的增加，数据存储过程中耗时增加，数据加密的粒度不可控等等。如果你接受不了这些问题，那我们还需寻找其他的加密方法。这里给大家推荐[Conceal][1]

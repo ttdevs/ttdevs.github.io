@@ -1,4 +1,19 @@
 
+---
+title: 「Android-SQLite」0x02从加载本地数据库开始
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Android
+    - SQLite
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x00 引言
 
 >好久以前就写了，但是一直拖拖拉拉的，在草稿箱里放了两个星期还没写完，想想这样托下去又要废掉了，还是分开来吧，写多少是多少。

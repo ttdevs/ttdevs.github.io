@@ -1,4 +1,18 @@
-## 0x00 需求
+
+---
+title: 「Python」文件拷贝工具Shutil介绍
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Python
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 
 一哥们让帮写个脚本：从一个文件夹中按照指定的规则拷贝部分文件。给半小时时间，虽然水平很菜没有信心，但还是应下了这个需求。
 

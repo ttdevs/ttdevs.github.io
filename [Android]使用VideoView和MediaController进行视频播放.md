@@ -1,4 +1,18 @@
-一个视频播放的activity，可以直接拿过来用，比较简单，直接贴个代码留作记录，效果如下：
+
+---
+title: 「Android」使用VideoView和MediaController进行视频播放
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Android
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 
 ![](http://img.blog.csdn.net/20131121171540296?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)  
 

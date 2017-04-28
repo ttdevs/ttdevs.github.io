@@ -1,4 +1,18 @@
 
+---
+title: 「Flask」0x01FlaskMail
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Flask
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x00  简介
 
 > Welcome to Flask-Mail, you can use to send mail in your web site.
@@ -45,26 +59,26 @@ Flask-Mail 使用 Flask 标准的配置 API 进行配置。下面是所有的配
 
 - 第一种方式：
 
-	使用传入到 Mail 实例中的应用程序的配置项进行邮件发送
+    使用传入到 Mail 实例中的应用程序的配置项进行邮件发送
 
-	``` python
-	from flask import Flask
-	from flask_mail import Mail
-	
-	app = Flask(__name__)
-	mail = Mail(app)
-	```
+    ``` python
+    from flask import Flask
+    from flask_mail import Mail
+    
+    app = Flask(__name__)
+    mail = Mail(app)
+    ```
 
 - 第二种方式：
 
-	使用 Flask 的 current_app 中的配置项进行邮件发送，如果我们有多个 不同配置的应用程序 则使用此种方式比较方便
+    使用 Flask 的 current_app 中的配置项进行邮件发送，如果我们有多个 不同配置的应用程序 则使用此种方式比较方便
 
-	``` python
-	mail = Mail()
-	
-	app = Flask(__name__)
-	mail.init_app(app)
-	```
+    ``` python
+    mail = Mail()
+    
+    app = Flask(__name__)
+    mail.init_app(app)
+    ```
 
 ### 发送
 
@@ -134,8 +148,9 @@ with mail.connect() as conn:
 在邮件中添加附件同样非常简单：
 
 ``` python
-image = 'umbrella_伞.jpg' with app.open_resource(image) as fp:
-	msg.attach(image, 'image/jpg', fp.read())
+image = 'umbrella.jpg'
+with app.open_resource(image) as fp:
+    msg.attach(image, 'image/jpg', fp.read())
 ```
 
 
@@ -181,26 +196,28 @@ if __name__ == '__main__':
 ### 邮件参数说明
 
 上面的Demo中用到QQ邮箱，这里简单介绍下。由于QQ邮箱需要安全验证，所以我们配置下面几个参数：
-	
+    
 - MAIL_SERVER
 
-	SMTP地址：smtp.qq.com
+    SMTP地址：smtp.qq.com
 
 - MAIL_PORT
 
-	由于需要安全验证，所以此处用465 
+    由于需要安全验证，所以此处用465
+    
 - MAIL_USE_SSL：True
 
-	SSL，走加密方式
+    SSL，走加密方式
 
 - MAIL_USERNAME
-	
-	iot.raspi@qq.com 	
+    
+    iot.raspi@qq.com
+    
 - MAIL_PASSWORD
-	
-	这个地方我们需要使用授权码：
-	打开 `QQ邮箱` > `设置` > `POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV服务` > `生成授权码`
-	
+    
+    这个地方我们需要使用授权码：
+    打开 `QQ邮箱` > `设置` > `POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV服务` > `生成授权码`
+    
 最后别忘了打开SMTP服务～～
 
 
@@ -226,5 +243,6 @@ if __name__ == '__main__':
 3. https://pypi.python.org/pypi/Flask-Mail/
 
 ![Create by ttdevs](https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png)
+
 
 

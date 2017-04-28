@@ -1,4 +1,18 @@
 
+---
+title: 「Java」Java中获取本地IP和Port
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Java
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x00 问题
 
 项目中要用到DatagramSocket，同时也要获取本地的IP和PORT，直接创建并获取端口获取的IP总是0.0.0.0，代码如下：

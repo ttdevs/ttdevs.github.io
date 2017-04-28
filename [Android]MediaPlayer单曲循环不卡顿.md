@@ -1,4 +1,18 @@
 
+---
+title: 「Android」MediaPlayer单曲循环不卡顿
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Android
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x00 需求
 
 单曲循环播放歌曲，要求过度连贯，听不出来卡顿感觉。

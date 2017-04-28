@@ -1,4 +1,18 @@
 
+---
+title: 「WebSocket」使用Websocket实现消息推送(心跳)
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - WebSocket
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x00 心跳
 
 本来以为写完了，结果最近和一个同事在讨论心跳的事情，这里再做一个补充。先说我的结论：

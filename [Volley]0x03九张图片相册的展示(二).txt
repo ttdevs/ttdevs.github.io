@@ -1,4 +1,18 @@
-<p>
+
+---
+title: 「Volley」0x03九张图片相册的展示(二)
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Volley
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
      需要实现一个相册的展示，默认最多显示九张，超过了就显示前九张。很常见的功能，比如新浪微博、<a href="http://lib.csdn.net/base/wechat">微信</a>等：</p> 
 <p style="text-align:center"><img src="http://img.blog.csdn.net/20140313095744687?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" width="300" height="450" alt="">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<img src="http://img.blog.csdn.net/20140313100524750?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" width="300" height="450" alt=""><br> </p> 
 <p style="text-align:left">不打算再弄个新标题，就在图片加载的后面来个二级标题——九张图片相册的展示(微信微博等)。下面开始进入正题。</p> 

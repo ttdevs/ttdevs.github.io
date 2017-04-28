@@ -1,4 +1,18 @@
-<p>上篇文章简单的介绍了volley的使用，这篇偶将继续和大家一起分享volley的使用。</p> 
+
+---
+title: 「Volley」0x01自定义你的请求对象
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Volley
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 <p>其实忘记一件很重要的事情，我相信也是很多初识volley的人困惑的地方，就是从哪里开始学习，认识volley，使用volley，可能你谷歌或者百度到的最多的就是一个简单demo或者对volley介绍的翻译，如果你很牛可能理解起来很容易，但是对于我等菜鸟还是有点难度的。虽然偶的水平有限，但是我会尽量遵照自己这段时间对volley的认识过程来总结。</p> 
 <p><br> </p> 
 <h1>1、volley的部署</h1> 

@@ -1,4 +1,18 @@
 
+---
+title: 「Android」通过Intent传递数据
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Android
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x00 需求
 
 日常开发中，我们经常遇到通过 Intent 来传递数据（如果你使用Bundle也是一样的），默认情况，我们可以看到支持的数据类型：

@@ -1,4 +1,18 @@
 
+---
+title: 「Java」Java中TCP和UDP总结
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Java
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x00 还是先说点啥
 
 之前写过一些关于TCP和UDP数据传输的代码，比如使用TCP传输音视频数据包，P2P打洞中使用UDP等。写好之后就直接丢下了，没有总结下都。最近准备找工作，再拿来温习下。

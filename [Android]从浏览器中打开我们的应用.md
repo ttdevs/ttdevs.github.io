@@ -1,4 +1,18 @@
 
+---
+title: 「Android」从浏览器中打开我们的应用
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Android
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x01 需求
 
 有时候你会发现，用Android系统自带的浏览器（chrome）打开一个web页面，如果安装了相应的App，就会自动打开这个App并进入具体的界面中，比如手机上打开：

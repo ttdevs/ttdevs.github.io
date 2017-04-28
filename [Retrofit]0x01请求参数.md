@@ -1,4 +1,18 @@
 
+---
+title: 「Retrofit」0x01请求参数
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Retrofit
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x00 请求参数
 
 常见的Http请求，除了指定的请求地址，很多时候我们还需要加上一些请求参数，这些参数可能是固定的，也可能是动态添加的。在Retrofit中，我们该如何处理呢？这里以GET方式中添加请求参数为例。

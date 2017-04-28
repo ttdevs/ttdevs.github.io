@@ -1,4 +1,18 @@
 
+---
+title: 「macOS」macOS安装Python
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - macOS
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x00 为什么要装(Bi)
 
 装逼遭雷劈。

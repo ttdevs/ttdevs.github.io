@@ -1,4 +1,18 @@
 
+---
+title: 「Python」使用requests处理cookie
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Python
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ![requests](https://camo.githubusercontent.com/5e4574f4d470db274e80e7cb1464e426e643e084/687474703a2f2f646f63732e707974686f6e2d72657175657374732e6f72672f656e2f6d61737465722f5f7374617469632f72657175657374732d736964656261722e706e67)
 
 ## 0x00 需求

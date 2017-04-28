@@ -1,4 +1,18 @@
 
+---
+title: 「Retrofit」0x04POST方式提交JSON数据
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Retrofit
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x00 HTTP Method：POST
 
 POST请求再日常的使用中很常见，比如登录，上传数据中使用。之前介绍了GET方式，今天简单介绍下如何使用POST来提交数据。

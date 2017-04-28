@@ -1,4 +1,18 @@
 
+---
+title: 「macOS」用Homebrew安装Mysql
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - macOS
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x00 需求
 
 简单记录mac下mysql安装。这里需要一个前提——先安装 [`homebrew`](http://brew.sh/index_zh-cn.html)，具体可以参考[这里](http://brew.sh/index_zh-cn.html)。

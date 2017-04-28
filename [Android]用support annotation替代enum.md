@@ -1,4 +1,18 @@
-一次演讲中听到android中使用enum可能会造成很大的性能问题。开始我是怀疑的。为什么怀疑？因为我在好几个地方用到了枚举类型。再去查看过谷歌的API，enum的直接子类也有好多，比如：
+
+---
+title: 「Android」用support annotation替代enum
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Android
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 
 >Allocation.MipmapControl, 
 Authenticator.RequestorType, 

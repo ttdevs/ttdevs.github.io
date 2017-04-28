@@ -1,4 +1,18 @@
 
+---
+title: 「Android」内存泄漏相关内容总结(上)
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Android
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x00 忏悔
 
 好久没有认真的写博客了，草稿箱中静静躺着好几篇，但总是不能把他们写完，一直没有写的心情把，罪过...

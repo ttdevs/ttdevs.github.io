@@ -1,4 +1,18 @@
 
+---
+title: 「Wechat」微信公众号开发流程
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Wechat
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x01申请订阅号或者服务号
 
 微信有三种号：订阅号，公众号，服务号，所有人都可以注册订阅号，个人很难注册公众号和服务号；订阅号不能认证，开放的接口也是最少的。既然做开发，这种肯定不好使。因此我们需要选择订阅号或者服务号来做开发。自己没办法注册，可以考虑万能的淘宝。或者我们也可以使用[测试账号](http://mp.weixin.qq.com/debug/cgi-bin/sandbox?t=sandbox/login)

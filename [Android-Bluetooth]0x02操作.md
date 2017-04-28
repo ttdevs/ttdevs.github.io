@@ -1,4 +1,19 @@
 
+---
+title: 「Android-Bluetooth」0x02操作
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Android
+    - Bluetooth
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x00 低功耗蓝牙（BLE）
 
 这个小硬件已经是 android 机器的标配了，由于平时不怎么用，因此到现在都没有去研究过。现在有一个简单的小需求：通过蓝牙连接一个串口设备读取其上面的数据，遂写此文。

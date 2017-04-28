@@ -1,4 +1,18 @@
 
+---
+title: 「玩转树莓派」0x05GPIO
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - 玩转树莓派
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 GPIO：General Purpose Input/Output pins on the Raspberry Pi
 
 >General purpose input/output; in this specific case the pins on the Raspberry Pi and what you can do with them. So called because you can use them for all sorts of purposes; most can be used as either inputs or outputs, depending on your program.

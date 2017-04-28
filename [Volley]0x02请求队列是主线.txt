@@ -1,4 +1,18 @@
-<p>忽忽，很意外，第二篇大家反映还不错哈，谢谢咯～～对于这篇，要写好信心不大，不过我会尽量的。</p> 
+
+---
+title: 「Volley」0x02请求队列是主线
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Volley
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 <p><br> </p> 
 <h1>1、从哪里开始：</h1> 
 <p>从哪里开始，菜鸟能想到的当然是从最先接触的地方开始啦～～&nbsp;</p> 

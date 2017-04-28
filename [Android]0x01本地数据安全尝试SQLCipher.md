@@ -1,4 +1,18 @@
 
+---
+title: 「Android」0x01本地数据安全尝试SQLCipher
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Android
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x00 
 
 先纪念下，从今天开始，又开始写博客啦啦啦啦。话说基本上一年多没好好写博客了。回想起来，和之前写博客时相比，还是差距好大。好吧，废话不说了，进入正题。

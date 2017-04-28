@@ -1,4 +1,19 @@
 
+---
+title: 「Android-SQLite」0x01创建自己的数据库
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Android
+    - SQLite
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x01 创建自己的数据库
 
 大多数情况，我们还是需要自己去维护一个数据库，常见的包括数据库的创建，升级，销毁等操作。 android提供了SQLiteOpenHelper抽象类，我们创建SQLiteOpenHelper的实现类，重写他的onCreate(), onUpgrade() 或者 onOpen()方法，对数据库进行管理。如下：

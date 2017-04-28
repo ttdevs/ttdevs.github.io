@@ -1,4 +1,18 @@
-#  [ android网络开源框架volley(五)——volley的一些细节 ](/ttdevs/article/details/40260433)
+
+---
+title: 「Volley」0x04一些细节
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Volley
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 
 最近又把volley拿出来整理了下。之前没有遇到过的一些小问题又来了，在此记录下：
 

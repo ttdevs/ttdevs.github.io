@@ -1,4 +1,18 @@
 
+---
+title: 「WebSocket」使用Websocket实现消息推送(下)
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - WebSocket
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x00 WebSocket
 
 上一篇使用 [Java-WebSocket](https://github.com/TooTallNate/Java-WebSocket) 写了一套 `WebSocket` 的Demo，这一篇着重分析下` WebSocket` 的一些实现细节，更加详细的协议细节可参考 [RFC6455][rfc6455]。

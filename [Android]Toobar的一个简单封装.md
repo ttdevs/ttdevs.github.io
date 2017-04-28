@@ -1,4 +1,18 @@
-现有的APP尝试向Material Design靠齐，开始使用Toolbar代替之前的ActionBar。
+
+---
+title: 「Android」Toobar的一个简单封装
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Android
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 
 Toolbar和ActionBar的直观区别就是需要我们自己将ToolBar加到自己的布局文件中。目前的情况是：在我们的现有项目上改动，多数的Activity都是继承一个BaseActivity。为了用最小的代价达到目的，简单的思考之后，做了如下的改动：
 

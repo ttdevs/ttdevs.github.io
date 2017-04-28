@@ -1,4 +1,18 @@
 
+---
+title: 「WebSocket」使用Websocket实现消息推送(上)
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - WebSocket
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x00 Websocket
 
 联系客服功能在项目中很难避免，一般有下面三种实现方式：

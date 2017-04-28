@@ -1,4 +1,18 @@
 
+---
+title: 「Android」Android Studio 2.0 NDK开发环境搭建
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Android
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x00 前情回顾
 
 前不久写了一篇环境搭建，虽然可以跑一个demo，但是如果你跟着做的话就会发现，仅仅是可以跑一个Demo，真做起来很是蛋疼。编写源码，生成so，跑App，改一点代码，再生成so，跑app。而且编写代码没有提示，不能格式化，各种不能，就是最基本的文本开发。经过一段时间折腾和Android Studio 2.0的 release，发现有更完美的方式，而且不用编写Android.mk和Application.mk。看在我刚开始学的份上，容我再来写一遍。看完这篇，你会发现JNI的开发也是如此的so easy。

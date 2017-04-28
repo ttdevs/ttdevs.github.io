@@ -1,4 +1,18 @@
 
+---
+title: 「Android」获取Wifi的IP、子网掩码、DNS、网关等信息
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Android
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x01 获取网络信息
 
 使用 DhcpInfo 获取这些信息，返回的是一个int型数据，转换下得到想要的信息，代码如下：

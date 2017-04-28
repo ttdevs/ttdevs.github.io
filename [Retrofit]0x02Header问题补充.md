@@ -1,4 +1,18 @@
 
+---
+title: 「Retrofit」0x02Header问题补充
+date: 1970-01-01 00:00:00
+updated: 2017-04-27 19:07:57
+comments: true
+tags:
+    - Retrofit
+categories:
+    - 技术
+toc: true
+cover: cover.jpg 
+---
+
+
 ## 0x00 Retrofit Header
 
 上一篇中我们介绍Retrofit的一个简单的Demo和添加Header方法，这一篇在补充一下Header的另外几种处理方法。
