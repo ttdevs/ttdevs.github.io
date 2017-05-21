@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「Android-SQLite」0x01创建自己的数据库 | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/[Android-SQLite]0x01创建自己的数据库/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「Android-SQLite」0x01创建自己的数据库</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Android/">Android</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/SQLite/">SQLite</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <h2 id="0x01-创建自己的数据库"><a href="/1970/01/01/[Android-SQLite]0x01创建自己的数据库/#0x01-创建自己的数据库" class="headerlink" title="0x01 创建自己的数据库"></a>0x01 创建自己的数据库</h2><p>大多数情况，我们还是需要自己去维护一个数据库，常见的包括数据库的创建，升级，销毁等操作。 android提供了SQLiteOpenHelper抽象类，我们创建SQLiteOpenHelper的实现类，重写他的onCreate(), onUpgrade() 或者 onOpen()方法，对数据库进行管理。如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DataBaseOpenHelper</span> <span class="keyword">extends</span> <span class="title">SQLiteOpenHelper</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String DATABASE_NAME = <span class="string">"ChinaCity.db"</span>;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DATABASE_VERSION = <span class="number">1</span>; <span class="comment">// Version must be &gt;= 1</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DataBaseOpenHelper</span><span class="params">(Context context)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>(context, DATABASE_NAME, <span class="keyword">null</span>, DATABASE_VERSION);</div><div class="line">        System.out.println(<span class="string">"DataBaseOpenHelper"</span>);</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DataBaseOpenHelper</span><span class="params">(Context context, <span class="keyword">int</span> version)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>(context, DATABASE_NAME, <span class="keyword">null</span>, version);</div><div class="line">        System.out.println(<span class="string">"DataBaseOpenHelper version"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onOpen</span><span class="params">(SQLiteDatabase db)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (!db.isReadOnly()) &#123;</div><div class="line">            db.execSQL(<span class="string">"PRAGMA foreign_keys = ON;"</span>); <span class="comment">// Enable foreign key constraints </span></div><div class="line">        &#125;</div><div class="line">        <span class="comment">// create table test(id integer references students(id),score integer check (score&lt;=100 and score&lt;=0),primary key(id,score))</span></div><div class="line">        <span class="keyword">super</span>.onOpen(db);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(SQLiteDatabase db)</span> </span>&#123;</div><div class="line">        CityData.createTable(db);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onUpgrade</span><span class="params">(SQLiteDatabase db, <span class="keyword">int</span> oldVersion, <span class="keyword">int</span> newVersion)</span> </span>&#123;</div><div class="line">        CityData.dropTable(db);</div><div class="line">        CityData.createTable(db);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">CityData</span> <span class="keyword">implements</span> <span class="title">BaseColumns</span> </span>&#123;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String TYPE_TEXT = <span class="string">" text "</span>;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String TYPE_INTEGER = <span class="string">" integer "</span>;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String COMMA_SEP = <span class="string">","</span>;</div><div class="line"></div><div class="line">        <span class="comment">// *******************************china_city_code***********************************</span></div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String TABLE_NAME_CITY = <span class="string">"china_city_code"</span>;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String COLUMN_NAME_PROVINCE = <span class="string">"province"</span>;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String COLUMN_NAME_CITY = <span class="string">"city"</span>;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String COLUMN_NAME_COUNTY = <span class="string">"county"</span>;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String COLUMN_NAME_CODE = <span class="string">"code"</span>;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String SQL_CREATE_CITY = <span class="string">"CREATE TABLE IF NOT EXISTS "</span> + TABLE_NAME_CITY + <span class="string">" ("</span> +</div><div class="line">                _ID + TYPE_INTEGER + <span class="string">" PRIMARY KEY AUTOINCREMENT, "</span> +</div><div class="line">                COLUMN_NAME_PROVINCE + TYPE_TEXT + COMMA_SEP +</div><div class="line">                COLUMN_NAME_CITY + TYPE_TEXT + COMMA_SEP +</div><div class="line">                COLUMN_NAME_COUNTY + TYPE_TEXT + COMMA_SEP +</div><div class="line">                COLUMN_NAME_CODE + TYPE_INTEGER</div><div class="line">                + <span class="string">" )"</span>;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String SQL_CREATE_CITY_INDEX = <span class="string">"CREATE UNIQUE INDEX IF NOT EXISTS "</span> + COLUMN_NAME_CODE + <span class="string">" ON "</span> + TABLE_NAME_CITY + <span class="string">"("</span> + COLUMN_NAME_CODE + <span class="string">")"</span>;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String SQL_DELETE_CITY = <span class="string">"DROP TABLE IF EXISTS "</span> + TABLE_NAME_CITY;</div><div class="line"></div><div class="line">        <span class="comment">// *******************************china_provinces_code*******************************</span></div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String TABLE_NAME_PROVINCE = <span class="string">"china_provinces_code"</span>;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String COLUMN_NAME_ID = <span class="string">"id"</span>;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String COLUMN_NAME_NAME = <span class="string">"name"</span>;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String SQL_CREATE_PROVINCE = <span class="string">"CREATE TABLE IF NOT EXISTS "</span> + TABLE_NAME_PROVINCE + <span class="string">" ("</span> +</div><div class="line">                _ID + TYPE_INTEGER + <span class="string">" PRIMARY KEY AUTOINCREMENT, "</span> +</div><div class="line">                COLUMN_NAME_ID + TYPE_INTEGER + COMMA_SEP +</div><div class="line">                COLUMN_NAME_NAME + TYPE_TEXT</div><div class="line">                + <span class="string">" )"</span>;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String SQL_DELETE_PROVINCE = <span class="string">"DROP TABLE IF EXISTS "</span> + TABLE_NAME_PROVINCE;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">createTable</span><span class="params">(SQLiteDatabase db)</span> </span>&#123;</div><div class="line">            db.execSQL(SQL_CREATE_PROVINCE);</div><div class="line">            db.execSQL(SQL_CREATE_CITY);</div><div class="line">            db.execSQL(SQL_CREATE_CITY_INDEX);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">dropTable</span><span class="params">(SQLiteDatabase db)</span> </span>&#123;</div><div class="line">            db.execSQL(SQL_DELETE_PROVINCE);</div><div class="line">            db.execSQL(SQL_DELETE_CITY);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>构造函数中我们需要传入四个参数，第一个参数为上下文，第二个为数据库名称，第三个参数一般为null，第四个为数据库的版本。onCreate()方法中主要执行数据库的创建操作。onUpgrade()方法主要在数据库升级时调用，源码 <code>android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(boolean writable)</code> 中这样描述：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> SQLiteDatabase <span class="title">getDatabaseLocked</span><span class="params">(<span class="keyword">boolean</span> writable)</span> </span>&#123;</div><div class="line">   <span class="keyword">if</span> (mDatabase != <span class="keyword">null</span>) &#123;</div><div class="line">       <span class="keyword">if</span> (!mDatabase.isOpen()) &#123;</div><div class="line">           <span class="comment">// Darn!  The user closed the database by calling mDatabase.close().</span></div><div class="line">           mDatabase = <span class="keyword">null</span>;</div><div class="line">       &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!writable || !mDatabase.isReadOnly()) &#123;</div><div class="line">           <span class="comment">// The database is already open for business.</span></div><div class="line">           <span class="keyword">return</span> mDatabase;</div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="keyword">if</span> (mIsInitializing) &#123;</div><div class="line">       <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"getDatabase called recursively"</span>);</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   SQLiteDatabase db = mDatabase;</div><div class="line">   <span class="keyword">try</span> &#123;</div><div class="line">       mIsInitializing = <span class="keyword">true</span>;</div><div class="line"></div><div class="line">       <span class="keyword">if</span> (db != <span class="keyword">null</span>) &#123;</div><div class="line">           <span class="keyword">if</span> (writable &amp;&amp; db.isReadOnly()) &#123;</div><div class="line">               db.reopenReadWrite();</div><div class="line">           &#125;</div><div class="line">       &#125; <span class="keyword">else</span> <span class="keyword">if</span> (mName == <span class="keyword">null</span>) &#123;</div><div class="line">           db = SQLiteDatabase.create(<span class="keyword">null</span>);</div><div class="line">       &#125; <span class="keyword">else</span> &#123;</div><div class="line">           <span class="keyword">try</span> &#123;</div><div class="line">               <span class="keyword">if</span> (DEBUG_STRICT_READONLY &amp;&amp; !writable) &#123;</div><div class="line">                   <span class="keyword">final</span> String path = mContext.getDatabasePath(mName).getPath();</div><div class="line">                   db = SQLiteDatabase.openDatabase(path, mFactory,</div><div class="line">                           SQLiteDatabase.OPEN_READONLY, mErrorHandler);</div><div class="line">               &#125; <span class="keyword">else</span> &#123;</div><div class="line">                   db = mContext.openOrCreateDatabase(mName, mEnableWriteAheadLogging ?</div><div class="line">                           Context.MODE_ENABLE_WRITE_AHEAD_LOGGING : <span class="number">0</span>,</div><div class="line">                           mFactory, mErrorHandler);</div><div class="line">               &#125;</div><div class="line">           &#125; <span class="keyword">catch</span> (SQLiteException ex) &#123;</div><div class="line">               <span class="keyword">if</span> (writable) &#123;</div><div class="line">                   <span class="keyword">throw</span> ex;</div><div class="line">               &#125;</div><div class="line">               Log.e(TAG, <span class="string">"Couldn't open "</span> + mName</div><div class="line">                       + <span class="string">" for writing (will try read-only):"</span>, ex);</div><div class="line">               <span class="keyword">final</span> String path = mContext.getDatabasePath(mName).getPath();</div><div class="line">               db = SQLiteDatabase.openDatabase(path, mFactory,</div><div class="line">                       SQLiteDatabase.OPEN_READONLY, mErrorHandler);</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       onConfigure(db);</div><div class="line"></div><div class="line">       <span class="keyword">final</span> <span class="keyword">int</span> version = db.getVersion();</div><div class="line">       <span class="keyword">if</span> (version != mNewVersion) &#123;</div><div class="line">           <span class="keyword">if</span> (db.isReadOnly()) &#123;</div><div class="line">               <span class="keyword">throw</span> <span class="keyword">new</span> SQLiteException(<span class="string">"Can't upgrade read-only database from version "</span> +</div><div class="line">                       db.getVersion() + <span class="string">" to "</span> + mNewVersion + <span class="string">": "</span> + mName);</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           db.beginTransaction();</div><div class="line">           <span class="keyword">try</span> &#123;</div><div class="line">               <span class="keyword">if</span> (version == <span class="number">0</span>) &#123;</div><div class="line">                   onCreate(db);</div><div class="line">               &#125; <span class="keyword">else</span> &#123;</div><div class="line">                   <span class="keyword">if</span> (version &gt; mNewVersion) &#123;</div><div class="line">                       onDowngrade(db, version, mNewVersion);</div><div class="line">                   &#125; <span class="keyword">else</span> &#123;</div><div class="line">                       onUpgrade(db, version, mNewVersion);</div><div class="line">                   &#125;</div><div class="line">               &#125;</div><div class="line">               db.setVersion(mNewVersion);</div><div class="line">               db.setTransactionSuccessful();</div><div class="line">           &#125; <span class="keyword">finally</span> &#123;</div><div class="line">               db.endTransaction();</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       onOpen(db);</div><div class="line"></div><div class="line">       <span class="keyword">if</span> (db.isReadOnly()) &#123;</div><div class="line">           Log.w(TAG, <span class="string">"Opened "</span> + mName + <span class="string">" in read-only mode"</span>);</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       mDatabase = db;</div><div class="line">       <span class="keyword">return</span> db;</div><div class="line">   &#125; <span class="keyword">finally</span> &#123;</div><div class="line">       mIsInitializing = <span class="keyword">false</span>;</div><div class="line">       <span class="keyword">if</span> (db != <span class="keyword">null</span> &amp;&amp; db != mDatabase) &#123;</div><div class="line">           db.close();</div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>当当前版本小于新版本时，会调用onUpgrade()方法。所以上面SQLiteOpenHelper的实现思路为：构造方法中初始化一下数据库的必要参数，如数据库版本，数据库名等；在onCreate()方法中创建数据库的表；当我们需要对数据库进行升级的时候，修改数据库的版本号，这样就可以触发onUpgrade()方法，这里我们做最简单的处理：drop掉所有表然后重新创建。当然我们还可以在onOpen()方法中做一下数据库的设置操作，如设置外键生效。这样我们的数据库管理类就实现了。</p>
+<h2 id="0x02-拿到数据库对象"><a href="/1970/01/01/[Android-SQLite]0x01创建自己的数据库/#0x02-拿到数据库对象" class="headerlink" title="0x02 拿到数据库对象"></a>0x02 拿到数据库对象</h2><p>有了数据库管理类，对数据库进行操作我们最好封装一个操作类，在这个类中对数据库中的表进行操作。下面的代码也是网上比较常见的（对于数据库对象，也有处理成单例）。先看代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DataBaseManager</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> DataBaseOpenHelper dbHelper;</div><div class="line">    <span class="keyword">private</span> SQLiteDatabase db;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DataBaseManager</span><span class="params">(Context context)</span> <span class="keyword">throws</span> SQLException </span>&#123;</div><div class="line">        <span class="keyword">this</span>.dbHelper = <span class="keyword">new</span> DataBaseOpenHelper(context);</div><div class="line">        <span class="keyword">this</span>.db = dbHelper.getWritableDatabase();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">CopyOfDataBaseManager</span><span class="params">(Context context, <span class="keyword">int</span> version)</span> <span class="keyword">throws</span> SQLException </span>&#123;</div><div class="line">        <span class="keyword">this</span>.dbHelper = <span class="keyword">new</span> DataBaseOpenHelper(context, version);</div><div class="line">        <span class="keyword">this</span>.db = dbHelper.getWritableDatabase();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">closeDataBase</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (db != <span class="keyword">null</span> &amp;&amp; db.isOpen()) &#123;</div><div class="line">            db.close();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isInitData</span><span class="params">(String tableName)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> count = <span class="number">0</span>;</div><div class="line">        String sql = <span class="string">"select count(*) from "</span> + tableName;</div><div class="line">        Cursor cursor = db.rawQuery(sql, <span class="keyword">null</span>);</div><div class="line">        <span class="keyword">if</span> (cursor.moveToFirst()) &#123;</div><div class="line">            count = cursor.getInt(<span class="number">0</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> count &gt; <span class="number">0</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">clearTable</span><span class="params">(String tableName)</span> </span>&#123;</div><div class="line">        String sql = <span class="string">"delete from "</span> + tableName + <span class="string">";"</span>;</div><div class="line">        sql += <span class="string">"update sqlite_sequence set seq = 0 where name = "</span> + tableName + <span class="string">";"</span>;</div><div class="line">        db.execSQL(sql);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">insertProvinceData</span><span class="params">(<span class="keyword">int</span> id, String name)</span> </span>&#123;</div><div class="line">        String sql = <span class="string">"insert into "</span> + CityData.TABLE_NAME_PROVINCE + <span class="string">" ("</span> + CityData.COLUMN_NAME_ID + <span class="string">","</span></div><div class="line">                + CityData.COLUMN_NAME_NAME + <span class="string">") VALUES("</span> + id + <span class="string">",'"</span> + name + <span class="string">"');"</span>;</div><div class="line">        db.execSQL(sql);</div><div class="line">        System.out.println(sql);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// TODO其他一下对表进行的操作</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>首先我们创建一个DataBaseOpenHelper的实例，然后通过它拿到SQLiteDatabase对象，这样我们就可以对数据库进行操作了。DataBaseOpenHelper有两种get方法：<code>getWritableDatabase()</code> 和 <code>getReadableDatabase()</code>，大家都应该知道着两种方法的含义，<code>getReadableDatabase()</code> 拿到的数据库对象不可以进行插入修改等写操作。在这两种方法的说明在我们可能需要注意几点：</p>
+<ul>
+<li>当我们没有申请数据库操作的权限或者磁盘已满，会报错</li>
+<li>数据库的更新可能需要很长时间，因此我们不能在主线程中调用</li>
+<li>当我们不再对数据库进行操作时，别忘记关闭数据库</li>
+</ul>
+<p>接下来就是数据库的常用操作了</p>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/hello-world/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">Hello World</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/[Android-SQLite]0x02从加载本地数据库开始/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「Android-SQLite」0x02从加载本地数据库开始</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>

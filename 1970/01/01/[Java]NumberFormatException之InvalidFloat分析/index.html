@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「Java」NumberFormatException之InvalidFloat分析 | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/[Java]NumberFormatException之InvalidFloat分析/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「Java」NumberFormatException之InvalidFloat分析</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <h2 id="0x00-问题"><a href="/1970/01/01/[Java]NumberFormatException之InvalidFloat分析/#0x00-问题" class="headerlink" title="0x00 问题"></a>0x00 问题</h2><p>新版本上线，4天时间一个错误出现一百多次，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">java.lang.NumberFormatException: Invalid <span class="keyword">float</span>: <span class="string">"55,4"</span></div><div class="line">	at java.lang.StringToReal.invalidReal(StringToReal.java:<span class="number">63</span>)</div><div class="line">	at java.lang.StringToReal.initialParse(StringToReal.java:<span class="number">164</span>)</div><div class="line">	at java.lang.StringToReal.parseFloat(StringToReal.java:<span class="number">323</span>)</div><div class="line">	at java.lang.Float.parseFloat(Float.java:<span class="number">306</span>)</div></pre></td></tr></table></figure>
+<h2 id="0x01-分析"><a href="/1970/01/01/[Java]NumberFormatException之InvalidFloat分析/#0x01-分析" class="headerlink" title="0x01 分析"></a>0x01 分析</h2><p>发现此问题后感觉很熟悉，以前应该是见过，但是忘记怎么解决的了，没办法，踩过的坑再踩一遍。涉及的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OnePreference</span></span>&#123;</div><div class="line">    ...</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setLatestWeight</span><span class="params">(<span class="keyword">float</span> weight)</span> </span>&#123;</div><div class="line">       getInstance(MyApplication.getContext()).putFloat(PREFS_LATEST_WEIGHT, Float.parseFloat(NumberUtils.formatFloatWithOneDot(weight)));</div><div class="line">    &#125;</div><div class="line">    ...</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NumberUtils</span> </span>&#123;</div><div class="line">    ...</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">formatFloatWithOneDot</span><span class="params">(<span class="keyword">float</span> number)</span> </span>&#123;</div><div class="line">        number = Math.round(number * <span class="number">10</span>) / <span class="number">10f</span>;</div><div class="line">        <span class="keyword">return</span> String.format(<span class="string">"%.1f"</span>, number);</div><div class="line">    &#125;</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li><p>确认问题</p>
+<p>  android无法复现，iOS后台未报此错误</p>
+</li>
+<li><p>怀疑是数据的问题</p>
+<p>  这是一个记录体重的功能，新版体重输入已经做了限制，所以怀疑可能是老数据的问题。因此找后端的同事降此数据做处理：如果此字段无法解析为数字则过滤掉。<br>  但是遗憾的，后端发布之后问题依然存在。</p>
+</li>
+<li><p>分析代码</p>
+<p>  <code>setLatestWeight(float weight)</code> 这个传入的是float，所以之前的假设是错误的 —— 如果是数据的问题，那根本走不到方法里。<br>  这样的话那就是 <code>formatFloatWithOneDot(float number)</code> 这个方法的问题，但是想了下之前都有这么写过 —— 将float类型格式化为一位小数的字符串，应该没问题啊。那会是怎样呢？可能很自然会想到国际化的问题。遂作了一个简单的测试：</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExampleUnitTest</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Test</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testStringLocale</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">        Locale[] locales = <span class="keyword">new</span> Locale[]&#123;</div><div class="line">                Locale.CANADA,</div><div class="line">                Locale.CANADA_FRENCH,</div><div class="line">                Locale.CHINESE,</div><div class="line">                Locale.ENGLISH,</div><div class="line">                Locale.FRANCE,</div><div class="line">                Locale.GERMAN,</div><div class="line">                Locale.GERMANY,</div><div class="line">                Locale.ITALIAN,</div><div class="line">                Locale.ITALY,</div><div class="line">                Locale.JAPAN,</div><div class="line">                Locale.JAPANESE,</div><div class="line">                Locale.KOREA,</div><div class="line">                Locale.KOREAN,</div><div class="line">                Locale.PRC,</div><div class="line">                Locale.ROOT,</div><div class="line">                Locale.SIMPLIFIED_CHINESE,</div><div class="line">                Locale.TAIWAN,</div><div class="line">                Locale.TRADITIONAL_CHINESE,</div><div class="line">                Locale.UK,</div><div class="line">                Locale.US</div><div class="line">        &#125;;</div><div class="line"></div><div class="line">        String weightString = <span class="keyword">null</span>;</div><div class="line">        <span class="keyword">for</span> (Locale locale : locales) &#123;</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                weightString = formatFloatWithOneDot(locale, <span class="number">55.4f</span>);</div><div class="line">                <span class="keyword">float</span> weight = Float.parseFloat(weightString);</div><div class="line">            &#125; <span class="keyword">catch</span> (NumberFormatException e) &#123;</div><div class="line">                System.out.println(locale + <span class="string">"&gt;&gt;&gt;&gt;&gt;"</span> + weightString + <span class="string">"&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; error"</span>);</div><div class="line">                <span class="keyword">continue</span>;</div><div class="line">            &#125;</div><div class="line">            System.out.println(locale + <span class="string">"&gt;&gt;&gt;&gt;&gt;"</span> + weightString);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">formatFloatWithOneDot</span><span class="params">(Locale locale, <span class="keyword">float</span> number)</span> </span>&#123;</div><div class="line">        number = Math.round(number * <span class="number">10</span>) / <span class="number">10f</span>;</div><div class="line">        <span class="keyword">return</span> String.format(locale, <span class="string">"%.1f"</span>, number);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<pre><code>输出结果如下：
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">en_CA&gt;&gt;&gt;&gt;&gt;55.4</div><div class="line">fr_CA&gt;&gt;&gt;&gt;&gt;55,4&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; error</div><div class="line">zh&gt;&gt;&gt;&gt;&gt;55.4</div><div class="line">en&gt;&gt;&gt;&gt;&gt;55.4</div><div class="line">fr_FR&gt;&gt;&gt;&gt;&gt;55,4&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; error</div><div class="line">de&gt;&gt;&gt;&gt;&gt;55,4&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; error</div><div class="line">de_DE&gt;&gt;&gt;&gt;&gt;55,4&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; error</div><div class="line">it&gt;&gt;&gt;&gt;&gt;55,4&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; error</div><div class="line">it_IT&gt;&gt;&gt;&gt;&gt;55,4&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; error</div><div class="line">ja_JP&gt;&gt;&gt;&gt;&gt;55.4</div><div class="line">ja&gt;&gt;&gt;&gt;&gt;55.4</div><div class="line">ko_KR&gt;&gt;&gt;&gt;&gt;55.4</div><div class="line">ko&gt;&gt;&gt;&gt;&gt;55.4</div><div class="line">zh_CN&gt;&gt;&gt;&gt;&gt;55.4</div><div class="line">&gt;&gt;&gt;&gt;&gt;55.4</div><div class="line">zh_CN&gt;&gt;&gt;&gt;&gt;55.4</div><div class="line">zh_TW&gt;&gt;&gt;&gt;&gt;55.4</div><div class="line">zh_TW&gt;&gt;&gt;&gt;&gt;55.4</div><div class="line">en_GB&gt;&gt;&gt;&gt;&gt;55.4</div><div class="line">en_US&gt;&gt;&gt;&gt;&gt;55.4</div><div class="line"></div><div class="line">Process finished with exit code 0</div></pre></td></tr></table></figure>
+
+
+我们可以看到，在不同的语言下 `String.format(locale, &quot;%.1f&quot;, number)` 格式化的结果是不一样的，55.4可能会被格式化为55,4，然后就出现了上面的错误。将我们的测试机语言设置成出错的语言，问题可以复现。
+
+再来看下后台的错误：
+
+![错误信息]()
+
+- 大部分是华为的设备，然后是三星，索尼
+- 各个版本都有，从4.4到最新的7.0
+- 不同的渠道都有，主要的渠道来自华为
+
+这些信息也从侧面反映了问题的原因。看来华为的国际化之路还是很屌的。
+</code></pre><h2 id="0x02-解决"><a href="/1970/01/01/[Java]NumberFormatException之InvalidFloat分析/#0x02-解决" class="headerlink" title="0x02 解决"></a>0x02 解决</h2><ul>
+<li><p>由于我们并没有做国际化的适配，因此这里改起来还是很方便的，直接给 <code>String.format()</code> 方法指定Locale信息：</p>
+<p>  <code>String.format(Locale.ENGLISH, &quot;%.1f&quot;, number);</code></p>
+<p>  or</p>
+<p>  <code>String.format(Locale.CHINA, &quot;%.1f&quot;, number);</code>        </p>
+</li>
+<li><p>NumberFormat(DecimalFormat)</p>
+</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/[Java]Java中获取本地IP和Port/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「Java」Java中获取本地IP和Port</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/[Python]Python中的Thread Local/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「Python」Python中的Thread Local</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>

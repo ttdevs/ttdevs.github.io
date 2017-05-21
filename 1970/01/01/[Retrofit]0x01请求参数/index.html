@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「Retrofit」0x01请求参数 | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/[Retrofit]0x01请求参数/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「Retrofit」0x01请求参数</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Retrofit/">Retrofit</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <h2 id="0x00-请求参数"><a href="/1970/01/01/[Retrofit]0x01请求参数/#0x00-请求参数" class="headerlink" title="0x00 请求参数"></a>0x00 请求参数</h2><p>常见的Http请求，除了指定的请求地址，很多时候我们还需要加上一些请求参数，这些参数可能是固定的，也可能是动态添加的。在Retrofit中，我们该如何处理呢？这里以GET方式中添加请求参数为例。</p>
+<h2 id="0x01-固定请求参数"><a href="/1970/01/01/[Retrofit]0x01请求参数/#0x01-固定请求参数" class="headerlink" title="0x01 固定请求参数"></a>0x01 固定请求参数</h2><p>这里说的固定请求参数是指每次请求我们都在Url中添加相同的请求的参数。这种场景多出现在需要认证的情况，比如添加 Token 字段等。</p>
+<p>在之前的文章中，我们有提到在构建OkHttpClient对象的时候使用过 <code>Interceptor</code> ，在 <code>Interceptor</code> 的逻辑中，我们会重新创建一个 <code>Request</code> 对象，在这个对象中我们可以传入一个 <code>HttpUrl</code> ，在这个对象中，我们可以传入一些需要的请求参数。通过之前对 <code>Interceptor</code> 了解，我们应该知道，这里做的操作是对所有的请求都有效的。这样就可以完成我们为每个请求添加固定请求参数的目的。代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">OkHttpClient client = <span class="keyword">new</span> OkHttpClient.Builder()</div><div class="line">                .addInterceptor(<span class="keyword">new</span> Interceptor() &#123;</div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="keyword">public</span> okhttp3.<span class="function">Response <span class="title">intercept</span><span class="params">(Chain chain)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">                        Request original = chain.request();</div><div class="line"></div><div class="line">                        HttpUrl originalHttpUrl = original.url();</div><div class="line"></div><div class="line">                        HttpUrl url = originalHttpUrl</div><div class="line">                                .newBuilder()</div><div class="line">                                .addQueryParameter(<span class="string">"token"</span>, <span class="string">"I_am_user_token"</span>)</div><div class="line">                                .addQueryParameter(<span class="string">"user_key"</span>, <span class="string">"I_am_user_user_key"</span>)</div><div class="line">                                .build();</div><div class="line"></div><div class="line">                        Request request = original</div><div class="line">                                .newBuilder()</div><div class="line">                                .url(url)</div><div class="line">                                .build();</div><div class="line"></div><div class="line">                        okhttp3.Response response = chain.proceed(request);</div><div class="line">                        <span class="keyword">return</span> response;</div><div class="line">                    &#125;</div><div class="line">                &#125;)</div><div class="line">                .build();</div></pre></td></tr></table></figure>
+<h2 id="0x02-动态请求参数"><a href="/1970/01/01/[Retrofit]0x01请求参数/#0x02-动态请求参数" class="headerlink" title="0x02 动态请求参数"></a>0x02 动态请求参数</h2><p>这个指我们在不同的请求中添加不同过的请求参数。比如，在请求用户信息的接口中我们可能需要传入用户ID，在请求记录的接口中我们需要传入起止时间等。由于这样的参数是针对接口的，因此我们就需要在每一个接口做中处理。</p>
+<ul>
+<li><p>@Query 添加一个请求参数</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// http://119.29.29.29/d?dn=ttdevs.vicp.com</span></div><div class="line"><span class="meta">@GET</span>(<span class="string">"/d"</span>)</div><div class="line"><span class="function"><span class="keyword">public</span> Call&lt;ResponseBody&gt; <span class="title">singleParams</span><span class="params">(@Query(<span class="string">"dn"</span>)</span> String domain)</span>;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<pre><code>通过上面的方式，我们发出的请求就是：
+
+`http://119.29.29.29/d?dn={domain}`
+</code></pre><ul>
+<li><p>@QueryMap 添加一组请求参数</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@GET</span>(<span class="string">"/record"</span>)</div><div class="line">	<span class="function"><span class="keyword">public</span> Call&lt;ResponseBody&gt; <span class="title">multiParams</span><span class="params">(@QueryMap(encoded = <span class="keyword">true</span>)</span> Map&lt;String, String&gt; options)</span>;</div></pre></td></tr></table></figure>
+<p>  上面我们发出的请求是：</p>
+<p>  <code>http://ttdevs.vicp.net/record?p1=v1&amp;p2=v2</code></p>
+<p>  这个这个例子中还可以看到，我们使用了一个参数：<code>encoded = true</code>，这个参数的意思是，对我们的参数进行URL<br>  Encode。</p>
+</li>
+</ul>
+<h2 id="0x03-总结"><a href="/1970/01/01/[Retrofit]0x01请求参数/#0x03-总结" class="headerlink" title="0x03 总结"></a>0x03 总结</h2><p>通过上面的介绍，我们可以了解，如果添加我们的请求参数。当需要给每一个请求都添加相同参数时该如何封装，把Retrofit打造成更适合我们使用的工具。</p>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/[Retrofit]0x02Header问题补充/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「Retrofit」0x02Header问题补充</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/[Retrofit]0x03同步与异步请求/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「Retrofit」0x03同步与异步请求</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>

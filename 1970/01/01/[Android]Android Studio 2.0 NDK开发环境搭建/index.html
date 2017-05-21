@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「Android」Android Studio 2.0 NDK开发环境搭建 | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/[Android]Android Studio 2.0 NDK开发环境搭建/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「Android」Android Studio 2.0 NDK开发环境搭建</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Android/">Android</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <h2 id="0x00-前情回顾"><a href="/1970/01/01/[Android]Android Studio 2.0 NDK开发环境搭建/#0x00-前情回顾" class="headerlink" title="0x00 前情回顾"></a>0x00 前情回顾</h2><p>前不久写了一篇环境搭建，虽然可以跑一个demo，但是如果你跟着做的话就会发现，仅仅是可以跑一个Demo，真做起来很是蛋疼。编写源码，生成so，跑App，改一点代码，再生成so，跑app。而且编写代码没有提示，不能格式化，各种不能，就是最基本的文本开发。经过一段时间折腾和Android Studio 2.0的 release，发现有更完美的方式，而且不用编写Android.mk和Application.mk。看在我刚开始学的份上，容我再来写一遍。看完这篇，你会发现JNI的开发也是如此的so easy。</p>
+<h2 id="0x01-环境搭建"><a href="/1970/01/01/[Android]Android Studio 2.0 NDK开发环境搭建/#0x01-环境搭建" class="headerlink" title="0x01 环境搭建"></a>0x01 环境搭建</h2><p>所需环境：</p>
+<ol>
+<li>Android Studio 2.0</li>
+<li>Gradle 2.10（最低要求）</li>
+<li>NDK：ndk-r11c（目前最新版：2016-04-16）</li>
+<li>LLDB：2.1（目前最新版：2016-04-16）</li>
+</ol>
+<p>下面开始正式操作：</p>
+<ul>
+<li><p>安装Android Studio 2.0</p>
+<p>  这个就不细说了。</p>
+</li>
+<li><p>配置Gradle</p>
+<p>  最低要求Gradle版本为2.10，目前最新版本为2.12。修改方法：</p>
+<p>  <code>项目根目录/gradle/wrapper/gradle-wrapper.properties</code></p>
+<p>  将最下面的一行改成你要的版本，如：</p>
+<p>  <code>distributionUrl=https\://services.gradle.org/distributions/gradle-2.10-all.zip</code></p>
+</li>
+<li><p>安装NDK</p>
+<p>  安装NDK有两种方式，一种是直接下载最新的NDK安装文件进行安装，另一种是通过SDK安装：</p>
+<ol>
+<li><p>NDK安装文件</p>
+<p> 下载参考<a href="http://developer.android.com/ndk/downloads/index.html" target="_blank" rel="external">这里</a>。根据你的操作系统下载不同版本。</p>
+</li>
+<li><p>通过SDK安装</p>
+<p> <code>Android Studio &gt; Preferences &gt; Appearance &amp; Behavior &gt; Syetem Settings &gt; Android SDK &gt; SDK Tools</code></p>
+<p> 在这个Tab中找到 <code>Android NDK</code>，选中安装即可。安装之后我们可以在 Android SDK 的目录下看到一个 <code>ndk-bundle</code> 目录，这个就是我们的NDK目录。</p>
+<p><img src="/1970/01/01/[Android]Android Studio 2.0 NDK开发环境搭建/image.png" alt="ndk_lldb"></p>
+</li>
+</ol>
+</li>
+<li><p>LLDB</p>
+<p>  和 GDB 类似，<a href="http://lldb.llvm.org/" target="_blank" rel="external">LLDB</a>  是一款调试器，可以调试我们的JNI代码。同上打开SDK设置界面：</p>
+<p>  <code>Android Studio &gt; Preferences &gt; Appearance &amp; Behavior &gt; Syetem Settings &gt; Android SDK &gt; SDK Tools</code></p>
+<p>  在这个Tab中找到 <code>LLDB</code>，选中安装即可。安装之后我们可以在 Android SDK 的目录下看到一个 <code>lldb</code> 目录，这个就是我们的 LLDB 目录。LLDB的更多信息可参考<a href="http://lldb.llvm.org/" target="_blank" rel="external">这里</a>。</p>
+</li>
+</ul>
+<p>通过上面的配置，接下来就可以开始我们的JNI的开发了。 可能你会问之前我有介绍过一篇开发环境的搭建，这个有什么不同呢？如果你使用之前的方法，你需要配置 Android.mk、Application.mk，无代码自动完成，不能代码个时候，运行调试麻烦，等等。这些问题在这里都不存在了，让我们把更多的精力放到代码编写中。</p>
+<h2 id="0x02-测试Demo"><a href="/1970/01/01/[Android]Android Studio 2.0 NDK开发环境搭建/#0x02-测试Demo" class="headerlink" title="0x02 测试Demo"></a>0x02 测试Demo</h2><p>新建java代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CipherUtils</span> </span>&#123;</div><div class="line">    <span class="keyword">static</span> &#123;</div><div class="line">        System.loadLibrary(<span class="string">"CipherUtils"</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">native</span> <span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>生成对应的C++代码：</p>
+<p>令人兴奋的是，Android Studio可以帮我们自动生成 C 代码。点击 <code>add</code> 方法，Option ＋ Return 即可生成一个 <code>CipherUtils.c</code>文件，由于我打算使用C++，因此将扩展名改为 <code>cpp</code> ，同时添加头文件，最终如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;jni.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></div><div class="line"></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"utils/log.h"</span></span></div><div class="line"></div><div class="line"><span class="function">JNIEXPORT jint JNICALL <span class="title">Java_com_ttdevs_jniutils_CipherUtils_add</span><span class="params">(JNIEnv *env, jclass type, jint x, jint y)</span> </span>&#123;</div><div class="line">    <span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">input_str</span><span class="params">(<span class="string">"Test add two number!"</span>)</span></span>;</div><div class="line">    LOGE(<span class="string">"%s"</span>, input_str.c_str());</div><div class="line">    <span class="keyword">return</span> x + y;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>PS：如果报错，可是将错误的 cpp文件拷贝出来再考吧回去。</code></p>
+<p>build.gradle 配置</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">android &#123;</div><div class="line">    ......</div><div class="line">        defaultConfig &#123;</div><div class="line">        ......</div><div class="line">        ndk &#123;</div><div class="line">            moduleName <span class="string">"CipherUtils"</span></div><div class="line">            stl <span class="string">"gnustl_static"</span> <span class="comment">// stlport_static</span></div><div class="line">            abiFilters <span class="string">"armeabi"</span>, <span class="string">"armeabi-v7a"</span></div><div class="line">            ldLibs <span class="string">"log"</span>, <span class="string">"android"</span></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">sourceSets</span>.main &#123;</div><div class="line">        <span class="comment">// 如果不写(jni.srcDirs = ['src/main/jni/'])</span></div><div class="line">        <span class="comment">// Android展示模式没有jni目录</span></div><div class="line">        <span class="comment">// this file has been added after the last project sync with gradle</span></div><div class="line">        <span class="comment">// 必须有值,如: 'src/main/jni/'</span></div><div class="line">        jni.srcDirs = [<span class="string">'src/main/jni/'</span>]</div><div class="line">        <span class="comment">// jniLibs.srcDir "libs"</span></div><div class="line">    &#125;</div><div class="line">    ......</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>直接点击运行按钮，即可跑我们的测试程序了。就这么简单。</p>
+<h2 id="0x03-JNI层的Debug"><a href="/1970/01/01/[Android]Android Studio 2.0 NDK开发环境搭建/#0x03-JNI层的Debug" class="headerlink" title="0x03 JNI层的Debug"></a>0x03 JNI层的Debug</h2><p>这个同样简单。首先需要在外面的build.gradle中配置一下：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">android &#123;</div><div class="line">    ......</div><div class="line">    buildTypes &#123;</div><div class="line">        debug &#123;</div><div class="line">            jniDebuggable = <span class="keyword">true</span></div><div class="line">        &#125;</div><div class="line">        ......</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在 <code>C/C++</code> 源文件上添加断点，点击debug，就可以像debug我们的java代码一样调试我们的原生代码了。</p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/[Android]Android Studio 1.x NDK环境搭建/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「Android」Android Studio 1.x NDK环境搭建</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/[Android]Android你可能要用到的自定义View分享/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「Android」Android你可能要用到的自定义View分享</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>

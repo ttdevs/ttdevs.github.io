@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「Python」使用requests处理cookie | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/[Python]使用requests处理cookie/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「Python」使用requests处理cookie</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Python/">Python</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <p><img src="https://camo.githubusercontent.com/5e4574f4d470db274e80e7cb1464e426e643e084/687474703a2f2f646f63732e707974686f6e2d72657175657374732e6f72672f656e2f6d61737465722f5f7374617469632f72657175657374732d736964656261722e706e67" alt="requests"></p>
+<h2 id="0x00-需求"><a href="/1970/01/01/[Python]使用requests处理cookie/#0x00-需求" class="headerlink" title="0x00 需求"></a>0x00 需求</h2><p>常见的 <code>application/json</code> 请求，如果token进行验证，我们可以在header或者body中直接添加，对于使用cookie进行验证的请求，虽然可以自己维护cookie，但是会比token麻烦很多。</p>
+<p>之前的忘了请求都是使用python3的urllib进行，当处理cookie时，发现比较困难，因此着手另寻他法，这样就发现了requests。简单看了下，使用起来比urllib方便了好多，好多。不紧紧实现了手动添加cookie的需求，其他接口使用也是相当友好。有时间打算吧之前的代码重构一下。</p>
+<p>下面简单介绍下requests的使用。</p>
+<h2 id="0x01-requests"><a href="/1970/01/01/[Python]使用requests处理cookie/#0x01-requests" class="headerlink" title="0x01 requests"></a>0x01 requests</h2><h3 id="Request"><a href="/1970/01/01/[Python]使用requests处理cookie/#Request" class="headerlink" title="Request"></a>Request</h3><ul>
+<li><p>GET</p>
+<ul>
+<li><p>无参数</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; r = requests.get(&apos;https://api.github.com/events&apos;)`</div></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<pre><code>- url参数
+
+    <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; payload = &#123;&apos;key1&apos;: &apos;value1&apos;, &apos;key2&apos;: &apos;value2&apos;&#125;</div><div class="line">&gt;&gt;&gt; r = requests.get(&apos;http://httpbin.org/get&apos;, params=payload)</div><div class="line">&gt;&gt;&gt; print(r.url)</div><div class="line">http://httpbin.org/get?key2=value2&amp;key1=value1</div></pre></td></tr></table></figure>
+
+
+    输出：
+
+    <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; print(r.url)</div><div class="line">http://httpbin.org/get?key2=value2&amp;key1=value1</div></pre></td></tr></table></figure>
+</code></pre><ul>
+<li>POST</li>
+</ul>
+<pre><code>- form参数
+
+    <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">r = requests.post(&apos;http://httpbin.org/post&apos;, data = &#123;&apos;key&apos;:&apos;value&apos;&#125;)</div></pre></td></tr></table></figure>
+
+
+- json参数
+
+   <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; import json</div><div class="line">&gt;&gt;&gt; url = &apos;https://api.github.com/some/endpoint&apos;</div><div class="line">&gt;&gt;&gt; payload = &#123;&apos;some&apos;: &apos;data&apos;&#125;</div><div class="line">&gt;&gt;&gt; r = requests.post(url, data=json.dumps(payload))</div><div class="line">       ``` </div><div class="line">    </div><div class="line">    - file</div><div class="line">    </div><div class="line">        `TODO`</div><div class="line"></div><div class="line">- Other: </div><div class="line"></div><div class="line">    - PUT: `r = requests.put(&apos;http://httpbin.org/put&apos;, data = &#123;&apos;key&apos;:&apos;value&apos;&#125;)`</div><div class="line">    - DELETE: `r = requests.delete(&apos;http://httpbin.org/delete&apos;)`</div><div class="line">    - HEAD: `r = requests.head(&apos;http://httpbin.org/get&apos;)`</div><div class="line">    - OPTIONS: `r = requests.options(&apos;http://httpbin.org/get&apos;)`</div><div class="line">       </div><div class="line">- HEADER</div><div class="line"></div><div class="line">	``` shell</div><div class="line">&gt;&gt;&gt; url = &apos;https://api.github.com/some/endpoint&apos;</div><div class="line">&gt;&gt;&gt; headers = &#123;&apos;user-agent&apos;: &apos;my-app/0.0.1&apos;&#125;</div><div class="line">&gt;&gt;&gt; r = requests.get(url, headers=headers)</div></pre></td></tr></table></figure>
+</code></pre><ul>
+<li><p>COOKIES</p>
+<p>  请求：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; url = &apos;http://httpbin.org/cookies&apos;</div><div class="line">&gt;&gt;&gt; cookies = dict(cookies_are=&apos;working&apos;)</div><div class="line">&gt;&gt;&gt; r = requests.get(url, cookies=cookies)</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>   请求的数据：</p>
+   <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">GET /cookies HTTP/1.1</div><div class="line">Host: httpbin.org</div><div class="line">Connection: keep-alive</div><div class="line">User-Agent: python-requests/2.12.4</div><div class="line">Accept-Encoding: gzip, deflate</div><div class="line">Accept: */*</div><div class="line">Cookie: cookies_are=working</div></pre></td></tr></table></figure>
+<h3 id="Response"><a href="/1970/01/01/[Python]使用requests处理cookie/#Response" class="headerlink" title="Response"></a>Response</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; import requests</div><div class="line">&gt;&gt;&gt; response = requests.get(&apos;https://api.github.com/events&apos;)</div></pre></td></tr></table></figure>
+<ul>
+<li>response.url </li>
+<li>response.encoding 编码</li>
+<li>response.status_code 状态吗</li>
+<li>response.headers headers</li>
+<li>response.text 返回的文本</li>
+<li>response.json() json</li>
+<li>response.raw 原始数据</li>
+<li>response.raise_for_status() 错误请求信息</li>
+<li>response.cookies</li>
+<li>response.history</li>
+</ul>
+<h2 id="0x03-总结"><a href="/1970/01/01/[Python]使用requests处理cookie/#0x03-总结" class="headerlink" title="0x03 总结"></a>0x03 总结</h2><p>使用过urllib的话，来看requests你会发现简单好多，同时支持python2 和 python3。</p>
+<h2 id="0xFF-参考"><a href="/1970/01/01/[Python]使用requests处理cookie/#0xFF-参考" class="headerlink" title="0xFF 参考"></a>0xFF 参考</h2><ul>
+<li><a href="https://pypi.python.org/pypi/requests" target="_blank" rel="external">https://pypi.python.org/pypi/requests</a></li>
+<li><a href="http://docs.python-requests.org/en/master/" target="_blank" rel="external">http://docs.python-requests.org/en/master/</a></li>
+<li><a href="https://github.com/kennethreitz/requests" target="_blank" rel="external">https://github.com/kennethreitz/requests</a></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/[Python]Python中的Thread Local/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「Python」Python中的Thread Local</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/[Python]文件拷贝工具Shutil介绍/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「Python」文件拷贝工具Shutil介绍</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>

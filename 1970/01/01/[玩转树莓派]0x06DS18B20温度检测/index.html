@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「玩转树莓派」0x06DS18B20温度检测 | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/[玩转树莓派]0x06DS18B20温度检测/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「玩转树莓派」0x06DS18B20温度检测</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/玩转树莓派/">玩转树莓派</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <h2 id="0x00-DS18B20温度检测"><a href="/1970/01/01/[玩转树莓派]0x06DS18B20温度检测/#0x00-DS18B20温度检测" class="headerlink" title="0x00 DS18B20温度检测"></a>0x00 DS18B20温度检测</h2><p>Raspberry connect to DS18B20</p>
+<p>需要一个能测量水温的温度计，淘宝买了高逼格的红外温枪，到手后发现这鬼东西不能测金属杯里的水温（好的太贵）。然后又淘宝了下，一个电子温度计都卖三位数，好吧，我穷…… 忽然想起手上有一个 <code>DS18B20</code>，嗯嗯，拿出来自己做一个温度计吧～～</p>
+<p><code>DS18B20</code> 这个传感器很常见，某宝上一搜一购物车，价格5到10元不等，当然也有更好的，按需购买，大概<a href="http://www.wendangku.net/doc/529cf93fc281e53a5802fff5.html" target="_blank" rel="external">参数如下</a>：</p>
+<blockquote>
+<ul>
+<li>独特的1-Wire总线接口仅需要一个管脚来通信。</li>
+<li>每个设备的内部ROM上都烧写了一个独一无二的64位序列号。</li>
+<li>多路采集能力使得分布式温度采集应用更加简单。</li>
+<li>无需外围元件。</li>
+<li>能够采用数据线供电；供电范围为3.0V至5.5V。</li>
+<li>温度可测量范围为：-55℃至+125℃（-67℉至+257℉）。</li>
+<li>温度范围超过-10℃至85℃之外时具有+-0.5℃的精度。<code>（怀疑有误）</code></li>
+<li>内部温度采集精度可以由用户自定义为9-Bits至12-Bits。</li>
+<li>DS18B20 分辨率可编程 1-Wire数字温度传感器</li>
+<li>温度转换时间在转换精度为12-Bits时达到最大值750ms。</li>
+<li>用户自定义非易失性的的温度报警设置。 · 定义了温度报警搜索命令和当温度超过用户自定义的设定值时。</li>
+<li>可选择的8-Pin SO (150 mils), 8-PinμSOP，及3-Pin TO-92封装。 · 与DS1822程序兼容。</li>
+<li>应用于温度控制系统，工业系统，民用产品。</li>
+</ul>
+</blockquote>
+<p>嗯嗯，很多技术参数，作为外行人看着就晕。这里关注几个细节就好：</p>
+<ul>
+<li>电压：3.0V～5.5V</li>
+<li>温度范围：-55℃至+125℃</li>
+<li>测量精度：可调，0.5℃对我来说可接受，所以暂时没去细究</li>
+</ul>
+<p>接下来结合我的树莓派的板子，给大家演示如何使用。</p>
+<h2 id="0x01-使用"><a href="/1970/01/01/[玩转树莓派]0x06DS18B20温度检测/#0x01-使用" class="headerlink" title="0x01 使用"></a>0x01 使用</h2><p>首先按照网上的方法，比如<a href="http://blog.csdn.net/vvbbbbb/article/details/52053293" target="_blank" rel="external">vvbbbbb</a>，一步步操作，难免遇到一些坑，我的问题是怎么都不能识别这个传感器，后来找了很久，无意中解决了，结合我的实际，做简单记录，具体操作如下：</p>
+<ul>
+<li><p>连接传感器和Raspberry Pi</p>
+<p>  <code>DS18B20</code> 有三个针脚，分别是</p>
+<ul>
+<li>VCC 红色，连 <code>Raspberry Pi</code> 的 VCC，测试连接 3V3 或 5V5 都可以</li>
+<li>DATA 黄色，连 <code>Raspberry Pi</code> 的 GPIO4</li>
+<li><p>GND 黑色，连 <code>Raspberry Pi</code> 的 GND</p>
+<p>另外和需要在用一个 4.7K 的电阻连接 VCC 和 DATA （别问我为什么，我也不知道，大学模电学的那叫一个渣），如果你没有 4.7K 的电阻，听说大一点或者小一点都可以，我没试，反正我有。如果你连电阻都没有，告诉你某宝上有打包一袋出售的，常用阻值的都有，很便宜，值得你入手。好了，最终电路如图：</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1801981-003624acc884b839.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="ds18b20"></p>
+<ul>
+<li><p>操作 </p>
+<ol>
+<li><p>更新系统</p>
+<p> 如果你的系统版本比较旧，建议你更新，否则跳过这一步：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo apt-get update</div><div class="line">sudo apt-get upgrade</div></pre></td></tr></table></figure>
+</li>
+</ol>
+</li>
+</ul>
+<pre><code>    更新速度视你的网速和源的速度，怎么切换源，可以参考我之前的文章。
+
+1. 启用 `1-Wire`
+
+    - 终端执行 `sudo raspi-config`，打开配置界面，找到 `1-Wire`（我的位于`Interfacing Option` 下，不同版本不一样，有的可能在 `Advanced Options` 下）启用它。
+    - 你也可以直接配置：编辑 `/boot/config.txt` ，在最后一行添加 `dtoverlay=w1-gpio` 保存即可。
+
+        1. 终端输入：`sudo nano /boot/config.txt`
+        2. `Ctrl+V` 滚到最下面，输入 `dtoverlay=w1-gpio`
+        3. `Ctrl+O` 保存，`Ctrl+X` 退出
+
+    两个方法结果一样，操作完成之后需要重启机器，命令：`sudo reboot`
+
+2. 查看你的传感器
+
+    <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">pi@raspberrypi:~ $ cd /sys/bus/w1/devices</div><div class="line">pi@raspberrypi:/sys/bus/w1/devices $ ls</div><div class="line">28-031561d43aff  w1_bus_master1</div><div class="line">pi@raspberrypi:/sys/bus/w1/devices $ cat 28-031561d43aff/w1_slave</div><div class="line">48 01 01 01 1f ff 0c 10 04 : crc=04 YES</div><div class="line">48 01 01 01 1f ff 0c 10 04 t=20500</div><div class="line">pi@raspberrypi:/sys/bus/w1/devices $</div></pre></td></tr></table></figure>
+
+
+    先查看 `w1` 设备列表，然后查看里面的 `w1_slave` 文件内容，即可显示出温度信息（这个温度信息并不是我们最终的温度，需要经过一定的换算）。
+
+    `前方高能`
+    `前方填坑`
+
+    嗯嗯，坑出现了，我的在查看传感器的时候显示如下：
+
+    <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">pi@raspberrypi:~$ cd /sys/bus/w1/devices/</div><div class="line">pi@raspberrypi:/sys/bus/w1/devices $ ls</div><div class="line">00-600000000000  00-a00000000000  00-e00000000000  w1_bus_master1</div><div class="line">pi@raspberrypi:/sys/bus/w1/devices $</div></pre></td></tr></table></figure>
+
+
+    网上看到的都是 `28-xxxxxxxxxxxxxx` 这样的信息，而我的却不是；这些目录下也没有 `w1_slave`文件；而且每次进这个目录 `/sys/bus/w1/devices` 这些文件夹的名字和数量都有可能会变。好吧，懵逼了。所以去找答案，果然也有一些人反应过这个问题，但大部分对我都没用，比如 VCC 从 3V3 换到 5V5 ，看看时间，又快12点了，想放弃了都。此时[佛光乍现](https://www.raspberrypi.org/forums/viewtopic.php?f=28&amp;t=106041)：可能是 `GPIO` 口的问题，可以换一个试试，一试果然很爽，操作如下：
+
+    编辑 `/boot/config.txt`，将刚才添加的那行修改如下 `dtoverlay=w1-gpio,gpiopin=5,pullup=on` 这里的 `5` 是对应的GPIO口，你也可以用其他的，高兴就好。保存重启即可。
+
+3. 查看温度数据
+
+    <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">pi@raspberrypi:/sys/bus/w1/devices $ cat 28-031561d43aff/w1_slave</div><div class="line">48 01 01 01 1f ff 0c 10 04 : crc=04 YES</div><div class="line">48 01 01 01 1f ff 0c 10 04 t=20500</div><div class="line">pi@raspberrypi:/sys/bus/w1/devices $</div></pre></td></tr></table></figure>
+
+
+    这里的 `t=20500` 应该就是温度数据，不知道 `crc=40` 是不是校验数据，不管了，我也没时间去计算。网上肯定有现成的轮子来展示，这里推荐 [w1thermsensor](https://github.com/timofurrer/w1thermsensor)。
+
+    - 安装
+
+        `pip install w1thermsensor`
+
+    - 使用(ds18b20.py)
+
+        <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> w1thermsensor <span class="keyword">import</span> W1ThermSensor</div><div class="line">sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, <span class="string">"031561d43aff"</span>)</div><div class="line"><span class="keyword">while</span> <span class="keyword">True</span>:</div><div class="line">    temperature_in_celsius = sensor.get_temperature()</div><div class="line">    <span class="keyword">print</span> temperature_in_celsius</div></pre></td></tr></table></figure>
+
+
+        这里的一个常量 `031561d43aff` 就是 `28-031561d43aff` 这里的后半部分，你的可能跟我不一样，请改成你自己看到的。
+
+        执行：
+
+        <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">pi@raspberrypi:~/python $ cat ds18b20.py</div><div class="line"><span class="keyword">from</span> w1thermsensor <span class="keyword">import</span> W1ThermSensor</div><div class="line">sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, <span class="string">"031561d43aff"</span>)</div><div class="line"><span class="keyword">while</span> <span class="keyword">True</span>:</div><div class="line">    temperature_in_celsius = sensor.get_temperature()</div><div class="line">    <span class="keyword">print</span> temperature_in_celsius</div><div class="line">pi@raspberrypi:~/python $ python ds18b20.py</div><div class="line"><span class="number">21.0</span></div><div class="line"><span class="number">21.0</span></div></pre></td></tr></table></figure>
+</code></pre><p>完美～</p>
+<h2 id="0xFF-参考"><a href="/1970/01/01/[玩转树莓派]0x06DS18B20温度检测/#0xFF-参考" class="headerlink" title="0xFF 参考"></a>0xFF 参考</h2><ol>
+<li><a href="https://datasheets.maximintegrated.com/en/ds/DS18B20.pdf" target="_blank" rel="external">https://datasheets.maximintegrated.com/en/ds/DS18B20.pdf</a></li>
+<li><a href="http://www.wendangku.net/doc/529cf93fc281e53a5802fff5.html" target="_blank" rel="external">http://www.wendangku.net/doc/529cf93fc281e53a5802fff5.html</a></li>
+<li><a href="http://blog.csdn.net/vvbbbbb/article/details/52053293" target="_blank" rel="external">http://blog.csdn.net/vvbbbbb/article/details/52053293</a></li>
+<li><a href="https://www.raspberrypi.org/forums/viewtopic.php?f=28&amp;t=106041" target="_blank" rel="external">https://www.raspberrypi.org/forums/viewtopic.php?f=28&amp;t=106041</a></li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/[玩转树莓派]0x04还我80端口/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「玩转树莓派」0x04还我80端口</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/2017/05/19/[Android-Bluetooth]0x02操作.md.bak/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「Android-Bluetooth」0x02操作</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>

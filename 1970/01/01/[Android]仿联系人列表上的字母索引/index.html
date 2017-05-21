@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「Android」仿联系人列表上的字母索引 | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/[Android]仿联系人列表上的字母索引/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「Android」仿联系人列表上的字母索引</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Android/">Android</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <p>这个小功能github有很多。不同的应用需求会有少许差别，比如listview滑动时字母是不是跟随滑动；手动点击字母是不是在屏幕中间显示一个提示；点击时索引的背景显示出来，离开后背景消失等等，当然这些都是细节问题。实现思路上也可以有多种，比如自己去draw每个字母，然后处理滑动、借助TextView来展示字母列表等。看了几个demo，感觉和自己的需求有些差别，而且这些demo为了实现”大而全”有些多余的东西，因此决定自己写个。</p>
+<h2 id="0x01-分析"><a href="/1970/01/01/[Android]仿联系人列表上的字母索引/#0x01-分析" class="headerlink" title="0x01 分析"></a>0x01 分析</h2><p>我们的需求是这样的：中文参与索引，字母或者其他开头的item不参与索引，直接放到第一个“#”里；点击字母索引其被点击字母列表颜色跟随变化；手动滑动listview字母索引的字母颜色也跟随变化；自己顺手加了个点击某个字母弹出提示的接口。最后效果如下图：</p>
+<p><img src="http://img.blog.csdn.net/20140831140659685?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="Letter Index">  </p>
+<h2 id="0x02-实现"><a href="/1970/01/01/[Android]仿联系人列表上的字母索引/#0x02-实现" class="headerlink" title="0x02 实现"></a>0x02 实现</h2><p>决定直接使用垂直方向的LinearLayout嵌套TextView来展示字母列表。思路如下：根据索引高度，大概计算每个字母的高度，然后添加到Linearlayout中；然后处理Linearlayout的touch事件，拿到坐标计算当前应该索引哪个。其中遇到的主要问题是对TextView的把握，比如它的高度如何计算？（真正实现的时候你会发现它有个paddingTop和paddingBottom）其他的比如滑动逻辑这些调试下即可，直接上代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div><div class="line">228</div><div class="line">229</div><div class="line">230</div><div class="line">231</div><div class="line">232</div><div class="line">233</div><div class="line">234</div><div class="line">235</div><div class="line">236</div><div class="line">237</div><div class="line">238</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 右侧字母索引。可作为一个独立的view插入自己的布局中&lt;br&gt;</div><div class="line"> * &lt;br&gt;</div><div class="line"> * 描述：&lt;br&gt;</div><div class="line"> * 线型布局中嵌套一个线型布局（目的为了增大可滑动区域的面积，若不考虑此可不使用嵌套）。&lt;br&gt;</div><div class="line"> * 每个字母插入内嵌的线性布局中，根据控件的高度计算每个字母的尺寸。&lt;br&gt;</div><div class="line"> * &lt;br&gt;</div><div class="line"> * 使用：&lt;br&gt;</div><div class="line"> * 将此view插入你的布局文件中，初始化完成之后设置你的ListView和索引用的数据源(需要自己组织排序数据源)即可。&lt;br&gt;</div><div class="line"> * &lt;br&gt;</div><div class="line"> * 数据源的组织：若某项不参与排序则数据源中设置为'0'或其他小于'A'的ASCII字符，内部会将所有字符转换成大写，所以务必在外部做好排序。&lt;br&gt;</div><div class="line"> * &lt;br&gt;</div><div class="line"> * 建议：若你的数据中包括ASCII码为a0、20的字符，建议剔除，如：&lt;br&gt;</div><div class="line"> * str.replace(' ', ' '); // a0-&gt;20 str.replaceAll(" ", "");&lt;br&gt;</div><div class="line"> * &lt;br&gt;</div><div class="line"> * 如果你处理的是中文，可使用libs中的pinyin4j处理</div><div class="line"> *</div><div class="line"> * <span class="doctag">@author</span> ttdevs 2014-07-31</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ListViewLetterIndicator</span> <span class="keyword">extends</span> <span class="title">LinearLayout</span> <span class="keyword">implements</span> <span class="title">OnScrollListener</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String INDICATOR = <span class="string">"#ABCDEFGHIJKLMNOPQRSTUVWXYZ"</span>;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> LinearLayout llMain;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> ListView mListView; <span class="comment">// ListView</span></div><div class="line">    <span class="keyword">private</span> List&lt;String&gt; mData; <span class="comment">// 数据源</span></div><div class="line">    <span class="keyword">private</span> TextView tvAlert; <span class="comment">// 显示当前的字母</span></div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mIndex; <span class="comment">// 当前所处的indicator位置</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> scrollable = <span class="keyword">true</span>; <span class="comment">//</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ListViewLetterIndicator</span><span class="params">(Context context)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>(context, <span class="keyword">null</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ListViewLetterIndicator</span><span class="params">(Context context, AttributeSet attrs)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>(context, attrs);</div><div class="line"></div><div class="line">        setOrientation(LinearLayout.VERTICAL);</div><div class="line">        setBackgroundColor(getResources().getColor(R.color.letter_indicator_background));</div><div class="line">        <span class="comment">// setPadding(8, 8, 8, 8);</span></div><div class="line"></div><div class="line">        llMain = <span class="keyword">new</span> LinearLayout(getContext());</div><div class="line">        llMain.setOrientation(LinearLayout.VERTICAL);</div><div class="line">        llMain.setGravity(Gravity.CENTER);</div><div class="line">        <span class="comment">// llMain.setPadding(2, 2, 2, 2);</span></div><div class="line"></div><div class="line">        <span class="keyword">int</span> width = (<span class="keyword">int</span>) getResources().getDimension(R.dimen.letter_indicator_width);</div><div class="line">        addView(llMain, width, LinearLayout.LayoutParams.MATCH_PARENT);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 设置数据源</div><div class="line">     *</div><div class="line">     * <span class="doctag">@param</span> lv   绑定的ListView</div><div class="line">     * <span class="doctag">@param</span> data 排序用的数据源</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setData</span><span class="params">(ListView lv, List&lt;String&gt; data)</span> </span>&#123;</div><div class="line">        setData(lv, data, <span class="keyword">null</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 设置数据源</div><div class="line">     *</div><div class="line">     * <span class="doctag">@param</span> lv   绑定的ListView</div><div class="line">     * <span class="doctag">@param</span> data 排序用的数据源</div><div class="line">     * <span class="doctag">@param</span> tv   显示当前所处字母的TextView</div><div class="line">     */</div><div class="line">    <span class="meta">@SuppressLint</span>(<span class="string">"DefaultLocale"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setData</span><span class="params">(ListView lv, List&lt;String&gt; data, TextView tv)</span> </span>&#123;</div><div class="line">        mListView = lv;</div><div class="line">        mData = data;</div><div class="line">        tvAlert = tv;</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; mData.size(); i++) &#123;</div><div class="line">            String str = mData.get(i);</div><div class="line">            mData.set(i, str.toUpperCase());</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        mListView.setOnScrollListener(<span class="keyword">this</span>);</div><div class="line">        mIndex = <span class="number">0</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onLayout</span><span class="params">(<span class="keyword">boolean</span> changed, <span class="keyword">int</span> left, <span class="keyword">int</span> top, <span class="keyword">int</span> right, <span class="keyword">int</span> bottom)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onLayout(changed, left, top, right, bottom);</div><div class="line">        initView();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">initView</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> childCount = llMain.getChildCount();</div><div class="line">        <span class="keyword">if</span> (childCount == INDICATOR.length()) &#123;</div><div class="line">            <span class="comment">// llMain.invalidate();</span></div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">int</span> height = llMain.getHeight();</div><div class="line">        <span class="keyword">int</span> textHeight = (<span class="keyword">int</span>) Math.floor(height / (INDICATOR.length() + <span class="number">6</span>));</div><div class="line"></div><div class="line">        LinearLayout.LayoutParams llpText = <span class="keyword">new</span> LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,</div><div class="line">                LinearLayout.LayoutParams.WRAP_CONTENT);</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; INDICATOR.length(); i++) &#123;</div><div class="line">            String str = String.valueOf(INDICATOR.charAt(i));</div><div class="line">            TextView tvIndicator = <span class="keyword">new</span> TextView(getContext());</div><div class="line">            tvIndicator.setText(str);</div><div class="line">            tvIndicator.setIncludeFontPadding(<span class="keyword">false</span>);</div><div class="line">            tvIndicator.setTextSize(TypedValue.COMPLEX_UNIT_PX, textHeight);</div><div class="line">            tvIndicator.setTextColor(getResources().getColor(R.color.letter_indicator_text_normal));</div><div class="line">            <span class="comment">// tvIndicator.setPadding(0, -4, 0, -4);</span></div><div class="line">            llMain.addView(tvIndicator, llpText);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@SuppressLint</span>(<span class="string">"DefaultLocale"</span>)</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> action = ev.getAction();</div><div class="line">        <span class="keyword">switch</span> (action) &#123;</div><div class="line">            <span class="keyword">case</span> MotionEvent.ACTION_DOWN:</div><div class="line">            <span class="keyword">case</span> MotionEvent.ACTION_MOVE:</div><div class="line">                scrollable = <span class="keyword">false</span>;</div><div class="line">                <span class="keyword">float</span> y = ev.getY();</div><div class="line">                <span class="keyword">float</span> childY = <span class="number">0</span>;</div><div class="line">                <span class="keyword">int</span> index = <span class="number">0</span>;</div><div class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; INDICATOR.length(); i++) &#123;</div><div class="line">                    TextView view = (TextView) llMain.getChildAt(i);</div><div class="line">                    childY = view.getTop();</div><div class="line">                    <span class="keyword">int</span> height = view.getHeight();</div><div class="line">                    <span class="keyword">if</span> (childY &lt; y &amp;&amp; childY + height &gt; y) &#123;</div><div class="line">                        index = i;</div><div class="line">                        <span class="keyword">break</span>;</div><div class="line">                    &#125;</div><div class="line">                    view = <span class="keyword">null</span>; <span class="comment">// not neccessary</span></div><div class="line">                &#125;</div><div class="line"></div><div class="line">                TextView view = (TextView) llMain.getChildAt(INDICATOR.length() - <span class="number">1</span>);</div><div class="line">                <span class="keyword">if</span> (y &gt; view.getTop()) &#123;</div><div class="line">                    index = INDICATOR.length() - <span class="number">1</span>;</div><div class="line">                &#125;</div><div class="line">                view = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">                changeIndicatorColor(index);</div><div class="line"></div><div class="line">                <span class="keyword">char</span> indexIndicator = INDICATOR.charAt(index);<span class="comment">// A:65, #:23</span></div><div class="line">                <span class="keyword">if</span> (indexIndicator &lt; <span class="string">'A'</span>) &#123;</div><div class="line">                    mListView.setSelection(<span class="number">0</span>);</div><div class="line">                &#125; <span class="keyword">else</span> &#123;</div><div class="line">                    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; mData.size(); i++) &#123;</div><div class="line">                        <span class="keyword">if</span> (mData.get(i).charAt(<span class="number">0</span>) &gt;= indexIndicator) &#123;</div><div class="line">                            mListView.setSelection(i);</div><div class="line">                            <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                <span class="keyword">break</span>;</div><div class="line">            <span class="keyword">case</span> MotionEvent.ACTION_UP:</div><div class="line">                postDelayed(<span class="keyword">new</span> Runnable() &#123;</div><div class="line"></div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">                        scrollable = <span class="keyword">true</span>;</div><div class="line">                    &#125;</div><div class="line">                &#125;, <span class="number">100</span>);</div><div class="line">                showText(<span class="string">""</span>, <span class="keyword">false</span>);</div><div class="line">                <span class="keyword">break</span>;</div><div class="line"></div><div class="line">            <span class="keyword">default</span>:</div><div class="line">                <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onScrollStateChanged</span><span class="params">(AbsListView view, <span class="keyword">int</span> scrollState)</span> </span>&#123;</div><div class="line">        <span class="comment">// invalidate();</span></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@SuppressLint</span>(<span class="string">"DefaultLocale"</span>)</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onScroll</span><span class="params">(AbsListView view, <span class="keyword">int</span> firstVisibleItem, <span class="keyword">int</span> visibleItemCount, <span class="keyword">int</span> totalItemCount)</span> </span>&#123;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            <span class="keyword">if</span> (!scrollable || <span class="keyword">null</span> == mData || mData.size() == <span class="number">0</span>) &#123;</div><div class="line">                <span class="keyword">return</span>;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">if</span> (<span class="keyword">null</span> != mData) &#123;</div><div class="line">                String str = mData.get(firstVisibleItem);</div><div class="line">                <span class="keyword">char</span> indicator = str.charAt(<span class="number">0</span>);</div><div class="line">                <span class="keyword">if</span> (indicator &lt; <span class="string">'A'</span>) &#123;</div><div class="line">                    changeIndicatorColor(<span class="number">0</span>);</div><div class="line">                    <span class="keyword">return</span>;</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; INDICATOR.length(); i++) &#123;</div><div class="line">                    <span class="keyword">if</span> (INDICATOR.charAt(i) == indicator) &#123;</div><div class="line">                        changeIndicatorColor(i);</div><div class="line">                        <span class="keyword">return</span>;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">changeIndicatorColor</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (mIndex != <span class="number">0</span> &amp;&amp; mIndex == index) &#123;</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        TextView tv = (TextView) llMain.getChildAt(mIndex);</div><div class="line">        tv.setTextColor(getResources().getColor(R.color.letter_indicator_text_normal));</div><div class="line"></div><div class="line">        tv = (TextView) llMain.getChildAt(index);</div><div class="line">        tv.setTextColor(getResources().getColor(R.color.letter_indicator_text_select));</div><div class="line"></div><div class="line">        mIndex = index;</div><div class="line"></div><div class="line">        showText(String.valueOf(INDICATOR.charAt(mIndex)), <span class="keyword">true</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">showText</span><span class="params">(String text, <span class="keyword">boolean</span> isShow)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> != tvAlert) &#123;</div><div class="line">            tvAlert.setText(text);</div><div class="line">            tvAlert.setVisibility(isShow ? View.VISIBLE : View.INVISIBLE);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// private Drawable initBackground() &#123;</span></div><div class="line">    <span class="comment">// float[] roundRect = new float[] &#123; 12, 12, 12, 12, 12, 12, 12, 12 &#125;;</span></div><div class="line">    <span class="comment">// RoundRectShape reoundRechShape = new RoundRectShape(roundRect, null,</span></div><div class="line">    <span class="comment">// null);</span></div><div class="line">    <span class="comment">// ShapeDrawable drawable = new ShapeDrawable(reoundRechShape);</span></div><div class="line">    <span class="comment">// drawable.getPaint().setColor(Color.parseColor(GRAY_AA));</span></div><div class="line">    <span class="comment">// // drawable.getPaint().setStyle(Paint.Style.FILL);</span></div><div class="line">    <span class="comment">// return drawable;</span></div><div class="line">    <span class="comment">// &#125;</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>测试过程中发现，有些item明明是汉字开头的（这个时候你可能还需要个汉字转拼音的工具包），却出现在“#”里，仔细检查，你会发现，那个并不是空格，细节请看代码注释。 由于很简单，不做详细介绍，仅仅做个记录，有问题可以留言一起讨论。</p>
+<h2 id="0x04-Demo"><a href="/1970/01/01/[Android]仿联系人列表上的字母索引/#0x04-Demo" class="headerlink" title="0x04 Demo"></a>0x04 Demo</h2><p>最后附个测试demo： <a href="http://download.csdn.net/detail/ttdevs/7846559" target="_blank" rel="external">下载</a></p>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/[Android]从浏览器中打开我们的应用/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「Android」从浏览器中打开我们的应用</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/[Android]使用VideoView和MediaController进行视频播放/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「Android」使用VideoView和MediaController进行视频播放</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>

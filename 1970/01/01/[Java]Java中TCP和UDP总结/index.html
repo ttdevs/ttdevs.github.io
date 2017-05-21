@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「Java」Java中TCP和UDP总结 | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/[Java]Java中TCP和UDP总结/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「Java」Java中TCP和UDP总结</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <h2 id="0x00-还是先说点啥"><a href="/1970/01/01/[Java]Java中TCP和UDP总结/#0x00-还是先说点啥" class="headerlink" title="0x00 还是先说点啥"></a>0x00 还是先说点啥</h2><p>之前写过一些关于TCP和UDP数据传输的代码，比如使用TCP传输音视频数据包，P2P打洞中使用UDP等。写好之后就直接丢下了，没有总结下都。最近准备找工作，再拿来温习下。</p>
+<p>暂时把自己的定位很明确，就是android应用层的开发，所以关于TCP/UDP的实现细节，暂时也不想去深究。但是心里清楚这个必须去看的，有时间推荐大家看看《TCP/IP详解》或者网上有很多大牛的总结。  </p>
+<h2 id="0x01-TCP"><a href="/1970/01/01/[Java]Java中TCP和UDP总结/#0x01-TCP" class="headerlink" title="0x01 TCP"></a>0x01 TCP</h2><p>不知道为什么，这个总结不想写的太细，不贴代码写的细又不知道能总结啥，好纠结，可能就是认识有限吧，公司要是有个架构就好了。不说了，还是安安稳稳的写总结吧。TCP这个可能是我们用的比较多的或者说我用的比较多的，主要的工作还是进行大量数据的传输和心跳保持（想想去年面试的时候都不知道啥是心跳，汗……）。对于心跳保持，就是一个简单的小心跳包；大量数据的传输，这个也总结不了啥东西，代码就那样，就是一些细节说一下。</p>
+<h3 id="客户端"><a href="/1970/01/01/[Java]Java中TCP和UDP总结/#客户端" class="headerlink" title="客户端"></a>客户端</h3><p>这个是我们关注的最多的，也是作为一个手机APP主要关注的，因为我们就是client。</p>
+<h4 id="创建client"><a href="/1970/01/01/[Java]Java中TCP和UDP总结/#创建client" class="headerlink" title="创建client"></a>创建client</h4><p><code>new Socket(ip, port);</code></p>
+<p>我们可以通过上面的方式创建一个socket，如果失败，会抛出IOException。参数中的IP和Port是目标服务器的IP和端口号。若你想得到本地的IP和PORT也可通过这个socket拿到。当然，创建socket还有多种方法，比如 <code>new Socket(proxy)</code>，如果有需要你可以查阅相关资料。</p>
+<p>拿到socket对象之后我们接着要做的事情就是从这个socket中拿到输入和输出流，这样我们才可以进行数据的收发：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">InputStream is = mSocket.getInputStream();</div><div class="line">OutputStream out = mSocket.getOutputStream();</div></pre></td></tr></table></figure>
+<p>通过输出流，我们可以使用 is.read(receiveBuffer) 和 out.write(data); 来进行数据的收发。这里给两个简单实例：</p>
+<h4 id="接收数据"><a href="/1970/01/01/[Java]Java中TCP和UDP总结/#接收数据" class="headerlink" title="接收数据"></a>接收数据</h4>  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        <span class="keyword">int</span> count = is.read(receiveBuffer);</div><div class="line">        <span class="keyword">if</span> (count == -<span class="number">1</span>) &#123;</div><div class="line">            notifyError();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">byte</span>[] data = getPacket(receiveBuffer, count, is);</div><div class="line">        mReceiverQueue.put(data);</div><div class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">        e.printStackTrace();</div><div class="line">        notifyError();</div><div class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">        e.printStackTrace();</div><div class="line">        notifyError();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>假如我们的数据包协议格式如下：  </p>
+<p><img src="http://img.blog.csdn.net/20140222112122625?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdHRkZXZz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="">  </p>
+<p>这个时候，如果进行大量数据传输的时候我们从InputStream中一次读取的数据可能不是一个完整的数据包。这个时候我们需要做下面的判断：</p>
+<p>a、读取的数据长度是否达到包头大小，若没有包头长，继续读，直到达到或者超过包头大小<br>b、从包头中解出长度字段，循环读取，直到读到长度字段标示长度为止<br>c、校验数据，去除包头，取出包体<br>d、重复上述步骤</p>
+<h4 id="发送数据"><a href="/1970/01/01/[Java]Java中TCP和UDP总结/#发送数据" class="headerlink" title="发送数据"></a>发送数据</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">()</span> </span>&#123;</div><div class="line">	<span class="keyword">try</span> &#123;</div><div class="line">		<span class="keyword">byte</span>[] data = mSenderQueue.take();</div><div class="line">		out.write(data);</div><div class="line">	&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">		e.printStackTrace();</div><div class="line">		notifyError();</div><div class="line">	&#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">		e.printStackTrace();</div><div class="line">		notifyError();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>mSenderQueue和mReceiverQueue一样，都是阻塞队列。发送的时候，我们从队列中取出要发送的数据，然后通过输出流写入即可。这个地方比发送简单了一些。可能你已经注意到，我的发送和接收都用了阻塞队列，这个原因就是考虑到大量数据的时候做一个缓冲，如果没有缓冲，可能导致代码的阻塞。另外就是当我们的阻塞队列充满的时候可以手动丢弃一些数据，这个就是具体应用了。  </p>
+<h3 id="服务端"><a href="/1970/01/01/[Java]Java中TCP和UDP总结/#服务端" class="headerlink" title="服务端"></a>服务端</h3><p>这个可以简单了解下，可以使用各种语言实现，比如Java、C++等。这里简单介绍Java的实现。</p>
+<p>首先，我们创建一个ServerSocket对象并指定一个端口号，通过这个对象的accept()方法等待客户的连接，这个方法是阻塞的；当有客户端连接上来之后，我们就拿到了连接的socket，拿到这个socket之后的操作就和客户端一样了，最后看一下关键代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">	ServerSocket serverSocket = <span class="keyword">new</span> ServerSocket(<span class="number">9559</span>);</div><div class="line">	<span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">		Socket socket = serverSocket.accept();</div><div class="line">		<span class="comment">// new ServiceSocketThread(socket).start();</span></div><div class="line">	&#125;</div><div class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">	e.printStackTrace();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>因为服务端不可能只与一个客户端连接，因此上面的代码写在一个死循环中。拿到socket之后起一个新的线程来处理这个socket。当然，实际情况可能不是这样，为每一个连接创建一个新的线程是很耗费资源的。</p>
+<p>最后，还有一点需要注意的是：从Socket中拿到InputStream和OutputStream之后如果关闭它们，socket也将随之关闭(未验证)。</p>
+<h2 id="0x02-UDP"><a href="/1970/01/01/[Java]Java中TCP和UDP总结/#0x02-UDP" class="headerlink" title="0x02 UDP"></a>0x02 UDP</h2><p>这个东西用的很少，就是当初测试P2P的时候用过。能想到的问题就是数据大小的问题，比如发送数据我们的数据定义为多大合适。但是最后没有实际的项目验证，在此也不好回答。先贴一段代码出来：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UDPServer</span> <span class="keyword">extends</span> <span class="title">BaseThread</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 发送队列大小</div><div class="line">     */</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SENDQUEUESIZE = <span class="number">10</span>;</div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 接收队列大小</div><div class="line">     */</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> RECEIVEQUEUESIZE = <span class="number">10</span>;</div><div class="line">    <span class="comment">/**</span></div><div class="line">     * UDP接收缓存大小</div><div class="line">     */</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> RECEIVERBUFFERSIZE = <span class="number">1024</span>;</div><div class="line">    <span class="comment">/**</span></div><div class="line">     * UDP接收缓存大小</div><div class="line">     */</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> RECEIVERPACKETSIZE = <span class="number">1024</span> * <span class="number">64</span>;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> count = <span class="number">0</span>;</div><div class="line">    <span class="keyword">private</span> DatagramPacket receivePacket;</div><div class="line">    <span class="keyword">private</span> DatagramSocket mSocket;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">prepare</span><span class="params">()</span> </span>&#123;</div><div class="line">        receivePacket = <span class="keyword">new</span> DatagramPacket(<span class="keyword">new</span> <span class="keyword">byte</span>[RECEIVERPACKETSIZE], RECEIVERPACKETSIZE);</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            mSocket = <span class="keyword">new</span> DatagramSocket(<span class="number">9559</span>);</div><div class="line">        &#125; <span class="keyword">catch</span> (SocketException e) &#123;</div><div class="line">            System.out.println(String.format(<span class="string">"udp connect init error: %s"</span>, e.getMessage()));</div><div class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            mSocket.receive(receivePacket);</div><div class="line"></div><div class="line">            <span class="keyword">byte</span>[] data = receivePacket.getData();</div><div class="line">            <span class="keyword">int</span> length = receivePacket.getLength();</div><div class="line">            <span class="keyword">int</span> offset = receivePacket.getOffset();</div><div class="line">            System.out.print(++count</div><div class="line">                    + String.format(<span class="string">"length:%d|%d, offset:%d, data: %s \n"</span>, length, data.length, offset, <span class="keyword">new</span> String(data, <span class="string">"gbk"</span>)));</div><div class="line">            System.out.println(data[<span class="number">1024</span>]);</div><div class="line">        &#125; <span class="keyword">catch</span> (SocketException e) &#123;</div><div class="line">            System.out.println(String.format(<span class="string">"udp connect init error: %s"</span>, e.getMessage()));</div><div class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">            System.out.println(String.format(<span class="string">"udp connect init error: %s"</span>, e.getMessage()));</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>byte[] data = receivePacket.getData();</code> </p>
+<p>这个地方拿到的data是缓冲区的大小，他们地址是一样的，这个大家可以试试就知道。至于这个data中有多少数据，就需要我们通过 <code>receivePacket.getLength();</code> 拿到。</p>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/[Java](==)与(equals)/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「Java」(==)与(equals)</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/[Java]Java中获取本地IP和Port/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「Java」Java中获取本地IP和Port</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>

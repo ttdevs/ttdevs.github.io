@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「Python」文件拷贝工具Shutil介绍 | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/[Python]文件拷贝工具Shutil介绍/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「Python」文件拷贝工具Shutil介绍</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Python/">Python</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <p>一哥们让帮写个脚本：从一个文件夹中按照指定的规则拷贝部分文件。给半小时时间，虽然水平很菜没有信心，但还是应下了这个需求。</p>
+<h2 id="0x01-分析"><a href="/1970/01/01/[Python]文件拷贝工具Shutil介绍/#0x01-分析" class="headerlink" title="0x01 分析"></a>0x01 分析</h2><p>首先想到的就是os，sys这些系统库完成这些操作，由于不熟悉这几个库，还是google一下。不过在搜索的时候发现了这个库： <code>shutil</code>。查看了下简直太简单，一行代码完成拷贝。自己之前还想着创建目录，检查文件是否存在，文件读写，各种问题……</p>
+<h2 id="0x02-shutil"><a href="/1970/01/01/[Python]文件拷贝工具Shutil介绍/#0x02-shutil" class="headerlink" title="0x02 shutil"></a>0x02 shutil</h2><p>shutil是一个python提供的高级文件操作工具，他可以帮助我们快速的进行常规文件操作。文件拷贝操作如下：</p>
+<p><code>shutil.copyfile(src, dst, *, follow_symlinks=True)</code></p>
+<p>第一个参数原文件，第二个参数目标文件位置。简单吧，想想如果java写的话，各种判断，各种iostream，各种蛋疼啊，python就一行啊啊啊啊……</p>
+<h3 id="方法说明"><a href="/1970/01/01/[Python]文件拷贝工具Shutil介绍/#方法说明" class="headerlink" title="方法说明"></a>方法说明</h3><ul>
+<li><p>copy(src, dst)</p>
+<p>  将文件src复制到文件dst，包含权限</p>
+</li>
+<li><p>copy2(src, dst)</p>
+<p>  同copy，同时复制文件元数据</p>
+</li>
+<li><p>copyfile(src, dst)</p>
+<p>  将文件src复制到文件dst，但不包含元数据</p>
+</li>
+<li><p>copymode(src, dst)</p>
+<p>  复制文件权限</p>
+</li>
+<li><p>copystat(src, dst)</p>
+<p>  将权限位、 最后存取时间、 最后修改时间和标志从src复制到dst</p>
+</li>
+<li><p>copytree(src, dst, symlinks=False, ignore=None)</p>
+<p>  递归复制目录</p>
+</li>
+<li><p>rmtree(path[, ignore_errors[, onerror]])</p>
+<p>  删除目录</p>
+</li>
+<li><p>move(src, dst)</p>
+<p>  递归移动目录</p>
+</li>
+</ul>
+<h3 id="Demo"><a href="/1970/01/01/[Python]文件拷贝工具Shutil介绍/#Demo" class="headerlink" title="Demo"></a>Demo</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> shutil</div><div class="line">    </div><div class="line">SOURCE = &#123;</div><div class="line">   <span class="string">"1f604"</span>,</div><div class="line">   ...</div><div class="line">   <span class="string">"1f349"</span>&#125;</div><div class="line">    </div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">replace</span><span class="params">()</span>:</span></div><div class="line">   base_path = <span class="string">"drawable/"</span></div><div class="line">   dest_path = <span class="string">"drawable_dest/"</span></div><div class="line">   <span class="keyword">for</span> name <span class="keyword">in</span> SOURCE:</div><div class="line">       file_name = base_path + <span class="string">"emoji_"</span> + name + <span class="string">".png"</span></div><div class="line">       dest_name = dest_path + <span class="string">"emoji_"</span> + name + <span class="string">".png"</span></div><div class="line">       shutil.copy(file_name, dest_name)</div><div class="line">    </div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">   replace()</div></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/[Python]使用requests处理cookie/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「Python」使用requests处理cookie</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/[Retrofit]0x00初探/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「Retrofit」0x00初探</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「玩转树莓派」0x04还我80端口 | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/[玩转树莓派]0x04还我80端口/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「玩转树莓派」0x04还我80端口</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/玩转树莓派/">玩转树莓派</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <h2 id="0x00-花生壳介绍"><a href="/1970/01/01/[玩转树莓派]0x04还我80端口/#0x00-花生壳介绍" class="headerlink" title="0x00 花生壳介绍"></a>0x00 花生壳介绍</h2><p>Oray for Raspberry Pi</p>
+<p>花生壳服务<a href="http://baike.baidu.com/link?url=EYa6mHfgk9r-R6a0_GvHX2aUNOWOQiTwSXvnMy-f4xHGfBMlOnP78dU_KfmlNCcTHYxvXhDcZ-ncLk1enR8mB_" target="_blank" rel="external">百度百科</a>中有这样一段介绍：</p>
+<blockquote>
+<p>花生壳是动态域名解析服务客户端软件。当您安装并注册该项服务，无论您在任何地点、任何时间、使用任何线路，均可利用这一服务建立拥有固定域名和最大自主权的互联网主机。“花生壳”支持的线路包括普通电话线、isdn、adsl、有线电视网络、双绞线到户的宽带网和其它任何能够提供互联网真实ip的接入服务线路，而无论连接获得的ip属于动态还是静态。</p>
+</blockquote>
+<p>简单来说，我们可以通过花生壳的服务把我们的IP和一个域名做映射，映射后就可以使用域名访问而不需要记IP了。IP是一个不好记的东西，像我们这样的个人用户又是没有固定IP的（固定IP的宽带服务较贵，土豪可忽略），因此花生壳可以帮我们解决这个疼点。之前的花生壳给注册用户免费提供了一个二级域名，现在注册需要花5元购买一个永久的二级域名。下面会有介绍。</p>
+<h2 id="0x01-安装花生壳内网版"><a href="/1970/01/01/[玩转树莓派]0x04还我80端口/#0x01-安装花生壳内网版" class="headerlink" title="0x01 安装花生壳内网版"></a>0x01 安装花生壳内网版</h2><p><code>花生壳内网版</code> 这个东西是干嘛的？ 如果你没有接触过，可能会有这个疑问，且听我慢慢道来。现在或者未来的某一天，你会知道，中国电信或者其他家的宽带会封掉一些我们常用的端口，比如最常见的80端口。可能主要是为了加强网络管理，不允许私人在家里搭建网络服务吧。顺便告诉你一个不幸的消息，如果你的ssh不能在外网访问或者访问不稳定，也有可能被封了。而我们将要安装的 <code>花生壳内网版</code> 就是突破这个限制的。大家也可以参考<a href="http://service.oray.com/question/2680.html" target="_blank" rel="external">这里</a>。</p>
+<h3 id="下载"><a href="/1970/01/01/[玩转树莓派]0x04还我80端口/#下载" class="headerlink" title="下载"></a>下载</h3><p>首先，我们需要下载<a href="http://hsk.oray.com/download/#type=http|shumeipai" target="_blank" rel="external">树莓派版的花生壳内网版</a>，在树莓派上，我们可以用 <code>wget</code> 进行下载（这里我们下载到~/Downloads/），命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pi@raspberrypi:~/Downloads $ wget http://download.oray.com/peanuthull/embed/phddns_raspberry.tgz</div></pre></td></tr></table></figure>
+<p>下载下来的文件叫 <code>phddns_raspberry.tgz</code>，我们对其进行解压：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">pi@raspberrypi:~/Downloads $ tar zxvf phddns_raspberry.tgz</div><div class="line">phddns2/</div><div class="line">phddns2/oraynewph</div><div class="line">phddns2/oraynewph.tgz</div><div class="line">phddns2/oray_serve</div><div class="line">phddns2/parse</div></pre></td></tr></table></figure>
+<h3 id="安装"><a href="/1970/01/01/[玩转树莓派]0x04还我80端口/#安装" class="headerlink" title="安装"></a>安装</h3><p>我们需要使用root账号来安装，否则可能出现权限问题，导致安装失败。<code>sudo su</code> 切换到root，使用 <code>./oraynewph start</code> 执行安装。下面是安装过程：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">pi@raspberrypi:~/Downloads $ cd phddns2</div><div class="line">pi@raspberrypi:~/Downloads/phddns2 $ sudo su</div><div class="line">root@raspberrypi:/home/pi/Downloads/phddns2# ./oraynewph start</div><div class="line">...</div></pre></td></tr></table></figure>
+<h3 id="配置"><a href="/1970/01/01/[玩转树莓派]0x04还我80端口/#配置" class="headerlink" title="配置"></a>配置</h3><p>在上面的安装日志中我们可以看到这的提示信息（你也可以使用 <code>oraynewph status</code> 命令来查看此信息）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">SN:RAPIe*************</div><div class="line">Please visit http://b.oray.com</div><div class="line">Oraynewph start success !</div></pre></td></tr></table></figure>
+<p>按照提示，我们打开 <a href="http://b.oray.com" target="_blank" rel="external">http://b.oray.com</a> 这个网站，使用上面的SN登录系统（默认密码是<code>admin</code>，登录后会要求你设置密码，绑定花生壳账号等，如果你没有，那需要你注册一个），登录后如下图：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1801981-3b9d5ae4dd7ad773.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="花生壳"></p>
+<p>我们点击内网映射，进入设置界面，点击 添加配置，如下图：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1801981-35f932a7e5c24583.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="配置"><br><img src="http://upload-images.jianshu.io/upload_images/1801981-33ccee123723a0df.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="配置"></p>
+<p>经过如上配置，我们就可以通过域名来访问我们放在家里的树莓派上的http服务了。简单的，我们可以使用如下命令起一个http服务：<code>sudo python -m SimpleHTTPServer 80</code> 进行测试。</p>
+<h2 id="0x02-花生壳服务"><a href="/1970/01/01/[玩转树莓派]0x04还我80端口/#0x02-花生壳服务" class="headerlink" title="0x02 花生壳服务"></a>0x02 花生壳服务</h2><h3 id="注册花生壳"><a href="/1970/01/01/[玩转树莓派]0x04还我80端口/#注册花生壳" class="headerlink" title="注册花生壳"></a>注册花生壳</h3><p>首先我们需要注册一个花生壳，并花¥5购买一个永久的二级域名，这个就介绍了，类似这样：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1801981-2e065557539ab45b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="oray info"></p>
+<h3 id="路由器上登录花生壳"><a href="/1970/01/01/[玩转树莓派]0x04还我80端口/#路由器上登录花生壳" class="headerlink" title="路由器上登录花生壳"></a>路由器上登录花生壳</h3><p>接下来的操作都是基于这个前提的。先回顾下我的网络拓扑：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1801981-f2dc8e70dc55ce2f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="network topology"></p>
+<p>我使用的是TP-Link的路由器，宽带ADSL拨号是在这个路由器上，路由器有一个公网IP。TP-Link路由器是支持花生壳服务的。我们在路由器登录花生壳账号后即可通过登录帐号绑定的域名来访问这个公网IP了，TP-Link的路由器登录后的信息如下：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1801981-ae18c1b1d02d7ab1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="tplink_ddns_oray"></p>
+<h3 id="配置DMZ"><a href="/1970/01/01/[玩转树莓派]0x04还我80端口/#配置DMZ" class="headerlink" title="配置DMZ"></a>配置DMZ</h3><p>对于挂在路由器下的 Raspberry Pi 仅仅依靠上面的花生壳配置还不够的。我们还需要启用路由器的DMZ主机功能，下面是关于DMZ的介绍：</p>
+<blockquote>
+<p>在某些特殊情况下，需要让局域网中的一台计算机完全暴露给广域网，以实现双向通信，此时可以把该计算机设置为DMZ主机。 只有启用了该功能后，对应的DMZ主机才会生效。</p>
+</blockquote>
+<p>根据介绍，我们做下面的配置：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1801981-e179b14b6d8e5843.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="DMZ"></p>
+<p>这样发送到我们路由器的所有请求都会被转发到我们的 Raspberry Pi了，我们的 Raspberry Pi 就成了公网中的一台主机了。</p>
+<p><code>PS：DMZ主机配置并不是一个安全的选择，更安全的配置是只影射我们使用的端口，比如80，22等</code></p>
+<p>好了，这基本算是最后一篇基础介绍了。下一篇开始介绍树莓派最吸引我的地方 <code>GPIO</code> 操作，想想都兴奋了～～</p>
+<hr>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/[玩转树莓派]0x03初始化配置/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「玩转树莓派」0x03初始化配置</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/[玩转树莓派]0x06DS18B20温度检测/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「玩转树莓派」0x06DS18B20温度检测</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「macOS」macOS安装 | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/1970/01/01/[macOS]macOS安装/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「macOS」macOS安装</h1>
+
+          <section class="post-info">
+            <span class="post-date">1970/01/01</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/macOS/">macOS</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <h2 id="0x00-要不要重装？"><a href="/1970/01/01/[macOS]macOS安装/#0x00-要不要重装？" class="headerlink" title="0x00 要不要重装？"></a>0x00 要不要重装？</h2><p>对于重装系统，我是拒绝的。</p>
+<p>想起刚买Mac那会，总是用Window的思维来理解Mac，费了老大的劲来对磁盘进行分区，最后分了两个区：用户目录放在一个区，其他文件放在另一区。感觉自己好屌，但是没过多久发现下面两个问题：</p>
+<ul>
+<li><p>重装系统，之前用户目录的文件读取权限可能会有问题</p>
+<p>  别问我为什么，知道重装可以解决大部分问题就好了</p>
+</li>
+<li><p>随着时间的流逝，开始预留给 系统文件和App所在分区 越来越不够用</p>
+</li>
+</ul>
+<p>最后总结：Mac 很少坏，所以，分区并没什么卵用，只会给您的使用带来麻烦。</p>
+<p>好了，言归正传，自从升级了macOS 就出现各种小问题，python用不了了，adb经常断，系统变卡了，每个小问题都要去整一下。想想还是算了，花点时间，在另一台 Mac Mini 上重新安装，然后用 Time Machine 还原到 Mac Book上。</p>
+<h2 id="0x01-系统安装"><a href="/1970/01/01/[macOS]macOS安装/#0x01-系统安装" class="headerlink" title="0x01 系统安装"></a>0x01 系统安装</h2><p>电脑上有一份最新的macOS安装文件，打算去做安装U盘。下班回去准备操作的时候，发现做U盘安装盘的速度好慢慢好慢啊。想，还是算了吧，睡觉之前使用网络安装，第二天醒来应该可以装好。</p>
+<p>这里附一个 macOS 安装文件下载地址：<a href="http://183.134.9.47/osxapps.itunes.apple.com/apple-assets-us-std-000001/Purple62/v4/af/5f/9d/af5f9d8e-cf9c-8147-c51c-c3c1fececb99/jze1425880974225146329.pkg?wsiphost=local" target="_blank" rel="external">Install macOS Sierra.app</a>。</p>
+<h3 id="网络安装"><a href="/1970/01/01/[macOS]macOS安装/#网络安装" class="headerlink" title="网络安装"></a>网络安装</h3><p>开机按住 Option(Alt) 键，进入启动引导，选择那个虚拟盘（可能需要输入WIFI密码，我用的网线），先将主硬盘格式化（这将丢失所有数据，请提前做好备份），然后选择第二项安装系统，按照提示点击各种 继续、同意 之类，就可以去睡觉了。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1801981-56d692d40f4d4edc.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Setup"></p>
+<p>第二天起床，发现已经安装好了。按照提示，进行初始化操作，比如登录icloud账号，设置用户名等等。然后新的系统就可以用了。</p>
+<h3 id="日常使用工具安装"><a href="/1970/01/01/[macOS]macOS安装/#日常使用工具安装" class="headerlink" title="日常使用工具安装"></a>日常使用工具安装</h3><p>这里只按照个人需要，流水账一样的记录下。</p>
+<ul>
+<li><p>iTerm2 </p>
+<p>  这个是用来替代Terminal，可以做很多个性化的设置，用起来更顺手。IT必备吧。<br>  下载地址：<a href="http://www.iterm2.com/index.html" target="_blank" rel="external">http://www.iterm2.com/index.html</a></p>
+</li>
+<li><p>oh-my-zsh</p>
+<p>  默认情况iTerm2和Terminal一样，界面都是比较丑的。这个可以更改iTerm2的主题。同时还集成了各种命令的简写。</p>
+<p>  下载地址：<a href="http://ohmyz.sh" target="_blank" rel="external">http://ohmyz.sh</a></p>
+</li>
+<li><p>go2shell</p>
+<p>  有朋友推荐一些工具来替代Finder，装个这个小工具之后，基本上就懒得再去学一个 类Finder 了。它的功能超级简单，点击一个按钮，在当前位置打开一个Terminal窗口。</p>
+<p>  下载地址：<a href="http://zipzapmac.com/Go2Shell" target="_blank" rel="external">http://zipzapmac.com/Go2Shell</a><br>  （不建议从App Store下载）</p>
+</li>
+<li><p>homebrew</p>
+<p>  这个用来管理软件的，类似wget等。之前安装软件，都是到各家官网去找安装包，自从有了这个，很多软件再也不用到处去找了。</p>
+<p>  下载地址：<a href="http://brew.sh" target="_blank" rel="external">http://brew.sh</a></p>
+</li>
+<li><p>alfred</p>
+<p>  如果你使用 Spotlight ，alfred可能是一个更好的选择。</p>
+<p>  下载地址：可以直接在App Store下载。</p>
+</li>
+<li><p>Firefox（这里仅仅记录几个常用的插件）</p>
+<ul>
+<li>Adblock Plus 广告已成往事</li>
+<li>BingDcit 没找到更好的翻译替代工具</li>
+<li>JSONView 网页查看json数据更友好</li>
+<li>Octotree 访问Github时，会在左侧列出文件列表，下载浏览更方便</li>
+<li>User-Agent Switcher 访问一下手机网页会更方便</li>
+<li>TabTrekker 一个酷炫的桌面插件，每天给你不同的壁纸</li>
+</ul>
+</li>
+<li><p>Chrome（这里仅仅记录几个常用的插件）</p>
+<ul>
+<li>Adblock Plus</li>
+<li>JSONView 网页查看json数据更友好</li>
+<li>Octotree 访问Github时，会在左侧列出文件列表，下载浏览更方便</li>
+<li>OneTab</li>
+<li>Pocket</li>
+<li>Translt 一个翻译插件，双击即可翻译，体验很棒</li>
+<li><p>Unsplash Instant 和TabTrekker很像</p>
+<p>PS：Chrome插件虽好，但请按需选择，除非你的内存大大的。</p>
+</li>
+</ul>
+</li>
+<li><p>python 和 python3</p>
+<p>  mac系统自带了python2.7，这里我还是选择了使用brew安装了python和python3。</p>
+</li>
+<li><p>IntelliJ IDEA (Plugins)</p>
+<ul>
+<li>GsonFormat</li>
+<li>Android ButterKnife Zelezny</li>
+<li>CodeGlance</li>
+</ul>
+</li>
+<li><p>其他开发工具</p>
+<p>  这个就看各位需要了，我装了一堆。</p>
+</li>
+</ul>
+<h3 id="收费App"><a href="/1970/01/01/[macOS]macOS安装/#收费App" class="headerlink" title="收费App"></a>收费App</h3><ul>
+<li>mweb</li>
+<li>Inboard</li>
+<li>Day One</li>
+<li>1Password</li>
+<li>Affinity Designer</li>
+<li>macOS Server</li>
+<li>Apple Remote Desktop</li>
+<li>Polarr</li>
+<li>PCalc</li>
+<li>小历</li>
+<li>Inbox for Gmail</li>
+<li>Paste</li>
+<li>可意视频</li>
+<li>TODO 还有很多没列出来</li>
+</ul>
+<p>别问我是不是装了这里所有软件，告诉你我装了，但不要崇拜哥，万能的淘宝可以实现你的梦想🙈</p>
+<h3 id="环境配置"><a href="/1970/01/01/[macOS]macOS安装/#环境配置" class="headerlink" title="环境配置"></a>环境配置</h3><ul>
+<li><p>环境变量</p>
+<p>  安装好oh-my-sh之后，就可以添加自己的环境变量配置了，这里简单说些我的配置。首先我选择在一个单独的文件中<code>~/.bash_profile</code> 写自己的配置，然后将此文件添加到 <code>~/.zshrc</code> 的最后 <code>source ~/.bash_profile</code>。<code>.bash_profile</code>的内容如下：</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home</div><div class="line">export GRADLE_HOME=$HOME/android/gradle/gradle-2.14.1</div><div class="line">export ANDROID_HOME=$HOME/android/android-sdk-macosx</div><div class="line">export NDK_HOME=$ANDROID_HOME/ndk-bundle</div><div class="line">export PATH=$&#123;PATH&#125;:$&#123;ANDROID_HOME&#125;/platform-tools:$&#123;ANDROID_HOME&#125;/tools:$&#123;NDK_HOME&#125;/:$&#123;GRADLE_HOME&#125;/bin:$&#123;JAVA_HOME&#125;/bin:$&#123;JAVA_HOME&#125;/lib:</div><div class="line"></div><div class="line">#</div><div class="line"># Aliases</div><div class="line"># Create by ttdevs 2016-03-31</div><div class="line">#</div><div class="line"></div><div class="line">alias oi=&apos;open -a iterm .&apos;</div><div class="line">alias of=&apos;open -a Finder .&apos;</div><div class="line">alias vv=&apos;virtualenv&apos;</div><div class="line">alias weather=&apos;curl http://wttr.in/shanghai&apos;</div></pre></td></tr></table></figure>
+<h2 id="0x02-继续装逼"><a href="/1970/01/01/[macOS]macOS安装/#0x02-继续装逼" class="headerlink" title="0x02 继续装逼"></a>0x02 继续装逼</h2><p>重装系统，我仍是拒绝的。</p>
+<p>此文不定期更新。</p>
+<p>最后，App Store的软件还是比较贵的，入坑需谨慎 啊 啊 啊</p>
+<hr>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/[macOS]Mac一句话分享/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「macOS」Mac一句话分享</p>
+            </a>
+          
+          
+            <a class="post-next pager-item" href="/1970/01/01/[macOS]macOS安装Python/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">「macOS」macOS安装Python</p>
+            </a>
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>
