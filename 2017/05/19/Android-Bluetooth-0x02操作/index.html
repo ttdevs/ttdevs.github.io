@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+          <head>
+        <meta charset="utf-8">
+            
+            <title>
+                「Android-Bluetooth」0x02操作 | ttdevs
+            </title>
+            <meta content="width=device-width, initial-scale=1" name="viewport">
+            <meta name="theme-color" content="#4184f3">
+            
+            
+            <link href="/favicon.ico" rel="icon"/>
+            
+
+            <link rel="stylesheet" href="/css/highlight.light.css">
+            <link rel="stylesheet" href="/css/prism-customize.css">
+            <link rel="stylesheet" href="/css/nav-icon.css">
+            <link rel="stylesheet" href="/css/waves.min.css">
+            <link rel="stylesheet" href="/css/jquery.tocify.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/nav-indicator.css">
+            
+  
+
+  
+  <!-- 谷歌统计 -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97465173-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+  
+            </meta>
+        </meta>
+    </head>
+
+    <body>
+        <header>
+            <!-- cover image or sth. -->
+        </header>
+        <div id="main" class="m-scene">
+            
+<div class="nav-wrapper">
+
+    <div class="container">
+        <nav>
+            <div class="logo wave">
+                <a href="/" id="logo">
+                    ttdevs
+                </a>
+            </div>
+            <div class="nav-toggle-icon" >
+                <div class="material-hamburger">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </div>
+            </div>
+            <div class="menu-wrapper">
+                <div class="nav-indicator">
+                </div>
+                <ul class="menus">
+                    
+                     
+                        <li>
+                            <a class="wave " href="/">
+                                首页
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/archives">
+                                归档
+                            </a>
+                        </li>
+                     
+                        <li>
+                            <a class="wave " href="/about">
+                                关于
+                            </a>
+                        </li>
+                     
+                    
+                   
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+            <div class="container content">
+                <div class="scene_element scene_element--fadein">
+                    <div class="row">
+    <div class="main">
+        <article>
+          
+          <header class="post-header with-cover" style="background-image:url('/2017/05/19/Android-Bluetooth-0x02操作/cover.jpg')" >
+          
+          </header>
+          <h1 class="post-title">「Android-Bluetooth」0x02操作</h1>
+
+          <section class="post-info">
+            <span class="post-date">2017/05/19</span>
+            
+            <span class="post-category">
+                <a class="article-category-link" href="/categories/技术/">技术</a>
+            </span>
+            
+            
+            <span class="post-tags">
+              <ul class="post-tag-list"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Android/">Android</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Bluetooth/">Bluetooth</a></li></ul>
+            </span>
+            
+          </section>
+
+          <section class="post-content">
+            <h2 id="0x00-低功耗蓝牙（BLE）"><a href="/2017/05/19/Android-Bluetooth-0x02操作/#0x00-低功耗蓝牙（BLE）" class="headerlink" title="0x00 低功耗蓝牙（BLE）"></a>0x00 低功耗蓝牙（BLE）</h2><p>上一篇简单介绍了下传统蓝牙的使用，当你沿着上一篇的思路去连接某些蓝牙（设备）的时候，你会发现总是不成功。没错，我们还有另外一种蓝牙没有讲：低功耗蓝牙(BLE: Bluetooth Low Energy)。</p>
+<p>这并不是一种新的东西，它只是蓝牙协议的一个新的版本。之前提到的是蓝牙2.0/2.1，这里的低功耗蓝牙BLE主要是蓝牙4.0/4.1/4.2。在我们的日常生活中这种蓝牙越来越常见，比如：各种手环，各种体脂秤，各种便携蓝牙设备等。</p>
+<p>更多关于蓝牙的介绍可以参考<a href="https://zh.wikipedia.org/wiki/蓝牙" target="_blank" rel="external">这里</a></p>
+<h2 id="0x01-蓝牙协议栈"><a href="/2017/05/19/Android-Bluetooth-0x02操作/#0x01-蓝牙协议栈" class="headerlink" title="0x01 蓝牙协议栈"></a>0x01 蓝牙协议栈</h2><p>和学习 TCP/IP 一样，如果了解协议栈对我们掌握蓝牙会有很大的帮助。</p>
+<p><img src="https://www.bluetooth.com/~/media/images/page-content/bluetooth%20stack.ashx?h=501&amp;w=388&amp;la=zh-cn&amp;hash=9756388D40595EB444E4B110F3587A323604714A" alt="蓝牙协议栈"></p>
+<ul>
+<li><p>物理 (PHY) 层</p>
+<p>  通过蓝牙通信信道控制 2.4Ghz 射频的传输/接收。BR/EDR 提供的信道较多但带宽较窄，而 LE 使用的信道较少但带宽较宽。</p>
+</li>
+<li><p>链路层</p>
+<p>  定义数据包结构/信道、发现/连接程序以及发送/接收数据。</p>
+</li>
+<li><p>直接测试模式</p>
+<p>  允许测试人员向 PHY 层发出指令以传输或接收给定数据包序列，通过 HCI 或 2 线 UART 接口提交命令。</p>
+</li>
+<li><p>主机控制器接口 (HCI)</p>
+<p>  蓝牙控制器子系统（底部三层）和蓝牙主机之间的可选标准接口。</p>
+</li>
+<li><p>逻辑链路控制和适配协议 (L2CAP) 层</p>
+<p>  基于数据包的协议，可将数据包传输至 HCI 或直接传输到无主机系统中的链路管理器。支持更高级别的协议多路复用、数据包分割和重组，以及将服务质量信息传输到更高层。</p>
+</li>
+<li><p>属性协议 (ATT)</p>
+<p>  在建立连接之后定义数据交换客户端/服务器协议。使用通用属性配置文件 (GATT) 将属性分类为有意义的服务。ATT 主要用于 LE 部署，偶尔也会用于 BR/EDR 部署。</p>
+</li>
+<li><p>安全管理器</p>
+<p>  定义管理蓝牙设备之间配对完整性、身份验证以及加密的协议和操作，提供安全功能工具箱，其他组件可利用该工具箱支持不同应用所需的各种安全级别。</p>
+</li>
+<li><p>通用属性配置文件 (GATT)</p>
+<p>  使用属性协议，GATT 对封装设备组件性能的服务进行分组，并描述基于 GATT 功能的用例、角色和一般性能。其服务框架定义服务规程和格式及其特性，其中包括发现、读取、写入、通知以及指示特性以及配置特性广播。GATT 仅用于蓝牙 LE 部署。 详细了解 <a href="https://www.bluetooth.com/zh-cn/specifications/generic-attributes-overview" target="_blank" rel="external">GATT</a> 信息。 </p>
+</li>
+<li><p>通用访问配置文件(GAP)</p>
+</li>
+</ul>
+<p>可与蓝牙 LE 部署中的 GATT 配合使用，以定义与发现蓝牙设备和共享信息相关的规程和角色，以及连接蓝牙设备的链路管理内容。 </p>
+<p><a href="https://race604.com/android-ble-in-action/" target="_blank" rel="external">以上信息来自这里</a></p>
+<h2 id="0x02-Android系统中的BLE"><a href="/2017/05/19/Android-Bluetooth-0x02操作/#0x02-Android系统中的BLE" class="headerlink" title="0x02 Android系统中的BLE"></a>0x02 Android系统中的BLE</h2><p>Android系统中对于低功耗蓝牙我们需要关心以下几点：</p>
+<ul>
+<li>Android 4.3（18）开始支持BLE</li>
+<li>Android 5.0（21）之前手机只可以作为中心设备（Central mode）使用，5.0之后可以作为外设（Peripheral mode）使用</li>
+</ul>
+<p>除了以上信息，我们在对协议中的几个概念做个介绍，这涉及到之后的开发：</p>
+<ul>
+<li><p>Attribute Protocol (ATT)</p>
+<p>  属性协议，对应 <code>BluetoothGattService</code></p>
+</li>
+<li><p>Generic Attribute Profile (GATT)</p>
+<p>  通用属性配置文件，对应Android中的 <code>BluetoothGatt</code></p>
+</li>
+<li><p>Characteristic</p>
+<p>  <code>BluetoothGattCharacteristic</code></p>
+</li>
+<li><p>Descriptor</p>
+<p>  <code>BluetoothGattDescriptor</code></p>
+</li>
+<li><p>Service</p>
+<p>  <code>BluetoothGattService</code></p>
+</li>
+</ul>
+<p><img src="https://www.bluetooth.com/~/media/images/page-content/gatt%20profile%20hierarchy.ashx?la=zh-cn&amp;hash=9323C669A731EA445651072296730FB343BA6BB5" alt=""></p>
+<h2 id="0x03-Android系统中的BLE操作流程"><a href="/2017/05/19/Android-Bluetooth-0x02操作/#0x03-Android系统中的BLE操作流程" class="headerlink" title="0x03 Android系统中的BLE操作流程"></a>0x03 Android系统中的BLE操作流程</h2><p>和之前的普通蓝牙相同，我们需要先检测设备的蓝牙是否可用，然后扫描周围的蓝牙设备，然后连接。这里可以看到，BLE的操作并不需要配对。如需要在设备必须支持低功耗蓝牙，则还需要加上这句：</p>
+<p><code>&lt;uses-feature android:name=&quot;android.hardware.bluetooth_le&quot; android:required=&quot;true&quot;/&gt;</code></p>
+<ul>
+<li><p>蓝牙扫描</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">boolean</span> mScanning;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">scanLeDevice</span><span class="params">(<span class="keyword">final</span> <span class="keyword">boolean</span> enable)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (enable) &#123;</div><div class="line">        mHandler.postDelayed(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">                mScanning = <span class="keyword">false</span>;</div><div class="line">                mBluetoothAdapter.stopLeScan(mLeScanCallback);</div><div class="line">            &#125;</div><div class="line">        &#125;, SCAN_PERIOD);</div><div class="line"></div><div class="line">        mScanning = <span class="keyword">true</span>;</div><div class="line">        mBluetoothAdapter.startLeScan(mLeScanCallback);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        mScanning = <span class="keyword">false</span>;</div><div class="line">        mBluetoothAdapter.stopLeScan(mLeScanCallback);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// Device scan callback.</span></div><div class="line"><span class="keyword">private</span> BluetoothAdapter.LeScanCallback mLeScanCallback = <span class="keyword">new</span> BluetoothAdapter.LeScanCallback() &#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onLeScan</span><span class="params">(<span class="keyword">final</span> BluetoothDevice device, <span class="keyword">int</span> rssi, <span class="keyword">byte</span>[] scanRecord)</span> </span>&#123;</div><div class="line">        String format = <span class="string">"Name:%s, Mac:%s, Type:%s"</span>;</div><div class="line">        String msg = String.format(format, device.getName(), device.getAddress(), device.getType());</div><div class="line">        print(msg);</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<pre><code>扫描完成之后，我们会拿到蓝牙的设备信息，然后就可以进行连接了。 
+</code></pre><ul>
+<li><p>连接蓝牙</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">onStartCommand</span><span class="params">(Intent intent, <span class="keyword">int</span> flags, <span class="keyword">int</span> startId)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">null</span> != intent) &#123;</div><div class="line">        mMAC = intent.getStringExtra(KEY_MAC);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (TextUtils.isEmpty(mMAC)) &#123;</div><div class="line">        mMAC = MAC_BIKE;</div><div class="line">    &#125;</div><div class="line">    mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);</div><div class="line">    mBluetoothAdapter = mBluetoothManager.getAdapter();</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">null</span> == mBluetoothAdapter) &#123;</div><div class="line">        stopSelf();</div><div class="line">        <span class="keyword">return</span> START_NOT_STICKY;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(mMAC);</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">null</span> == device) &#123;</div><div class="line">        stopSelf();</div><div class="line">        <span class="keyword">return</span> START_NOT_STICKY;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    closeConnect();</div><div class="line"></div><div class="line">    mBluetoothGatt = device.connectGatt(<span class="keyword">this</span>, <span class="keyword">false</span>, mCallBack);</div><div class="line">    <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.LOLLIPOP) &#123; <span class="comment">//5.0设置的传输最大空间</span></div><div class="line">        mBluetoothGatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);</div><div class="line">        mBluetoothGatt.requestMtu(<span class="number">84</span>);</div><div class="line">    &#125;</div><div class="line">    print(<span class="string">"Gatt connect"</span>);</div><div class="line">    <span class="keyword">return</span> START_STICKY;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>连接蓝牙</p>
+<p>  在连接的CallBack中如果我们检测到连接成功，才可以请求蓝牙提供的服务，这里先检测连接的状态：</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> BluetoothGattCallback mCallBack = <span class="keyword">new</span> BluetoothGattCallback() &#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onConnectionStateChange</span><span class="params">(BluetoothGatt gatt, <span class="keyword">int</span> status, <span class="keyword">int</span> newState)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onConnectionStateChange(gatt, status, newState);</div><div class="line"></div><div class="line">        print(String.format(<span class="string">"status:%d, newState:%d"</span>, status, newState));</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (status != BluetoothGatt.GATT_SUCCESS) &#123;</div><div class="line">            closeConnect();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">switch</span> (newState) &#123;</div><div class="line">            <span class="keyword">case</span> BluetoothProfile.STATE_CONNECTED:</div><div class="line">                print(<span class="string">"连接GATT服务成功，开始发现服务..."</span>);</div><div class="line">                gatt.discoverServices();</div><div class="line">                <span class="keyword">break</span>;</div><div class="line">            <span class="keyword">case</span> BluetoothProfile.STATE_DISCONNECTED:</div><div class="line">                print(<span class="string">"断开GATT服务，Bye"</span>);</div><div class="line">                closeConnect();</div><div class="line">                <span class="keyword">break</span>;</div><div class="line"></div><div class="line">            <span class="keyword">default</span>:</div><div class="line">                <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    ...</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>发现服务</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> BluetoothGattCallback mCallBack = <span class="keyword">new</span> BluetoothGattCallback() &#123;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServicesDiscovered</span><span class="params">(BluetoothGatt gatt, <span class="keyword">int</span> status)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onServicesDiscovered(gatt, status);</div><div class="line"></div><div class="line">        print(<span class="string">"发现服务："</span> + status);</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (BluetoothGatt.GATT_SUCCESS == status) &#123;</div><div class="line">            List&lt;BluetoothGattService&gt; gattServices = gatt.getServices();</div><div class="line">            <span class="keyword">if</span> (<span class="keyword">null</span> == gattServices || gattServices.size() == <span class="number">0</span>) &#123;</div><div class="line">                <span class="keyword">return</span>;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">for</span> (BluetoothGattService gattService : gattServices) &#123;</div><div class="line">                String serviceUUID = gattService.getUuid().toString();</div><div class="line">                print(<span class="string">"UUID GATT:"</span> + serviceUUID);</div><div class="line">                List&lt;BluetoothGattCharacteristic&gt; characteristics = gattService.getCharacteristics();</div><div class="line">                <span class="keyword">for</span> (BluetoothGattCharacteristic characteristic : characteristics) &#123;</div><div class="line">                    String uuid = characteristic.getUuid().toString();</div><div class="line">                    print(<span class="string">"UUID     Cha:"</span> + uuid);</div><div class="line">                    print(<span class="string">"UUID     Status:"</span> + getProperties(characteristic));</div><div class="line">                    <span class="keyword">if</span> (UUID_RECEIVE.toString().equalsIgnoreCase(uuid)) &#123;</div><div class="line">                        mBluetoothGatt.setCharacteristicNotification(characteristic, <span class="keyword">true</span>);</div><div class="line">                        print(<span class="string">"开始监听："</span> + uuid);</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>使用服务</p>
+<p>  …</p>
+</li>
+</ul>
+<h2 id="0x04-还需要了解的一些细节"><a href="/2017/05/19/Android-Bluetooth-0x02操作/#0x04-还需要了解的一些细节" class="headerlink" title="0x04 还需要了解的一些细节"></a>0x04 还需要了解的一些细节</h2><ul>
+<li>UUID</li>
+</ul>
+<ul>
+<li>判断服务的属性</li>
+</ul>
+<h2 id="0x05-可能会遇到的坑"><a href="/2017/05/19/Android-Bluetooth-0x02操作/#0x05-可能会遇到的坑" class="headerlink" title="0x05 可能会遇到的坑"></a>0x05 可能会遇到的坑</h2><p>手上的两台魅族设备，连接一个客户提供的蓝牙模块，死活连不上，其他手机连接正常。这两部设备连接淘宝上买的一个蓝牙模块正常。</p>
+<h2 id="0xFF-参考"><a href="/2017/05/19/Android-Bluetooth-0x02操作/#0xFF-参考" class="headerlink" title="0xFF 参考"></a>0xFF 参考</h2><ul>
+<li><a href="https://developer.android.com/guide/topics/connectivity/bluetooth-le.html" target="_blank" rel="external">https://developer.android.com/guide/topics/connectivity/bluetooth-le.html</a></li>
+<li><a href="https://www.bluetooth.com/zh-cn/specifications/bluetooth-core-specification" target="_blank" rel="external">https://www.bluetooth.com/zh-cn/specifications/bluetooth-core-specification</a></li>
+<li><a href="https://zh.wikipedia.org/wiki/%E8%97%8D%E7%89%99#.E8.97.8D.E7.89.994.0" target="_blank" rel="external">https://zh.wikipedia.org/wiki/%E8%97%8D%E7%89%99#.E8.97.8D.E7.89.994.0</a></li>
+<li><a href="https://race604.com/android-ble-in-action/" target="_blank" rel="external">https://race604.com/android-ble-in-action/</a></li>
+<li><a href="http://blog.csdn.net/qinxiandiqi/article/details/40741269" target="_blank" rel="external">http://blog.csdn.net/qinxiandiqi/article/details/40741269</a></li>
+<li><a href="http://www.jianshu.com/p/8690dbafe849" target="_blank" rel="external">http://www.jianshu.com/p/8690dbafe849</a></li>
+<li><a href="https://www.bluetooth.com/zh-cn/specifications/adopted-specifications" target="_blank" rel="external">https://www.bluetooth.com/zh-cn/specifications/adopted-specifications</a></li>
+<li><a href="https://www.bluetooth.org/DocMan/handlers/DownloadDoc.ashx?doc_id=286439" target="_blank" rel="external">https://www.bluetooth.org/DocMan/handlers/DownloadDoc.ashx?doc_id=286439</a></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/ttdevs/ttdevs.github.io/common/images/logo.png" alt="Create by ttdevs"></p>
+
+          </section>
+        </article>
+        
+
+       
+        <div class="pager">
+          
+            <a class="post-prev pager-item" href="/1970/01/01/玩转树莓派-0x06DS18B20温度检测/" >
+              <strong class="article-nav-caption">上一篇</strong>
+              <p class="post-nav-title">「玩转树莓派」0x06DS18B20温度检测</p>
+            </a>
+          
+          
+        </div>
+        
+
+         <!-- comments -->
+        <div class="comment-section">
+  
+    
+
+
+</div>
+
+    </div>
+    
+    <aside>
+        <div id="toc">
+        </div>
+    </aside>
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <p>由<a href="http://hexo.io/" target="_blank">Hexo</a>强力驱动，搭载<a href="https://github.com/wayou/hexo-theme-gstyle">gstyle</a>主题</p>
+    <p>
+        &copy; 2017 ttdevs
+    </p>
+</footer>
+<script src="/lib/jquery.js"></script>
+<script src="/lib/waves.js"></script>
+<script src="/lib/jquery-ui.js"></script>
+<script src="/lib/jquery.tocify.js"></script>
+<script src="/js/main.js"></script>
+
+    </body>
+</html>
