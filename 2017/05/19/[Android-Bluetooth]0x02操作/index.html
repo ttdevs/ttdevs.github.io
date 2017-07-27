@@ -121,10 +121,10 @@
           </section>
 
           <section class="post-content">
-            <h2 id="0x00-低功耗蓝牙（BLE）"><a href="/2017/05/19/[Android-Bluetooth]0x02操作/#0x00-低功耗蓝牙（BLE）" class="headerlink" title="0x00 低功耗蓝牙（BLE）"></a>0x00 低功耗蓝牙（BLE）</h2><p>上一篇简单介绍了下传统蓝牙的使用，当你沿着上一篇的思路去连接某些蓝牙（设备）的时候，你会发现总是不成功。没错，我们还有另外一种蓝牙没有讲：低功耗蓝牙(BLE: Bluetooth Low Energy)。</p>
-<p>这并不是一种新的东西，它只是蓝牙协议的一个新的版本。之前提到的是蓝牙2.0/2.1，这里的低功耗蓝牙BLE主要是蓝牙4.0/4.1/4.2。在我们的日常生活中这种蓝牙越来越常见，比如：各种手环，各种体脂秤，各种便携蓝牙设备等。</p>
+            <h2 id="0x00-低功耗蓝牙（BLE）"><a href="/2017/05/19/[Android-Bluetooth]0x02操作/#0x00-低功耗蓝牙（BLE）" class="headerlink" title="0x00 低功耗蓝牙（BLE）"></a>0x00 低功耗蓝牙（BLE）</h2><p>上一篇简单介绍了传统蓝牙设备的使用，当你沿着上一篇的思路去连接某些蓝牙设备的时候，你会发现总是不成功。没错，我们还有另外一种蓝牙没有讲：低功耗蓝牙(BLE: Bluetooth Low Energy)。</p>
+<p>这并不是一种新的东西，它只是蓝牙协议中的一个新的版本。之前提到的多是蓝牙2.0/2.1，这里的低功耗蓝牙（BLE）主要是指蓝牙4.0/4.1/4.2。在我们的日常生活中这种蓝牙越来越常见，比如各种手环、体脂秤、智能设备、便携蓝牙设备等等。</p>
 <p>更多关于蓝牙的介绍可以参考<a href="https://zh.wikipedia.org/wiki/蓝牙" target="_blank" rel="external">这里</a></p>
-<h2 id="0x01-蓝牙协议栈"><a href="/2017/05/19/[Android-Bluetooth]0x02操作/#0x01-蓝牙协议栈" class="headerlink" title="0x01 蓝牙协议栈"></a>0x01 蓝牙协议栈</h2><p>和学习 TCP/IP 一样，如果了解协议栈对我们掌握蓝牙会有很大的帮助。</p>
+<h2 id="0x01-蓝牙协议栈"><a href="/2017/05/19/[Android-Bluetooth]0x02操作/#0x01-蓝牙协议栈" class="headerlink" title="0x01 蓝牙协议栈"></a>0x01 蓝牙协议栈</h2><p>和学习 TCP/IP 一样，如果了解BLE的议栈对我们掌握蓝牙会有很大的帮助。</p>
 <p><img src="https://www.bluetooth.com/~/media/images/page-content/bluetooth%20stack.ashx?h=501&amp;w=388&amp;la=zh-cn&amp;hash=9756388D40595EB444E4B110F3587A323604714A" alt="蓝牙协议栈"></p>
 <ul>
 <li><p>物理 (PHY) 层</p>
@@ -155,7 +155,7 @@
 </li>
 </ul>
 <p>可与蓝牙 LE 部署中的 GATT 配合使用，以定义与发现蓝牙设备和共享信息相关的规程和角色，以及连接蓝牙设备的链路管理内容。 </p>
-<p><a href="https://race604.com/android-ble-in-action/" target="_blank" rel="external">以上信息来自这里</a></p>
+<p><a href="https://www.bluetooth.com/zh-cn/specifications/bluetooth-core-specification" target="_blank" rel="external">以上信息来自这里</a></p>
 <h2 id="0x02-Android系统中的BLE"><a href="/2017/05/19/[Android-Bluetooth]0x02操作/#0x02-Android系统中的BLE" class="headerlink" title="0x02 Android系统中的BLE"></a>0x02 Android系统中的BLE</h2><p>Android系统中对于低功耗蓝牙我们需要关心以下几点：</p>
 <ul>
 <li>Android 4.3（18）开始支持BLE</li>
@@ -233,11 +233,16 @@
        
         <div class="pager">
           
-            <a class="post-prev pager-item" href="/1970/01/01/[Retrofit]0x03同步与异步请求/" >
+            <a class="post-prev pager-item" href="/1970/01/01/hello-world/" >
               <strong class="article-nav-caption">上一篇</strong>
-              <p class="post-nav-title">「Retrofit」0x03同步与异步请求</p>
+              <p class="post-nav-title">Hello World</p>
             </a>
           
+          
+            <a class="post-next pager-item" href="/2017/05/26/Android-升级SupportLibrary/">
+              <strong class="article-nav-caption">下一篇</strong>
+              <p class="post-nav-title">[Android]升级Support Library</p>
+            </a>
           
         </div>
         
